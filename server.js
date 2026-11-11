@@ -134,8 +134,10 @@ app.get("/api/verify/:badgeId", (req, res) => {
   res.json({ verified: true, data: b });
 });
 
-// Public Verification Page (When customer or police/regulator scans Worker QR Badge)
-app.get(["/badge", "/badge/:id"], (req, res) => {
+app.get("/badge", (req, res) => handleBadgeRequest(req, res));
+app.get("/badge/:id", (req, res) => handleBadgeRequest(req, res));
+
+function handleBadgeRequest(req, res) {
   const id = req.params.id || req.query.id || "FX-WRK-884101";
   const b = VERIFIED_BADGES[id] || {
     badge_id: id,
@@ -195,7 +197,7 @@ app.get(["/badge", "/badge/:id"], (req, res) => {
 </body>
 </html>`;
   res.send(html);
-});
+}
 
 // App Entrypoints (Injects appropriate default role in index.html)
 function serveAppWithRole(role, req, res) {
@@ -211,7 +213,8 @@ function serveAppWithRole(role, req, res) {
 
 app.get("/vendor", (req, res) => serveAppWithRole("vendor", req, res));
 app.get("/admin", (req, res) => serveAppWithRole("admin", req, res));
-app.get("*", (req, res) => serveAppWithRole("consumer", req, res));
+app.get("/{*splat}", (req, res) => serveAppWithRole("consumer", req, res));
+app.use((req, res) => serveAppWithRole("consumer", req, res));
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`[OK] FixIt Web Server running on port ${PORT}`);
