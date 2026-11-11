@@ -18,16 +18,13 @@
       --primary: #FF5A00;
       --primary-hover: #E04E00;
       --primary-light: #FFF1E8;
-      --neutral-black: #262626;
+      --neutral-black: #1E293B;
+      --neutral-dark: #0F172A;
       --neutral-white: #FFFFFF;
-      --neutral-gray: #6B6B6B;
-      --neutral-light: #F5F5F5;
-      --neutral-border: #E5E5E5;
-      --success-green: #05A437;
-      --success-bg: #EBF4E5;
-      --shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+      --neutral-gray: #64748B;
+      --neutral-light: #F8FAFC;
+      --neutral-border: #E2E8F0;
       --font-en: 'TT Commons', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      --font-ar: 'Noto Sans Arabic', sans-serif;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
@@ -36,10 +33,11 @@
       color: var(--neutral-black);
       background-color: var(--neutral-white);
       -webkit-font-smoothing: antialiased;
-      line-height: 1.4;
+      line-height: 1.45;
     }
     a { text-decoration: none; color: inherit; }
     button { cursor: pointer; border: none; background: none; font: inherit; }
+    svg { display: block; flex-shrink: 0; }
 
     /* ========== TALABAT TOP NAVBAR ========== */
     .talabat-nav {
@@ -57,20 +55,21 @@
     .nav-left { display: flex; align-items: center; gap: 32px; }
     .brand-logo { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 24px; color: var(--primary); letter-spacing: -0.5px; }
     .brand-logo img { width: 42px; height: 42px; border-radius: 10px; object-fit: cover; }
-    .nav-links { display: flex; align-items: center; gap: 24px; font-size: 15px; font-weight: 600; color: var(--neutral-black); }
+    .nav-links { display: flex; align-items: center; gap: 24px; font-size: 15px; font-weight: 700; color: var(--neutral-black); }
     .nav-links a:hover { color: var(--primary); }
     @media (max-width: 820px) { .nav-links { display: none; } }
 
-    .nav-right { display: flex; align-items: center; gap: 16px; }
+    .nav-right { display: flex; align-items: center; gap: 14px; }
     .lang-switcher {
       display: flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 12px;
+      padding: 8px 14px;
       border-radius: 99px;
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 700;
       background: var(--neutral-light);
+      border: 1px solid var(--neutral-border);
       color: var(--neutral-black);
     }
     .btn-get-app {
@@ -79,18 +78,17 @@
       font-weight: 800;
       font-size: 14px;
       padding: 10px 22px;
-      border-radius: 8px;
+      border-radius: 10px;
       transition: background 0.15s;
     }
     .btn-get-app:hover { background: var(--primary-hover); }
 
-    /* ========== HERO SECTION (TALABAT WEB ORANGE BANNER) ========== */
+    /* ========== TALABAT HERO BANNER ========== */
     .talabat-hero {
       background: linear-gradient(135deg, #FF5A00 0%, #EA580C 100%);
       color: #fff;
-      padding: 48px 24px 64px;
+      padding: 56px 24px 68px;
       position: relative;
-      overflow: hidden;
     }
     .hero-container { max-width: 1140px; margin: 0 auto; }
     .hero-tagline {
@@ -103,23 +101,23 @@
       border-radius: 99px;
       font-size: 13px;
       font-weight: 800;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
       letter-spacing: 0.3px;
     }
     .hero-title {
-      font-size: 42px;
+      font-size: 44px;
       font-weight: 900;
       line-height: 1.15;
       letter-spacing: -0.8px;
-      max-width: 720px;
+      max-width: 760px;
       margin-bottom: 14px;
     }
-    @media (max-width: 768px) { .hero-title { font-size: 30px; } }
+    @media (max-width: 768px) { .hero-title { font-size: 32px; } }
     .hero-subtitle {
       font-size: 17px;
       opacity: 0.95;
-      max-width: 620px;
-      margin-bottom: 28px;
+      max-width: 640px;
+      margin-bottom: 32px;
       font-weight: 500;
     }
 
@@ -131,9 +129,9 @@
       display: flex;
       align-items: center;
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
-      max-width: 680px;
+      max-width: 720px;
     }
-    .search-pin { font-size: 22px; padding: 0 10px; color: var(--primary); }
+    .search-pin { padding: 0 12px; color: var(--primary); display: flex; align-items: center; }
     .search-input {
       flex: 1;
       height: 48px;
@@ -180,11 +178,9 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      min-height: 180px;
+      min-height: 190px;
       transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
       cursor: pointer;
-      position: relative;
-      overflow: hidden;
     }
     .category-card:hover {
       transform: translateY(-4px);
@@ -192,33 +188,32 @@
       border-color: var(--primary);
     }
     .cat-icon-wrap {
-      width: 54px;
-      height: 54px;
+      width: 52px;
+      height: 52px;
       border-radius: 14px;
       background: var(--primary-light);
       color: var(--primary);
       display: grid;
       place-items: center;
-      font-size: 26px;
       margin-bottom: 14px;
     }
-    .cat-title { font-size: 18px; font-weight: 900; color: var(--neutral-black); margin-bottom: 4px; }
-    .cat-desc { font-size: 13px; color: var(--neutral-gray); line-height: 1.35; }
+    .cat-title { font-size: 18px; font-weight: 900; color: var(--neutral-black); margin-bottom: 6px; }
+    .cat-desc { font-size: 13px; color: var(--neutral-gray); line-height: 1.4; }
     .cat-badge {
       display: inline-block;
       align-self: flex-start;
-      margin-top: 12px;
-      font-size: 11.5px;
+      margin-top: 14px;
+      font-size: 12px;
       font-weight: 800;
       color: var(--primary);
     }
 
-    /* ========== TALABAT PRO / FIXIT PRO BANNER ========== */
+    /* ========== TALABAT PRO CARD ========== */
     .pro-banner {
-      background: linear-gradient(135deg, #1E1B4B 0%, #0F172A 100%);
+      background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
       color: #fff;
       border-radius: 24px;
-      padding: 36px 40px;
+      padding: 38px 42px;
       margin: 24px 0 48px;
       display: flex;
       align-items: center;
@@ -231,8 +226,8 @@
       background: linear-gradient(135deg, #FF5A00, #EA580C);
       color: #fff;
       font-weight: 900;
-      font-size: 12px;
-      padding: 4px 12px;
+      font-size: 11.5px;
+      padding: 5px 14px;
       border-radius: 99px;
       letter-spacing: 0.5px;
       display: inline-block;
@@ -252,7 +247,7 @@
     }
     .pro-btn:hover { background: var(--primary-hover); }
 
-    /* ========== CERTIFIED OMAN COMMERCIAL REGISTRATION (CR) ========== */
+    /* ========== TRUST & COMPLIANCE STRIP ========== */
     .trust-strip {
       background: var(--neutral-light);
       border-radius: 20px;
@@ -261,14 +256,15 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 24px;
       margin-bottom: 48px;
+      border: 1px solid var(--neutral-border);
     }
     @media (max-width: 768px) { .trust-strip { grid-template-columns: 1fr; gap: 16px; } }
     .trust-item { display: flex; align-items: flex-start; gap: 14px; }
-    .trust-icon { font-size: 28px; }
+    .trust-icon-wrap { width: 42px; height: 42px; border-radius: 10px; background: #fff; display: grid; place-items: center; color: var(--primary); border: 1px solid var(--neutral-border); }
     .trust-title { font-weight: 900; font-size: 16px; color: var(--neutral-black); margin-bottom: 2px; }
-    .trust-desc { font-size: 13px; color: var(--neutral-gray); }
+    .trust-desc { font-size: 13px; color: var(--neutral-gray); line-height: 1.4; }
 
-    /* ========== APP DOWNLOAD SHOWCASE (TALABAT STYLE) ========== */
+    /* ========== APP DOWNLOAD SHOWCASE ========== */
     .app-showcase {
       background: #FFFFFF;
       border: 1px solid var(--neutral-border);
@@ -279,17 +275,17 @@
       justify-content: space-between;
       gap: 40px;
       margin-bottom: 48px;
-      box-shadow: var(--shadow);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
     }
     @media (max-width: 860px) { .app-showcase { flex-direction: column; text-align: center; padding: 28px 20px; } }
     .showcase-text h3 { font-size: 28px; font-weight: 900; margin-bottom: 10px; }
-    .showcase-text p { font-size: 15px; color: var(--neutral-gray); margin-bottom: 24px; max-width: 500px; }
+    .showcase-text p { font-size: 15px; color: var(--neutral-gray); margin-bottom: 24px; max-width: 520px; }
     .download-btns { display: flex; gap: 14px; flex-wrap: wrap; }
     @media (max-width: 860px) { .download-btns { justify-content: center; } }
     .app-store-btn {
-      background: var(--neutral-black);
+      background: var(--neutral-dark);
       color: #fff;
-      padding: 12px 20px;
+      padding: 12px 22px;
       border-radius: 12px;
       display: flex;
       align-items: center;
@@ -297,32 +293,31 @@
       transition: opacity 0.15s;
     }
     .app-store-btn:hover { opacity: 0.9; }
-    .app-store-btn.vendor { background: #0F172A; border: 1.5px solid #334155; }
-    .as-icon { font-size: 24px; }
-    .as-sub { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.8; }
+    .app-store-btn.vendor { background: #1E293B; border: 1.5px solid #334155; }
+    .as-sub { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.8; }
     .as-title { font-size: 14px; font-weight: 800; }
 
-    /* ========== TALABAT FOOTER ========== */
+    /* ========== TALABAT MULTI-COLUMN FOOTER ========== */
     .talabat-footer {
       background: #FFFFFF;
       border-top: 1px solid var(--neutral-border);
-      padding: 48px 24px 32px;
+      padding: 56px 24px 36px;
     }
     .footer-container { max-width: 1140px; margin: 0 auto; }
     .footer-grid {
       display: grid;
       grid-template-columns: 2fr repeat(3, 1fr);
-      gap: 32px;
-      margin-bottom: 40px;
+      gap: 40px;
+      margin-bottom: 48px;
     }
     @media (max-width: 860px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 480px) { .footer-grid { grid-template-columns: 1fr; } }
     .footer-col h4 { font-size: 15px; font-weight: 900; margin-bottom: 16px; color: var(--neutral-black); }
     .footer-col ul { list-style: none; }
-    .footer-col li { margin-bottom: 10px; }
+    .footer-col li { margin-bottom: 12px; }
     .footer-col a { color: var(--neutral-gray); font-size: 14px; transition: color 0.15s; }
     .footer-col a:hover { color: var(--primary); }
-    .footer-brand p { font-size: 13.5px; color: var(--neutral-gray); line-height: 1.5; margin-top: 10px; max-width: 320px; }
+    .footer-brand p { font-size: 13.5px; color: var(--neutral-gray); line-height: 1.55; margin-top: 12px; max-width: 320px; }
 
     .footer-bottom {
       border-top: 1px solid var(--neutral-border);
@@ -348,15 +343,15 @@
       </a>
       <div class="nav-links">
         <a href="#services">Services</a>
-        <a href="#towing">Auto Breakdown</a>
+        <a href="/open?service=towing">Breakdown SOS</a>
         <a href="#pro">FixIt Pro</a>
-        <a href="/downloads/FixIt-Vendor.apk">Become a Partner</a>
-        <a href="#about">About</a>
+        <a href="/partner">Become a Partner</a>
+        <a href="/about">About Us</a>
       </div>
     </div>
     <div class="nav-right">
-      <button class="lang-switcher" onclick="alert('Arabic / English toggle active across Sultanate of Oman')">
-        <span>🇴🇲</span>
+      <button class="lang-switcher" onclick="alert('Arabic and English language toggles are live across FixIt Oman.')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         <span>العربية</span>
       </button>
       <a href="/downloads/FixIt-Consumer.apk" class="btn-get-app">Download App</a>
@@ -367,16 +362,18 @@
   <header class="talabat-hero">
     <div class="hero-container">
       <div class="hero-tagline">
-        <span>🇴🇲</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
         <span>Sultanate of Oman · Dhofar Governorate</span>
       </div>
       <h1 class="hero-title">On-demand repair & breakdown services, right at your doorstep</h1>
-      <p class="hero-subtitle">From emergency car breakdown and flatbed towing to master AC technicians and home maintenance across Salalah.</p>
+      <p class="hero-subtitle">From emergency car recovery and flatbed towing to master AC technicians and villa maintenance across Salalah.</p>
 
       <div class="hero-search-card">
-        <span class="search-pin">📍</span>
+        <div class="search-pin">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF5A00" stroke-width="2.5"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
         <input type="text" class="search-input" placeholder="Search AC repair, tow truck, electrician, or plumbing..." />
-        <button class="search-btn" onclick="openDownloadModal()">Find Pro Near Me</button>
+        <button class="search-btn" onclick="window.location.href='/downloads/FixIt-Consumer.apk'">Find Pro Near Me</button>
       </div>
     </div>
   </header>
@@ -386,117 +383,147 @@
     <div class="section-header">
       <div>
         <h2 class="section-title">Popular Services in Salalah</h2>
-        <p class="section-desc">MOCIIP licensed technicians & commercial shops under CR-1148920</p>
+        <p class="section-desc">MOCIIP licensed technicians & commercial workshops under CR-1148920</p>
       </div>
       <a href="/downloads/FixIt-Consumer.apk" style="color:var(--primary);font-weight:800;font-size:14px">View All Services →</a>
     </div>
 
-    <!-- 8 Primary Verticals -->
+    <!-- 8 Primary Verticals with SVG Icons (Zero Emojis!) -->
     <div class="category-grid">
-      <div class="category-card" onclick="openDownloadModal()">
-        <div class="cat-icon-wrap">❄️</div>
+      <!-- 1. AC & Cooling -->
+      <a href="/open?service=ac" class="category-card">
+        <div class="cat-icon-wrap">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6M4 12h16"/></svg>
+        </div>
         <div>
           <div class="cat-title">AC & Cooling Fix</div>
-          <div class="cat-desc">Gas refill, split AC repair, filter cleaning, and master compressor replacement.</div>
+          <div class="cat-desc">Gas refill, split AC repair, duct cleaning, and master compressor replacement.</div>
         </div>
         <span class="cat-badge">From 8.000 OMR · ~30 min</span>
-      </div>
+      </a>
 
-      <div class="category-card" onclick="openDownloadModal()">
-        <div class="cat-icon-wrap">🛞</div>
+      <!-- 2. Breakdown & Towing -->
+      <a href="/open?service=towing" class="category-card">
+        <div class="cat-icon-wrap">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </div>
         <div>
           <div class="cat-title">Breakdown & Towing</div>
           <div class="cat-desc">Flatbed recovery, battery jump, fuel delivery, and tire puncture on-site.</div>
         </div>
         <span class="cat-badge">24/7 SOS · Instant Dispatch</span>
-      </div>
+      </a>
 
-      <div class="category-card" onclick="openDownloadModal()">
-        <div class="cat-icon-wrap">⚡</div>
+      <!-- 3. Electrician -->
+      <a href="/open?service=electric" class="category-card">
+        <div class="cat-icon-wrap">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
         <div>
           <div class="cat-title">Master Electrician</div>
           <div class="cat-desc">DB box wiring, short circuit isolation, lighting, and heavy machinery lines.</div>
         </div>
         <span class="cat-badge">From 6.000 OMR</span>
-      </div>
+      </a>
 
-      <div class="category-card" onclick="openDownloadModal()">
-        <div class="cat-icon-wrap">🚰</div>
+      <!-- 4. Plumbing -->
+      <a href="/open?service=plumbing" class="category-card">
+        <div class="cat-icon-wrap">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+        </div>
         <div>
           <div class="cat-title">Plumbing & Pumps</div>
           <div class="cat-desc">Pipe leaks, bathroom fittings, water heater tanks, and pressure motor installs.</div>
         </div>
         <span class="cat-badge">From 5.000 OMR</span>
-      </div>
+      </a>
 
-      <div class="category-card" onclick="openDownloadModal()">
-        <div class="cat-icon-wrap">🚕</div>
+      <!-- 5. Taxi -->
+      <a href="/open?service=taxi" class="category-card">
+        <div class="cat-icon-wrap">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="9" rx="2"/><path d="M5 11l2-6h10l2 6M9 5v-2h6v2M7 16h.01M17 16h.01"/></svg>
+        </div>
         <div>
           <div class="cat-title">Salalah Taxi & Transport</div>
           <div class="cat-desc">Fast city rides, airport transfers to Salalah International, and fleet dispatch.</div>
         </div>
         <span class="cat-badge">Standard Tariff</span>
-      </div>
+      </a>
 
-      <div class="category-card" onclick="openDownloadModal()">
-        <div class="cat-icon-wrap">✨</div>
+      <!-- 6. Cleaning -->
+      <a href="/open?service=cleaning" class="category-card">
+        <div class="cat-icon-wrap">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
         <div>
           <div class="cat-title">Home & Villa Cleaning</div>
           <div class="cat-desc">Deep carpet cleaning, sofa shampoo, post-monsoon freshening, and sanitization.</div>
         </div>
         <span class="cat-badge">From 12.000 OMR</span>
-      </div>
+      </a>
 
-      <div class="category-card" onclick="openDownloadModal()">
-        <div class="cat-icon-wrap">🛡️</div>
+      <!-- 7. Pest Control -->
+      <a href="/open?service=pest" class="category-card">
+        <div class="cat-icon-wrap">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
         <div>
           <div class="cat-title">Pest Control & Safety</div>
           <div class="cat-desc">Safe odorless treatment for villas, flats, restaurants, and warehouses.</div>
         </div>
         <span class="cat-badge">Warranty Guaranteed</span>
-      </div>
+      </a>
 
-      <div class="category-card" onclick="openDownloadModal()">
-        <div class="cat-icon-wrap">🔑</div>
+      <!-- 8. Locksmith -->
+      <a href="/open?service=locksmith" class="category-card">
+        <div class="cat-icon-wrap">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6M15.5 7.5l3 3M18.5 4.5l3 3"/></svg>
+        </div>
         <div>
           <div class="cat-title">Locksmith & Security</div>
           <div class="cat-desc">Emergency door lockout, smart key programming, and cylinder replacement.</div>
         </div>
         <span class="cat-badge">Emergency Service</span>
-      </div>
+      </a>
     </div>
 
-    <!-- FixIt Pro Subscription Card (Exact Talabat Pro Look) -->
+    <!-- FixIt Pro Subscription Card -->
     <div class="pro-banner" id="pro">
       <div>
         <span class="pro-tag">FIXIT PRO</span>
         <h3 class="pro-title">Unlimited priority dispatch & zero booking fees</h3>
         <p class="pro-subtitle">FixIt Pro members enjoy 15% off every repair, top-of-feed priority for technician bids, and guaranteed 14-day warranty extensions.</p>
       </div>
-      <a href="/downloads/FixIt-Consumer.apk" class="pro-btn">Join FixIt Pro</a>
+      <a href="/open?plan=pro" class="pro-btn">Join FixIt Pro</a>
     </div>
 
-    <!-- Trust & Verification Strip -->
+    <!-- Trust Strip -->
     <div class="trust-strip">
       <div class="trust-item">
-        <span class="trust-icon">🏛️</span>
+        <div class="trust-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 10h18M5 10v11M19 10v11M9 10v11M15 10v11M12 2L2 7h20L12 2z"/></svg>
+        </div>
         <div>
-          <div class="trust-title">MOCIIP Permitted Shops</div>
+          <div class="trust-title">MOCIIP Permitted Workshops</div>
           <div class="trust-desc">Every technician is registered under verified Commercial Registration (CR) with Oman Business Platform checks.</div>
         </div>
       </div>
       <div class="trust-item">
-        <span class="trust-icon">🛡️</span>
+        <div class="trust-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+        </div>
         <div>
           <div class="trust-title">14-Day Service Warranty</div>
           <div class="trust-desc">Free revisit and money-back protection if the problem returns within 14 days of job completion.</div>
         </div>
       </div>
       <div class="trust-item">
-        <span class="trust-icon">💳</span>
+        <div class="trust-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        </div>
         <div>
-          <div class="trust-title">Secure FixIt Pay & PayPal</div>
-          <div class="trust-desc">Protected escrow checkout — funds are only released to the vendor after you inspect and approve the job.</div>
+          <div class="trust-title">Protected Platform Escrow</div>
+          <div class="trust-desc">Safe payment escrow — funds are only released to the vendor after you inspect and electronically approve the job.</div>
         </div>
       </div>
     </div>
@@ -504,28 +531,21 @@
     <!-- App Download Showcase -->
     <div class="app-showcase">
       <div class="showcase-text">
-        <h3>Everything is easier in the FixIt App</h3>
+        <h3>Everything is faster in the FixIt App</h3>
         <p>Order in seconds, track your assigned technician's live GPS route on the map, and chat directly in real-time. Download the official Android apps below.</p>
         <div class="download-btns">
           <a href="/downloads/FixIt-Consumer.apk" class="app-store-btn">
-            <span class="as-icon">📱</span>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
             <div>
               <div class="as-sub">Customer App</div>
               <div class="as-title">Download Consumer APK</div>
             </div>
           </a>
           <a href="/downloads/FixIt-Vendor.apk" class="app-store-btn vendor">
-            <span class="as-icon">🏪</span>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             <div>
               <div class="as-sub">Pro Vendor Portal</div>
               <div class="as-title">Download Vendor APK</div>
-            </div>
-          </a>
-          <a href="/downloads/FixIt-Admin.apk" class="app-store-btn" style="background:#475569">
-            <span class="as-icon">👑</span>
-            <div>
-              <div class="as-sub">Control Center</div>
-              <div class="as-title">Admin APK</div>
             </div>
           </a>
         </div>
@@ -537,7 +557,7 @@
   </main>
 
   <!-- ========== TALABAT FOOTER ========== -->
-  <footer class="talabat-footer" id="about">
+  <footer class="talabat-footer">
     <div class="footer-container">
       <div class="footer-grid">
         <div class="footer-brand">
@@ -550,29 +570,27 @@
         <div class="footer-col">
           <h4>Popular Services</h4>
           <ul>
-            <li><a href="#services">AC Repair & Maintenance</a></li>
-            <li><a href="#services">Car Breakdown & Towing</a></li>
-            <li><a href="#services">Master Electrician</a></li>
-            <li><a href="#services">Plumbing & Water Tanks</a></li>
-            <li><a href="#services">Salalah City Taxi</a></li>
+            <li><a href="/open?service=ac">AC Repair & Maintenance</a></li>
+            <li><a href="/open?service=towing">Car Breakdown & Towing</a></li>
+            <li><a href="/open?service=electric">Master Electrician</a></li>
+            <li><a href="/open?service=plumbing">Plumbing & Water Tanks</a></li>
+            <li><a href="/open?service=taxi">Salalah City Taxi</a></li>
           </ul>
         </div>
         <div class="footer-col">
           <h4>Company</h4>
           <ul>
-            <li><a href="#">About FixIt</a></li>
-            <li><a href="/downloads/FixIt-Vendor.apk">Become a Vendor</a></li>
-            <li><a href="#">Careers</a></li>
+            <li><a href="/about">About FixIt</a></li>
+            <li><a href="/partner">Become a Vendor</a></li>
             <li><a href="/api/health">System Status</a></li>
           </ul>
         </div>
         <div class="footer-col">
           <h4>Legal & Policies</h4>
           <ul>
-            <li><a href="#">Terms & Conditions</a></li>
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">14-Day Warranty Policy</a></li>
-            <li><a href="#">Dispute Resolution</a></li>
+            <li><a href="/terms">Terms & Conditions</a></li>
+            <li><a href="/privacy">Privacy Policy</a></li>
+            <li><a href="/warranty">14-Day Warranty Policy</a></li>
           </ul>
         </div>
       </div>
@@ -588,10 +606,5 @@
     </div>
   </footer>
 
-  <script>
-    function openDownloadModal() {
-      window.location.href = "/downloads/FixIt-Consumer.apk";
-    }
-  </script>
 </body>
 </html>

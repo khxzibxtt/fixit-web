@@ -221,12 +221,28 @@ app.get("/", (req, res) => {
   }
 });
 
-// Direct APK Downloads
+// Deep Link Gateway (/open, /reward, /share, /app)
+app.get(["/open", "/reward", "/share", "/app"], (req, res) => {
+  const openPath = path.join(__dirname, "public", "open.html");
+  if (fs.existsSync(openPath)) {
+    res.sendFile(openPath);
+  } else {
+    res.redirect("/");
+  }
+});
+
+// Dedicated Legal & Info Pages
+app.get("/terms", (req, res) => res.sendFile(path.join(__dirname, "public", "legal", "terms.html")));
+app.get("/privacy", (req, res) => res.sendFile(path.join(__dirname, "public", "legal", "privacy.html")));
+app.get("/warranty", (req, res) => res.sendFile(path.join(__dirname, "public", "legal", "warranty.html")));
+app.get("/about", (req, res) => res.sendFile(path.join(__dirname, "public", "legal", "about.html")));
+app.get("/partner", (req, res) => res.sendFile(path.join(__dirname, "public", "legal", "partner.html")));
+
+// Direct APK Downloads (Confidential: Admin APK completely removed!)
 app.get("/download/:app", (req, res) => {
   const appMap = {
     consumer: "FixIt-Consumer.apk",
-    vendor: "FixIt-Vendor.apk",
-    admin: "FixIt-Admin.apk"
+    vendor: "FixIt-Vendor.apk"
   };
   const file = appMap[req.params.app.toLowerCase()];
   if (file) {
@@ -240,9 +256,9 @@ app.get("/web-preview", (req, res) => serveAppWithRole("consumer", req, res));
 app.get("/vendor", (req, res) => serveAppWithRole("vendor", req, res));
 app.get("/admin", (req, res) => serveAppWithRole("admin", req, res));
 
-// Wildcard fallback: show landing page
+// Wildcard fallback: show main website page
 app.get("/{*splat}", (req, res) => {
-  const landingPath = path.join(__dirname, "public", "landing.html");
+  const landingPath = path.join(__dirname, "public", "website.html");
   if (fs.existsSync(landingPath)) {
     res.sendFile(landingPath);
   } else {
