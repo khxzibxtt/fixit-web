@@ -1,0 +1,25 @@
+{
+  "name": "FixIt Salalah - Home & Roadside Services",
+  "short_name": "FixIt",
+  "description": "On-demand Home Maintenance, AC, Electrical, Taxi & Roadside Assistance in Salalah & Dhofar, Oman.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FF5A00",
+  "theme_color": "#FF5A00",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["utilities", "lifestyle", "business"]
+}
