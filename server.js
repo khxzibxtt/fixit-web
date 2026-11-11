@@ -211,10 +211,52 @@ function serveAppWithRole(role, req, res) {
   res.send(content);
 }
 
+// Talabat-Style: Root / serves the official Landing Page with App-Only notice and APK download links
+app.get("/", (req, res) => {
+  const landingPath = path.join(__dirname, "public", "landing.html");
+  if (fs.existsSync(landingPath)) {
+    res.sendFile(landingPath);
+  } else {
+    serveAppWithRole("consumer", req, res);
+  }
+});
+
+// Direct APK Downloads
+app.get("/download/:app", (req, res) => {
+  const appMap = {
+    consumer: "FixIt-Consumer.apk",
+    vendor: "FixIt-Vendor.apk",
+    admin: "FixIt-Admin.apk"
+  };
+  const file = appMap[req.params.app.toLowerCase()];
+  if (file) {
+    return res.redirect(`/downloads/${file}`);
+  }
+  res.redirect("/");
+});
+
+// Developer/Internal Web Preview (Full app with simulated roles)
+app.get("/web-preview", (req, res) => serveAppWithRole("consumer", req, res));
 app.get("/vendor", (req, res) => serveAppWithRole("vendor", req, res));
 app.get("/admin", (req, res) => serveAppWithRole("admin", req, res));
-app.get("/{*splat}", (req, res) => serveAppWithRole("consumer", req, res));
-app.use((req, res) => serveAppWithRole("consumer", req, res));
+
+// Wildcard fallback: show landing page
+app.get("/{*splat}", (req, res) => {
+  const landingPath = path.join(__dirname, "public", "landing.html");
+  if (fs.existsSync(landingPath)) {
+    res.sendFile(landingPath);
+  } else {
+    serveAppWithRole("consumer", req, res);
+  }
+});
+app.use((req, res) => {
+  const landingPath = path.join(__dirname, "public", "landing.html");
+  if (fs.existsSync(landingPath)) {
+    res.sendFile(landingPath);
+  } else {
+    serveAppWithRole("consumer", req, res);
+  }
+});
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`[OK] FixIt Web Server running on port ${PORT}`);

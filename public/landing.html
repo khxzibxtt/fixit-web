@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#FF5A00" />
+  <link rel="manifest" href="/manifest.json" />
+  <title>FixIt Oman — Fast Repairs, Towing & Technicians</title>
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <style>
+    @font-face{font-family:'TT Commons Pro';src:url('/fonts/TTCommonsPro-Normal.otf') format('opentype');font-weight:400;font-display:swap}
+    @font-face{font-family:'TT Commons Pro';src:url('/fonts/TTCommonsPro-Bold.otf') format('opentype');font-weight:700;font-display:swap}
+    @font-face{font-family:'TT Commons Pro';src:url('/fonts/TTCommonsPro-Black.otf') format('opentype');font-weight:900;font-display:swap}
+    @font-face{font-family:'Noto Sans Arabic';src:url('/fonts/NotoSansArabic-Regular.otf') format('opentype');font-weight:400;font-display:swap}
+    @font-face{font-family:'Noto Sans Arabic';src:url('/fonts/NotoSansArabic-Bold.otf') format('opentype');font-weight:700;font-display:swap}
+
+    :root {
+      --o: #FF5A00;
+      --od: #E04E00;
+      --o-light: #FFF1E8;
+      --dark: #0F172A;
+      --tx: #1E293B;
+      --mu: #64748B;
+      --border: #E2E8F0;
+      --card-bg: #FFFFFF;
+      --bg: #F8FAFC;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'TT Commons Pro', 'Noto Sans Arabic', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background: var(--bg); color: var(--tx); line-height: 1.45; overflow-x: hidden; }
+
+    /* Talabat-Style Smart App Banner */
+    .smart-banner {
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    }
+    .sb-left { display: flex; align-items: center; gap: 10px; }
+    .sb-logo { width: 40px; height: 40px; border-radius: 10px; object-fit: cover; }
+    .sb-title { font-size: 14px; font-weight: 900; color: #0F172A; }
+    .sb-sub { font-size: 11.5px; color: var(--mu); }
+    .sb-btn {
+      background: var(--o);
+      color: #fff;
+      font-size: 12.5px;
+      font-weight: 800;
+      padding: 8px 16px;
+      border-radius: 99px;
+      text-decoration: none;
+      box-shadow: 0 2px 8px rgba(255,90,0,0.3);
+      cursor: pointer;
+      border: 0;
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(180deg, #FF5A00 0%, #EA580C 100%);
+      color: #fff;
+      padding: 36px 20px 48px;
+      text-align: center;
+      position: relative;
+    }
+    .hero h1 { font-size: 32px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 8px; }
+    .hero p { font-size: 15px; opacity: 0.95; max-width: 500px; margin: 0 auto 24px; }
+    .hero-badges { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+    .hero-badge { background: rgba(255,255,255,0.18); backdrop-filter: blur(8px); padding: 5px 12px; border-radius: 99px; font-size: 12px; font-weight: 700; }
+
+    /* App Download Card */
+    .app-card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 24px;
+      margin: -24px 16px 24px;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.08);
+      position: relative;
+      border: 1px solid var(--border);
+    }
+    .app-card-title { font-size: 18px; font-weight: 900; margin-bottom: 6px; text-align: center; }
+    .app-card-sub { font-size: 13px; color: var(--mu); text-align: center; margin-bottom: 20px; }
+
+    .dl-btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #0F172A;
+      color: #fff;
+      padding: 14px 18px;
+      border-radius: 16px;
+      text-decoration: none;
+      margin-bottom: 12px;
+      transition: transform 0.15s;
+    }
+    .dl-btn:active { transform: scale(0.98); }
+    .dl-btn.vendor { background: linear-gradient(135deg, #1E293B, #0F172A); border: 1.5px solid #334155; }
+    .dl-btn.admin { background: #FFFFFF; color: #0F172A; border: 1.5px solid #CBD5E1; }
+    .dl-icon { font-size: 26px; }
+    .dl-text { flex: 1; text-align: left; }
+    .dl-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; opacity: 0.8; }
+    .dl-title { font-size: 15px; font-weight: 800; }
+
+    /* Services Grid */
+    .sec-title { font-size: 18px; font-weight: 900; margin: 20px 16px 12px; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 16px; margin-bottom: 24px; }
+    .tile {
+      background: #fff;
+      border-radius: 18px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .tile-ico { width: 44px; height: 44px; border-radius: 12px; background: var(--o-light); color: var(--o); display: grid; place-items: center; font-size: 22px; }
+    .tile-name { font-size: 14px; font-weight: 800; }
+    .tile-desc { font-size: 11.5px; color: var(--mu); }
+
+    /* Official Verification Card */
+    .verify-banner {
+      margin: 0 16px 24px;
+      background: linear-gradient(135deg, #059669, #047857);
+      color: #fff;
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .verify-banner a {
+      background: #fff;
+      color: #065F46;
+      font-weight: 800;
+      font-size: 12px;
+      padding: 8px 14px;
+      border-radius: 99px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    /* Footer */
+    footer {
+      background: #0F172A;
+      color: #94A3B8;
+      padding: 32px 16px 40px;
+      font-size: 12px;
+      text-align: center;
+      border-top: 1px solid #1E293B;
+    }
+    footer a { color: #CBD5E1; text-decoration: none; margin: 0 8px; }
+    .footer-links { margin: 12px 0 16px; }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 1000;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .modal-content {
+      background: #fff;
+      border-radius: 24px 24px 0 0;
+      padding: 24px;
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+      box-shadow: 0 -8px 30px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Talabat-Style Mobile App Banner -->
+  <div class="smart-banner" id="smartBanner">
+    <div class="sb-left">
+      <img src="/logo.png" class="sb-logo" alt="FixIt Logo" />
+      <div>
+        <div class="sb-title">FixIt Oman</div>
+        <div class="sb-sub">Order services only in the app</div>
+      </div>
+    </div>
+    <button class="sb-btn" onclick="openOrInstallApp()">GET APP</button>
+  </div>
+
+  <!-- Hero Section -->
+  <div class="hero">
+    <div class="hero-badges">
+      <span class="hero-badge">🇴🇲 Sultanate of Oman</span>
+      <span class="hero-badge">🏛️ MOCIIP Verified</span>
+      <span class="hero-badge">🛡️ 14-Day Warranty</span>
+    </div>
+    <h1>FixIt Salalah</h1>
+    <p>On-demand car breakdown, AC repair, electricians, and certified local shops. Ordering is exclusive to the FixIt App.</p>
+  </div>
+
+  <!-- App Download Box -->
+  <div class="app-card">
+    <div class="app-card-title">Order Faster on the Native App</div>
+    <div class="app-card-sub">Real-time GPS tracking, instant technician bids, and offline worker QR verification.</div>
+
+    <!-- Consumer App -->
+    <a href="/downloads/FixIt-Consumer.apk" class="dl-btn" onclick="triggerDeepLink()">
+      <span class="dl-icon">📱</span>
+      <div class="dl-text">
+        <div class="dl-label">Customer Application</div>
+        <div class="dl-title">Download FixIt Consumer (APK)</div>
+      </div>
+      <span style="font-size:18px">↓</span>
+    </a>
+
+    <!-- Vendor App -->
+    <a href="/downloads/FixIt-Vendor.apk" class="dl-btn vendor">
+      <span class="dl-icon">🏪</span>
+      <div class="dl-text">
+        <div class="dl-label">Vendor & Shop Owner Portal</div>
+        <div class="dl-title">Download FixIt Vendor (APK)</div>
+      </div>
+      <span style="font-size:18px">↓</span>
+    </a>
+
+    <!-- Admin App -->
+    <a href="/downloads/FixIt-Admin.apk" class="dl-btn admin">
+      <span class="dl-icon">👑</span>
+      <div class="dl-text">
+        <div class="dl-label">Admin Super-Controller</div>
+        <div class="dl-title">Download FixIt Admin (APK)</div>
+      </div>
+      <span style="font-size:18px">↓</span>
+    </a>
+
+    <div style="text-align:center;margin-top:14px">
+      <a href="/web-preview" style="font-size:12px;color:var(--mu);text-decoration:underline">Developer / Desktop Web Preview (Internal Testing)</a>
+    </div>
+  </div>
+
+  <!-- Popular Services -->
+  <div class="sec-title">Available Services Across Salalah</div>
+  <div class="grid">
+    <div class="tile" onclick="openOrInstallApp()">
+      <div class="tile-ico">🛞</div>
+      <div class="tile-name">Auto Repair & Towing</div>
+      <div class="tile-desc">Flatbed recovery, battery jump, mechanics</div>
+    </div>
+    <div class="tile" onclick="openOrInstallApp()">
+      <div class="tile-ico">❄️</div>
+      <div class="tile-name">AC & Refrigeration</div>
+      <div class="tile-desc">Split AC gas refill, duct cleaning, repair</div>
+    </div>
+    <div class="tile" onclick="openOrInstallApp()">
+      <div class="tile-ico">⚡</div>
+      <div class="tile-name">Master Electrician</div>
+      <div class="tile-desc">DB box wiring, short circuits, generators</div>
+    </div>
+    <div class="tile" onclick="openOrInstallApp()">
+      <div class="tile-ico">🚰</div>
+      <div class="tile-name">Plumbing & Pumps</div>
+      <div class="tile-desc">Pipe bursts, tank heaters, motor install</div>
+    </div>
+  </div>
+
+  <!-- Official Digital ID Pass Verification Banner -->
+  <div class="verify-banner">
+    <div>
+      <div style="font-weight:900;font-size:15px">Verify Technician QR Badge</div>
+      <div style="font-size:12px;opacity:.9;margin-top:2px">Every FixIt worker carries a MOCIIP registered digital pass.</div>
+    </div>
+    <a href="/badge?id=FX-WRK-884101">Verify Pass</a>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div style="font-weight:900;font-size:15px;color:#fff;margin-bottom:6px">FixIt Technologies LLC</div>
+    <p>Sultanate of Oman · Commercial Registration CR-1148920</p>
+    <div class="footer-links">
+      <a href="/legal">Terms of Service</a> ·
+      <a href="/privacy">Privacy Policy</a> ·
+      <a href="/refund">Refund Policy</a> ·
+      <a href="/api/health">System Status</a>
+    </div>
+    <p style="opacity:0.6;font-size:11px">© 2026 FixIt Salalah. All rights reserved. Web portal serves API & dispatch backend only. Orders are serviced exclusively via native Android applications.</p>
+  </footer>
+
+  <!-- App Redirect Modal -->
+  <div class="modal-overlay" id="appModal" onclick="closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div style="font-size:32px;margin-bottom:8px">📱</div>
+      <h3 style="font-size:18px;font-weight:900;margin-bottom:6px">Ordering is App-Only</h3>
+      <p style="font-size:13px;color:#64748B;margin-bottom:18px">To request services, chat with technicians, and track in real-time, please open or download the official FixIt App.</p>
+      <a href="fixit://open" class="sb-btn" style="display:block;padding:12px;margin-bottom:10px" onclick="fallbackDownload()">Open In FixIt App</a>
+      <a href="/downloads/FixIt-Consumer.apk" style="display:block;font-size:12.5px;color:var(--o);font-weight:800;text-decoration:none">Download Consumer APK Directly</a>
+    </div>
+  </div>
+
+  <script>
+    // Talabat-Style Deep Link Handler
+    function triggerDeepLink() {
+      // Try opening app scheme first
+      const appUrl = "fixit://open";
+      const start = Date.now();
+      window.location.href = appUrl;
+    }
+
+    function openOrInstallApp() {
+      const modal = document.getElementById("appModal");
+      modal.style.display = "flex";
+      triggerDeepLink();
+    }
+
+    function fallbackDownload() {
+      setTimeout(() => {
+        window.location.href = "/downloads/FixIt-Consumer.apk";
+      }, 1500);
+    }
+
+    function closeModal() {
+      document.getElementById("appModal").style.display = "none";
+    }
+
+    // Auto-detect mobile devices and prompt deep link if user came from a share link
+    window.addEventListener("DOMContentLoaded", () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("order") || params.get("job_id")) {
+        openOrInstallApp();
+      }
+    });
+  </script>
+</body>
+</html>
