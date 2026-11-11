@@ -8,7 +8,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <meta name="apple-mobile-web-app-title" content="FixIt" />
-<script src="qrcode.js"></script>
 <title>FixIt</title>
 <style>
 @font-face{font-family:'TT Commons Pro';src:url('fonts/TTCommonsPro-Normal.otf') format('opentype');font-weight:400;font-display:swap}
@@ -528,7 +527,7 @@ body {
   position: fixed;
   top: calc(12px + env(safe-area-inset-top));
   left: 50%;
-  transform: translate(-50%, -70px) scale(0.8);
+  transform: translate(-50%, -150px) scale(0.8); display:none;
   width: 38px;
   height: 38px;
   border-radius: 50%;
@@ -610,15 +609,10 @@ body {
 
 </head>
 <body>
-<div id="offlineBanner" style="display:none;background:#0F172A;color:#fff;padding:10px 16px;font-size:12.5px;font-weight:700;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:9999;box-shadow:0 2px 10px rgba(0,0,0,0.2)">
-  <div style="display:flex;align-items:center;gap:8px">
-    <span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#F59E0B;box-shadow:0 0 6px #F59E0B"></span>
-    <span id="offlineBannerText">⚡ Offline Mode Active · Cached Data & Permanent QR Passes Ready</span>
-  </div>
   <button class="pill" style="background:#334155;color:#fff;font-size:11px;padding:3px 8px;cursor:pointer" onclick="openQrBadgeSheet(getMyBadgeId(), ROLE==='vendor'?'WORKER':'CUSTOMER')">My Pass</button>
 </div>
 
-<div id="webRoleBar" class="web-role-bar" style="display:none !important">
+<div id="webRoleBar" style="display:none !important">
   <div style="display:flex;align-items:center;gap:6px">
     <span style="width:8px;height:8px;border-radius:50%;background:#10B981;box-shadow:0 0 6px #10B981"></span>
     <span style="letter-spacing:0.3px">FixIt Salalah Web</span>
@@ -8374,270 +8368,11 @@ function updateTalabatMapInPlace(containerId, jobId) {
 }
 
 
-/* ================= PWA OFFLINE ENGINE & PERMANENT QR PASSES ================= */
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js").then(reg => {
-      console.log("[PWA] Service Worker active, scope:", reg.scope);
-    }).catch(err => {
-      console.log("[PWA] SW register skipped:", err);
-    });
-  });
-}
-
-function updateOfflineUiStatus() {
-  const b = document.getElementById("offlineBanner");
-  if (b) {
-    b.style.display = navigator.onLine === false ? "flex" : "none";
-  }
-}
-window.addEventListener("online", () => {
-  updateOfflineUiStatus();
-  toast("✓ Back Online · Network Restored");
-});
-window.addEventListener("offline", () => {
-  updateOfflineUiStatus();
-  toast("⚡ Offline Mode · Using Cached App Data & Passes");
-});
-if (typeof navigator !== "undefined" && navigator.onLine === false) {
-  setTimeout(updateOfflineUiStatus, 500);
-}
-
-function generateQrSvg(text) {
-  try {
-    if (typeof qrcode === "function") {
-      const qr = qrcode(0, "M");
-      qr.addData(String(text || "https://fixit-now.xyz"));
-      qr.make();
-      return qr.createSvgTag({ scalable: true, margin: 2 });
-    }
-  } catch (e) {
-    console.warn("generateQrSvg error:", e);
-  }
-  return `<svg viewBox="0 0 100 100" style="width:100%;height:100%;background:#fff"><rect width="100" height="100" fill="#fff" stroke="#FF5A00" stroke-width="3"/><text x="50" y="52" font-size="11" font-weight="900" text-anchor="middle" fill="#0F172A">FIXIT PASS</text></svg>`;
-}
-
-function getMyBadgeId() {
-  if (ROLE === "vendor") {
-    const w = (getActiveShop()?.workers || [])[0];
-    return w?.worker_id || "FX-WRK-884101";
-  }
-  if (ROLE === "admin") {
-    return "FX-ADM-000001";
-  }
-  return S.auth?.uniqueId || (S.profile?.user_id ? "FX-USR-" + String(S.profile.user_id).slice(-6) : "FX-USR-100492");
-}
-
-function openQrBadgeSheet(id, type) {
-  S.qrBadgeTarget = {
-    id: id || getMyBadgeId(),
-    type: type || (ROLE === "vendor" ? "WORKER" : "CUSTOMER")
-  };
-  S.sheet = "qr_badge";
-  render();
-}
-
-function openQrScannerModal() {
-  S.sheet = "qr_scanner";
-  render();
-}
-
-function qrBadgeSheet() {
-  const ar = L === "ar";
-  const target = S.qrBadgeTarget || { id: getMyBadgeId(), type: ROLE === "vendor" ? "WORKER" : "CUSTOMER" };
-  const id = target.id;
-
-  // Resolve detailed badge entity
-  let b = null;
-  // 1. Worker lookup
-  (S.shops || []).forEach(s => {
-    (s.workers || []).forEach(w => {
-      if (w.worker_id === id) {
-        b = {
-          badge_id: w.worker_id,
-          type: "WORKER",
-          name: w.name,
-          title: w.title,
-          phone: w.phone,
-          email: w.email,
-          photo: w.face_photo,
-          shop_name: s.shop_name,
-          cr_number: s.cr_number,
-          obp_status: "VERIFIED & PERMITTED",
-          rating: 4.9,
-          jobs_done: 42,
-          warranty: "14-Day Official Money-Back Guarantee"
-        };
-      }
-    });
-  });
-
-  // 2. Shop lookup
-  if (!b) {
-    const shop = (S.shops || []).find(s => s.shop_id === id || s.cr_number === id);
-    if (shop) {
-      b = {
-        badge_id: shop.shop_id,
-        type: "SHOP",
-        name: shop.shop_name,
-        title: "Official Registered Repair & Transport Shop",
-        photo: shop.board_photo,
-        shop_name: shop.shop_name,
-        cr_number: shop.cr_number,
-        obp_status: "MOCIIP PERMITTED",
-        rating: 4.9,
-        jobs_done: 88,
-        warranty: "FixIt Official Certified Shop"
-      };
-    }
-  }
-
-  // 3. Customer lookup or fallback
-  if (!b) {
-    const u = (S.users || []).find(x => getUniqueFixItId(x) === id);
-    b = {
-      badge_id: id,
-      type: id.startsWith("FX-WRK") ? "WORKER" : id.startsWith("FX-SHP") ? "SHOP" : "CUSTOMER",
-      name: u ? u.full_name : (ROLE === "vendor" ? "Khalid Al Balushi" : (S.profile.full_name || "Khxzi Bxtt")),
-      title: id.startsWith("FX-WRK") ? "Master Technician" : id.startsWith("FX-SHP") ? "Commercial Shop" : "FixIt Pro Customer Member",
-      photo: u?.avatar || S.profile?.avatar || (ROLE === "vendor" ? (PRO_AVATAR_PHOTOS["FX-WRK-884101"] || "") : ""),
-      shop_name: "Al-Mahdoud Technical & Engineering LLC",
-      cr_number: "CR-1148920",
-      obp_status: "VERIFIED & PERMITTED",
-      rating: 4.9,
-      jobs_done: 42,
-      warranty: "14-Day Official Money-Back Guarantee"
-    };
-  }
-
-  const passUrl = "https://fixit-now.xyz/badge?id=" + encodeURIComponent(b.badge_id);
-  const qrSvg = generateQrSvg(passUrl);
-
-  return `<div class="sheet" onclick="if(event.target===this){S.sheet=null;render()}">
-    <div style="max-height:92vh;overflow-y:auto;padding-bottom:28px">
-      <div class="grab"></div>
-      <div class="row" style="justify-content:space-between;margin-bottom:8px">
-        <div class="row" style="gap:8px">
-          <span style="font-size:24px">🪪</span>
-          <div>
-            <div class="t1" style="font-size:17px;font-weight:900">${ar ? "بطاقة الهوية والاعتماد الرسمية" : "Official Digital ID & QR Badge"}</div>
-            <div class="t2" style="font-size:11.5px">${ar ? "معتمدة من منصة عُمان للأعمال ووزارة التجارة" : "MOCIIP & Oman Business Platform Verified"}</div>
-          </div>
-        </div>
-        <button class="ib" onclick="S.sheet=null;render()">${I("x")}</button>
-      </div>
-
-      <!-- ID Badge Card -->
-      <div style="background:linear-gradient(135deg,#0F172A,#1E293B);color:#fff;border-radius:20px;padding:18px;box-shadow:0 12px 30px rgba(0,0,0,0.18);position:relative;overflow:hidden;border:1.5px solid #334155">
-        <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:rgba(255,90,0,0.15);border-radius:50%;filter:blur(20px)"></div>
-
-        <div class="row" style="justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.12);padding-bottom:12px;margin-bottom:14px">
-          <div class="row" style="gap:8px">
-            <img src="logo.png" style="width:30px;height:30px;border-radius:8px;object-fit:cover" />
-            <div>
-              <div style="font-weight:900;font-size:14px;letter-spacing:0.3px">FixIt Digital Pass</div>
-              <div style="font-size:10px;color:#94A3B8;letter-spacing:0.8px">SULTANATE OF OMAN</div>
-            </div>
-          </div>
-          <span class="pill" style="background:#059669;color:#fff;font-size:10px;font-weight:900;padding:4px 8px">✓ ${ar ? "موثق معتمد" : "OBP VERIFIED"}</span>
-        </div>
-
-        <!-- Center QR Code View -->
-        <div style="display:flex;flex-direction:column;align-items:center;gap:12px;margin:8px 0">
-          <div style="background:#fff;padding:12px;border-radius:16px;box-shadow:0 6px 18px rgba(0,0,0,0.3);width:190px;height:190px;display:flex;align-items:center;justify-content:center">
-            <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">
-              ${qrSvg}
-            </div>
-          </div>
-          <div style="font-family:monospace;font-weight:900;font-size:14px;color:#FDBA74;letter-spacing:1px">${esc(b.badge_id)}</div>
-        </div>
-
-        <!-- Entity Details -->
-        <div style="background:rgba(255,255,255,0.06);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:6px;margin-top:6px">
-          <div class="row" style="gap:10px">
-            ${b.photo ? `<img src="${esc(b.photo)}" style="width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid #FF5A00" />` : `<div style="width:46px;height:46px;border-radius:50%;background:#FF5A00;display:grid;place-items:center;font-weight:900">${esc(b.name.charAt(0))}</div>`}
-            <div class="sp">
-              <div style="font-weight:900;font-size:15px;color:#fff">${esc(b.name)}</div>
-              <div style="font-size:12px;color:#FDBA74;font-weight:700">${esc(b.title)}</div>
-              <div style="font-size:11px;color:#CBD5E1">${esc(b.shop_name)} · CR: ${esc(b.cr_number)}</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="row" style="justify-content:space-between;margin-top:12px;font-size:11px;color:#94A3B8">
-          <span>🛡️ ${esc(b.warranty)}</span>
-          <span style="color:#6EE7B7;font-weight:800">★ ${b.rating} (${b.jobs_done} Jobs)</span>
-        </div>
-      </div>
-
-      <!-- Action Buttons -->
-      <div style="display:flex;flex-direction:column;gap:8px;margin-top:14px">
-        <div class="two">
-          <button class="btn ok s" onclick="navigator.clipboard?.writeText('${passUrl}');toast('✓ Link Copied to Clipboard!')">
-            📋 ${ar ? "نسخ رابط التحقق" : "Copy Pass URL"}
-          </button>
-          <button class="btn outline s" style="background:#fff;border-color:#334155!important;color:#0F172A" onclick="openQrScannerModal()">
-            📷 ${ar ? "مسح شارة أخرى" : "Scan Another QR"}
-          </button>
-        </div>
-        <button class="btn s" style="background:#0F172A;color:#fff" onclick="window.open('${passUrl}','_blank')">
-          🌐 ${ar ? "فتح بطاقة الاعتماد في المتصفح" : "Open Public Online Pass"}
-        </button>
-      </div>
-    </div>
-  </div>`;
-}
-
-function qrScannerSheet() {
-  const ar = L === "ar";
-  return `<div class="sheet" onclick="if(event.target===this){S.sheet=null;render()}">
-    <div style="padding-bottom:24px">
-      <div class="grab"></div>
-      <div class="row" style="justify-content:space-between;margin-bottom:12px">
-        <div class="row" style="gap:8px">
-          <span style="font-size:22px">🔍</span>
-          <div>
-            <div class="t1" style="font-size:17px;font-weight:900">${ar ? "التحقق الفوري من رمز QR وشارة الهوية" : "Instant QR Badge & Pass Scanner"}</div>
-            <div class="t2" style="font-size:12px">${ar ? "مسح شارات العمال، المحلات، أو بطاقات العملاء المعتمدة" : "Scan Worker ID, Shop Signboard or Customer Pass"}</div>
-          </div>
-        </div>
-        <button class="ib" onclick="S.sheet=null;render()">${I("x")}</button>
-      </div>
-
-      <!-- Scanner Viewfinder Box -->
-      <div style="position:relative;background:#0F172A;border-radius:18px;height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;overflow:hidden;border:2px dashed #FF5A00;margin-bottom:12px">
-        <div style="width:140px;height:140px;border:2px solid #FF5A00;border-radius:14px;position:relative;display:flex;align-items:center;justify-content:center">
-          <div style="width:100%;height:2px;background:#FF5A00;box-shadow:0 0 10px #FF5A00;animation:pulse 1.5s infinite"></div>
-        </div>
-        <div style="font-size:12px;color:#94A3B8;margin-top:10px">${ar ? "وجّه الكاميرا نحو رمز QR لشارة الفني" : "Point Camera at Worker or Shop QR Badge"}</div>
-      </div>
-
-      <!-- Quick Scan Suggestions / Direct ID Verification -->
-      <div class="fld">
-        <label>${ar ? "أو أدخل معرف الشارة يدوياً (ID / CR):" : "Or Enter Badge / Worker ID to Verify Instantly:"}</label>
-        <div class="row" style="gap:6px">
-          <input id="quickScanIdInp" dir="ltr" class="tlbt-input" placeholder="FX-WRK-884101" value="FX-WRK-884101" />
-          <button class="btn s" style="width:auto;padding:0 18px" onclick="const qId=document.getElementById('quickScanIdInp').value.trim();if(qId){openQrBadgeSheet(qId,'WORKER')}">
-            ${ar ? "تحقق" : "Verify"}
-          </button>
-        </div>
-      </div>
-
-      <div style="font-size:12px;font-weight:800;color:#6B7280;margin:6px 0">${ar ? "شارات تجريبية للتحقق الفوري:" : "Quick Test Badges:"}</div>
-      <div class="chips" style="margin:0">
-        <button class="chip" onclick="openQrBadgeSheet('FX-WRK-884101','WORKER')">👷 Khalid Al Balushi (FX-WRK-884101)</button>
-        <button class="chip" onclick="openQrBadgeSheet('FX-WRK-884102','WORKER')">🔧 Salim Al Kathiri (FX-WRK-884102)</button>
-        <button class="chip" onclick="openQrBadgeSheet('FX-SHP-104821','SHOP')">🏪 Al-Mahdoud Tech (FX-SHP-104821)</button>
-        <button class="chip" onclick="openQrBadgeSheet('FX-USR-100492','CUSTOMER')">👤 Khxzi Bxtt (FX-USR-100492)</button>
-      </div>
-    </div>
-  </div>`;
-}
 
 function render() {
   const u = totalUnread();
   const nav = S.stack.length ? "" : `<nav class="nav">${NAV[ROLE].map(n => `<button class="${S.tab === n[0] ? "on" : ""}" onclick="tab('${n[0]}')">${I(n[1])}${t(n[2])}${n[0] === "chats" && u ? `<span class="badge">${u}</span>` : ""}${ROLE === "admin" && n[0] === "orders" && S.jobs.filter(j => j.status === "OPEN").length ? `<span class="badge">${S.jobs.filter(j => j.status === "OPEN").length}</span>` : ""}</button>`).join("")}</nav>`;
-  const sheet = S.sheet === "book" ? cBookSheet() : S.sheet === "bid" ? vBidSheet() : S.sheet === "pro_profile" ? proProfileSheet() : (S.sheet === "address" || S.sheet === "loc_picker") ? locPickerSheet() : S.sheet === "ticket" ? ticketSheet() : S.sheet === "deposit" ? depositSheet() : S.sheet === "profile" ? profileSheet() : (S.sheet === "card" || S.sheet === "paypal") ? paypalSheet() : (S.sheet === "tx_detail" || S.sheet === "txDetail") ? txDetailSheet() : S.sheet === "order_help" ? orderHelpSheet() : S.sheet === "help_topic" ? helpTopicSheet() : S.sheet === "cancel_sub" ? cancelSubSheet() : S.sheet === "google_auth" ? googleAuthSheet() : S.sheet === "admin_user_edit" ? adminUserEditSheet() : S.sheet === "qr_badge" ? qrBadgeSheet() : S.sheet === "qr_scanner" ? qrScannerSheet() : "";
+  const sheet = S.sheet === "book" ? cBookSheet() : S.sheet === "bid" ? vBidSheet() : S.sheet === "pro_profile" ? proProfileSheet() : (S.sheet === "address" || S.sheet === "loc_picker") ? locPickerSheet() : S.sheet === "ticket" ? ticketSheet() : S.sheet === "deposit" ? depositSheet() : S.sheet === "profile" ? profileSheet() : (S.sheet === "card" || S.sheet === "paypal") ? paypalSheet() : (S.sheet === "tx_detail" || S.sheet === "txDetail") ? txDetailSheet() : S.sheet === "order_help" ? orderHelpSheet() : S.sheet === "help_topic" ? helpTopicSheet() : S.sheet === "cancel_sub" ? cancelSubSheet() : S.sheet === "google_auth" ? googleAuthSheet() : S.sheet === "admin_user_edit" ? adminUserEditSheet() : "";
   const banner = S.pushBanner ? `<div class="push-banner" onclick="openNotifLink(S.pushBanner)"><div class="ic">${I("bell")}</div><div class="sp"><div style="font-weight:800;font-size:14px">${esc(S.pushBanner.title)}</div><div style="font-size:12px;opacity:.85" class="ell">${esc(S.pushBanner.body)}</div></div><span class="pill" style="background:var(--o);color:#fff">${L === "ar" ? "عرض" : "Open"}</span></div>` : "";
   const keepChat = document.getElementById("chat"), atBottom = keepChat && keepChat.scrollHeight - keepChat.scrollTop - keepChat.clientHeight < 60;
   const imgModal = S.previewImg ? `<div class="sheet" style="align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.85)" onclick="S.previewImg=null;render()"><img src="${esc(S.previewImg)}" alt="Preview Image" style="max-width:100%;max-height:82vh;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.5)" /></div>` : "";
@@ -8700,7 +8435,7 @@ function render() {
     if (sp && pullDist > 12) {
       const y = Math.min(54, (pullDist - 12) * 0.55) - 44;
       const rot = Math.min(320, pullDist * 2.2);
-      sp.classList.add("visible");
+      sp.style.display="grid"; sp.classList.add("visible");
       sp.style.transform = `translate(-50%, ${y}px) rotate(${rot}deg)`;
     }
   }, { passive: true });
@@ -8716,12 +8451,12 @@ function render() {
       sync().finally(() => {
         setTimeout(() => {
           render();
-          sp.classList.remove("visible", "spinning");
+          sp.classList.remove("visible", "spinning"); sp.style.display="none";
           sp.style.transform = "translate(-50%, -70px) scale(0.8)";
         }, 450);
       });
     } else {
-      sp.classList.remove("visible", "spinning");
+      sp.classList.remove("visible", "spinning"); sp.style.display="none";
       sp.style.transform = "translate(-50%, -70px) scale(0.8)";
     }
     pullDist = 0;
@@ -8749,7 +8484,7 @@ function updateRoleBarUI() {
   const bar = document.getElementById("webRoleBar");
   if (!bar) return;
   const isWeb = !window.FixItNative;
-  bar.style.display = isWeb ? "flex" : "none";
+  bar.style.display = "none";
   document.querySelectorAll(".web-role-btn").forEach(b => b.classList.remove("active"));
   const btn = document.getElementById("roleBtn" + ROLE.charAt(0).toUpperCase() + ROLE.slice(1));
   if (btn) btn.classList.add("active");
