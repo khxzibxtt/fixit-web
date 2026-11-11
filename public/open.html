@@ -58,20 +58,31 @@
       document.getElementById('title').innerText = 'Booking Service: ' + service;
     }
 
-    document.getElementById('openAppBtn').href = deepLink;
+    // Compose Android Intent URL for Chrome (works reliably without popup blockers)
+    const intentUrl = "intent://" + deepLink.replace("fixit://", "") + "#Intent;scheme=fixit;package=com.khxzi.fixit;end";
+
+    document.getElementById('openAppBtn').href = intentUrl;
+    document.getElementById('openAppBtn').onclick = function(e) {
+      window.location.href = intentUrl;
+      return false;
+    };
 
     // Execute automatic deep link
     const start = Date.now();
-    window.location.href = deepLink;
+    try {
+      window.location.href = intentUrl;
+    } catch (e) {
+      window.location.href = deepLink;
+    }
 
-    // If app not installed or fails to open within 1.8s, prompt APK download
+    // If app not installed or fails to open within 2s, prompt APK download
     setTimeout(() => {
       const elapsed = Date.now() - start;
-      if (elapsed < 2500) {
+      if (elapsed < 3000) {
         document.getElementById('loader').style.display = 'none';
-        document.getElementById('statusText').innerText = "Looks like FixIt isn't installed yet. Download the official APK below to claim your code automatically upon first launch.";
+        document.getElementById('statusText').innerText = "Looks like FixIt isn't opened yet. Tap the orange button above to launch, or download the APK below.";
       }
-    }, 1800);
+    }, 2000);
   </script>
 </body>
 </html>

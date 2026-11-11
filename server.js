@@ -34,7 +34,7 @@ const VERIFIED_BADGES = {
     email: "khalid@fixit-now.xyz",
     shop_name: "Al-Mahdoud Technical & Engineering LLC",
     shop_name_ar: "المحدود للخدمات الفنية والهندسية ش.م.م",
-    cr_number: "CR-1148920",
+    cr_number: "VERIFIED",
     obp_status: "VERIFIED & PERMITTED",
     warranty: "14-Day Official Money-Back Guarantee",
     rating: 4.9,
@@ -52,7 +52,7 @@ const VERIFIED_BADGES = {
     email: "salim@fixit-now.xyz",
     shop_name: "Al-Mahdoud Technical & Engineering LLC",
     shop_name_ar: "المحدود للخدمات الفنية والهندسية ش.م.م",
-    cr_number: "CR-1148920",
+    cr_number: "VERIFIED",
     obp_status: "VERIFIED & PERMITTED",
     warranty: "14-Day Official Money-Back Guarantee",
     rating: 4.8,
@@ -70,7 +70,7 @@ const VERIFIED_BADGES = {
     email: "tariq@fixit-now.xyz",
     shop_name: "Al-Mahdoud Auto Care, Towing & Taxi Fleet",
     shop_name_ar: "المحدود لخدمات السيارات والسطحة والتاكسي",
-    cr_number: "CR-1148920",
+    cr_number: "VERIFIED",
     obp_status: "VERIFIED & PERMITTED",
     warranty: "14-Day Official Money-Back Guarantee",
     rating: 4.9,
@@ -82,7 +82,7 @@ const VERIFIED_BADGES = {
     type: "SHOP",
     name: "Al-Mahdoud Technical & Engineering LLC",
     name_ar: "المحدود للخدمات الفنية والهندسية ش.م.م",
-    cr_number: "CR-1148920",
+    cr_number: "VERIFIED",
     branch: "Salalah Central HQ (Shop #1)",
     obp_status: "MOCIIP PERMITTED",
     warranty: "Official Protected Shop",
@@ -144,7 +144,7 @@ function handleBadgeRequest(req, res) {
     type: id.startsWith("FX-WRK") ? "WORKER" : id.startsWith("FX-SHP") ? "SHOP" : "CUSTOMER",
     name: "Verified FixIt Professional",
     title: "Licensed Service Technician",
-    cr_number: "CR-1148920",
+    cr_number: "VERIFIED",
     shop_name: "Al-Mahdoud Technical & Engineering LLC",
     obp_status: "VERIFIED & PERMITTED",
     rating: 4.9,
@@ -185,7 +185,7 @@ function handleBadgeRequest(req, res) {
         <div style="font-size:13px;color:#EA580C;font-weight:700">${b.title || b.type}</div>
       </div>
 
-      <div class="field-row"><span>Commercial Reg (CR):</span><b>${b.cr_number || "CR-1148920"}</b></div>
+      <div class="field-row"><span>Commercial Reg (CR):</span><b>${b.cr_number || "VERIFIED"}</b></div>
       <div class="field-row"><span>Registered Shop:</span><b>${b.shop_name || "Al-Mahdoud Tech LLC"}</b></div>
       <div class="field-row"><span>Status:</span><b style="color:#15803D">${b.obp_status || "ACTIVE ✓"}</b></div>
       <div class="field-row"><span>Rating:</span><b>★ ${b.rating || "4.9"} (${b.jobs_done || 42} Jobs Done)</b></div>
