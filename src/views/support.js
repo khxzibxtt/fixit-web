@@ -37,15 +37,11 @@ function supportPage({ visitor, mode = "support" }) {
             <div style="display:flex;flex-wrap:wrap;gap:10px">
               <a href="https://wa.me/96895956361" target="_blank" rel="noopener noreferrer" class="fx-btn" style="background:#15803D;color:#fff">
                 ${ICONS.whatsapp}
-                <span>Message on WhatsApp</span>
-              </a>
-              <a href="mailto:support@fixit-now.xyz" class="fx-btn fx-btn-outline">
-                ${ICONS.mail}
-                <span>support@fixit-now.xyz</span>
+                <span>Message on WhatsApp (+968 9595 6361)</span>
               </a>
             </div>
             <p style="margin:12px 0 0;font-size:13px;color:var(--mu2)">
-              Official email &amp; WhatsApp support respond across Salalah and Oman daily. Voice calls are intentionally disabled in favor of documented WhatsApp &amp; ticket support.
+              Direct WhatsApp support and ticket queue respond across Salalah and Oman daily. Voice calls are intentionally disabled in favor of documented WhatsApp &amp; ticket support.
             </p>
           </div>
         </div>
@@ -152,7 +148,7 @@ function supportPage({ visitor, mode = "support" }) {
             box.style.display = "block";
             box.style.background = "#FEE2E2";
             box.style.color = "#991B1B";
-            box.textContent = "Network error while sending request. Please use WhatsApp Care or email support@fixit-now.xyz.";
+            box.textContent = "Network error while sending request. Please use WhatsApp Care (+968 9595 6361).";
           } finally {
             btn.disabled = false;
           }

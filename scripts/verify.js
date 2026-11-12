@@ -22,7 +22,8 @@ const BANNED_STRINGS = [
   "FixIt-Admin",
   "TXN-",
   "QR Badge",
-  "QR Code"
+  "QR Code",
+  "support@fixit-now.xyz"
 ];
 
 function getFreePort() {

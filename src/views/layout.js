@@ -1,5 +1,6 @@
 /**
- * Shared Pure-JS HTML layout shell, responsive sticky header, inline SVG icons, and full footer.
+ * Talabat-Style Pure-JS HTML layout shell, Smart App Banner, TT Commons typography,
+ * responsive navbar, inline SVG icons, and authentic footer (zero fake CRs/LLCs/emails).
  */
 
 function escapeHtml(str) {
@@ -21,11 +22,15 @@ const ICONS = {
   mail: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>',
   smartphone: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2.5"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>',
   tag: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>',
-  wrench: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>',
-  snowflake: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M17 5l-5 4-5-4M17 19l-5-4-5 4M2 12h20M5 7l4 5-4 5M19 7l-4 5 4 5"/></svg>',
-  bolt: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
-  drop: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2.5c-3.5 4.5-6 7.8-6 11.2a6 6 0 0 0 12 0c0-3.4-2.5-6.7-6-11.2z"/></svg>',
-  car: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 17h14M3 13l2-6h14l2 6v4H3z"/><circle cx="7.5" cy="14.5" r="1"/><circle cx="16.5" cy="14.5" r="1"/></svg>',
+  wrench: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>',
+  snowflake: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M17 5l-5 4-5-4M17 19l-5-4-5 4M2 12h20M5 7l4 5-4 5M19 7l-4 5 4 5"/></svg>',
+  bolt: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+  drop: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2.5c-3.5 4.5-6 7.8-6 11.2a6 6 0 0 0 12 0c0-3.4-2.5-6.7-6-11.2z"/></svg>',
+  car: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 17h14M3 13l2-6h14l2 6v4H3z"/><circle cx="7.5" cy="14.5" r="1"/><circle cx="16.5" cy="14.5" r="1"/></svg>',
+  taxi: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="8" rx="2"/><path d="M5 11l2-5h10l2 5M9 6V4h6v2M7 16h.01M17 16h.01"/></svg>',
+  sparkles: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m12 3 1.9 4.9L19 10l-5.1 2.1L12 17l-1.9-4.9L5 10l5.1-2.1zM5 3l.8 2.2L8 6l-2.2.8L5 9l-.8-2.2L2 6l2.2-.8zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>',
+  key: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m11 12 9-9 3 3-2 2-2-2-2 2-2-2-2 2"/></svg>',
+  search: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
   globe: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>',
   check: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
 };
@@ -33,31 +38,30 @@ const ICONS = {
 const NAV_ITEMS = [
   { href: "/", label: "Overview", key: "home" },
   { href: "/services", label: "Services", key: "services" },
-  { href: "/reward", label: "Rewards", key: "reward" },
-  { href: "/partner", label: "Partners", key: "partner" },
-  { href: "/support", label: "Support", key: "support" },
+  { href: "/partner", label: "Become a Partner", key: "partner" },
+  { href: "/support", label: "Help & Support", key: "support" },
   { href: "/about", label: "About", key: "about" }
 ];
 
 function renderPage({ title, description = "", activePath = "/", body = "", headExtra = "", scripts = "" }) {
-  const safeTitle = escapeHtml(title ? `${title} | FixIt Oman` : "FixIt Oman — On-Demand Home, AC & Roadside App");
-  const safeDesc = escapeHtml(description || "FixIt connects residents across Salalah and Oman with verified repair, maintenance, and roadside pros exclusively through the FixIt Android app.");
+  const safeTitle = escapeHtml(title ? `${title} | FixIt Oman` : "FixIt Oman | Professional On-Demand Repairs, Breakdown, & Technicians");
+  const safeDesc = escapeHtml(description || "FixIt connects homeowners, drivers, and property managers in Salalah and Oman with verified technicians and breakdown recovery through transparent pro bidding.");
 
   const navLinks = NAV_ITEMS.map(item => {
     const isActive = item.href === activePath;
-    return `<a href="${item.href}" class="fx-nav-link${isActive ? " is-active" : ""}">${item.label}</a>`;
+    return `<a href="${item.href}" class="talabat-nav-link${isActive ? " is-active" : ""}">${item.label}</a>`;
   }).join("");
 
   const mobileLinks = NAV_ITEMS.map(item => {
     const isActive = item.href === activePath;
-    return `<a href="${item.href}" class="fx-drawer-link${isActive ? " is-active" : ""}">${item.label}</a>`;
+    return `<a href="${item.href}" class="talabat-drawer-link${isActive ? " is-active" : ""}">${item.label}</a>`;
   }).join("");
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="theme-color" content="#FF5A00" />
   <title>${safeTitle}</title>
   <meta name="description" content="${safeDesc}" />
@@ -65,264 +69,335 @@ function renderPage({ title, description = "", activePath = "/", body = "", head
   <link rel="manifest" href="/manifest.json" />
   ${headExtra}
   <style>
+    @font-face { font-family: 'TT Commons'; src: url('/fonts/TTCommonsPro-Normal.otf') format('opentype'); font-weight: 400; font-display: swap; }
+    @font-face { font-family: 'TT Commons'; src: url('/fonts/TTCommonsPro-DemiBold.otf') format('opentype'); font-weight: 600; font-display: swap; }
+    @font-face { font-family: 'TT Commons'; src: url('/fonts/TTCommonsPro-Bold.otf') format('opentype'); font-weight: 700; font-display: swap; }
+    @font-face { font-family: 'TT Commons'; src: url('/fonts/TTCommonsPro-Black.otf') format('opentype'); font-weight: 900; font-display: swap; }
+    @font-face { font-family: 'Noto Sans Arabic'; src: url('/fonts/NotoSansArabic-Regular.otf') format('opentype'); font-weight: 400; font-display: swap; }
+    @font-face { font-family: 'Noto Sans Arabic'; src: url('/fonts/NotoSansArabic-Bold.otf') format('opentype'); font-weight: 700; font-display: swap; }
+
     :root {
-      --o: #FF5A00;
-      --o-dark: #E04E00;
-      --cream: #FAF6F0;
-      --ink: #111827;
-      --mu: #4B5563;
-      --mu2: #6B7280;
-      --line: #E5E7EB;
-      --bg: #FFFFFF;
-      --surface: #F9FAFB;
-      --ok: #15803D;
-      --ok-bg: #DCFCE7;
-      --radius: 16px;
-      --max: 1120px;
+      --primary: #FF5A00;
+      --primary-hover: #E04E00;
+      --primary-light: #FFF1E8;
+      --neutral-black: #262626;
+      --neutral-white: #FFFFFF;
+      --neutral-gray: #6B6B6B;
+      --neutral-light: #F5F5F5;
+      --neutral-border: #E5E5E5;
+      --success-green: #05A437;
+      --success-bg: #EBF4E5;
+      --shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+      --font-en: 'TT Commons', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-ar: 'Noto Sans Arabic', sans-serif;
     }
-    * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif; line-height: 1.55; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-    a { color: inherit; text-decoration: none; }
-    button, input, textarea, select { font: inherit; }
-    .fx-wrap { width: 100%; max-width: var(--max); margin: 0 auto; padding: 0 20px; }
 
-    /* Fixed Sticky Header */
-    .fx-header {
-      position: sticky; top: 0; z-index: 60;
-      background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--line);
+    * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+    html, body {
+      font-family: var(--font-en);
+      color: var(--neutral-black);
+      background-color: var(--neutral-white);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.45;
+      overflow-x: hidden;
     }
-    .fx-header-inner {
-      display: flex; align-items: center; justify-content: space-between;
-      height: 68px; gap: 16px;
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; border: none; background: none; font: inherit; }
+
+    /* ========== SMART APP BANNER (MOBILE FIRST) ========== */
+    .talabat-smart-banner {
+      background: #111827;
+      color: #fff;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      z-index: 1001;
     }
-    .fx-brand {
-      display: inline-flex; align-items: center; gap: 10px; flex-shrink: 0;
-    }
-    .fx-wordmark {
-      background: var(--o); color: #fff; font-weight: 900; font-size: 20px;
-      letter-spacing: -0.7px; padding: 4px 12px 6px; border-radius: 7px;
-      transform: rotate(-1.5deg); display: inline-block; line-height: 1.1;
-    }
-    .fx-region {
-      font-size: 12px; font-weight: 700; color: var(--mu); background: var(--cream);
-      border: 1px solid #F3E8D8; padding: 3px 9px; border-radius: 999px;
-    }
-    .fx-nav {
-      display: flex; align-items: center; gap: 6px;
-    }
-    .fx-nav-link {
-      padding: 8px 13px; border-radius: 999px; font-size: 14px; font-weight: 600;
-      color: var(--mu); transition: background 0.15s, color 0.15s; white-space: nowrap;
-    }
-    .fx-nav-link:hover { background: var(--surface); color: var(--ink); }
-    .fx-nav-link.is-active { background: #FFF4EE; color: var(--o); font-weight: 700; }
-    .fx-header-actions {
-      display: flex; align-items: center; gap: 10px; flex-shrink: 0;
-    }
-    .fx-btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      height: 42px; padding: 0 18px; border-radius: 999px; border: 1px solid transparent;
-      font-weight: 700; font-size: 14px; cursor: pointer; transition: transform 0.12s, background 0.15s;
+    .smart-open-btn {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 8px 16px;
+      border-radius: 8px;
       white-space: nowrap;
+      transition: background 0.15s;
     }
-    .fx-btn:active { transform: scale(0.98); }
-    .fx-btn-primary { background: var(--o); color: #fff; }
-    .fx-btn-primary:hover { background: var(--o-dark); }
-    .fx-btn-outline { background: #fff; color: var(--ink); border-color: #D1D5DB; }
-    .fx-btn-outline:hover { background: var(--surface); }
-    .fx-btn-lg { height: 50px; padding: 0 24px; font-size: 15px; }
-    .fx-burger {
-      display: none; width: 42px; height: 42px; border-radius: 10px;
-      border: 1px solid var(--line); background: #fff; color: var(--ink);
-      align-items: center; justify-content: center; cursor: pointer;
-    }
-    .fx-drawer {
-      display: none; border-top: 1px solid var(--line); background: #fff;
-      padding: 12px 20px 20px;
-    }
-    .fx-drawer.open { display: block; }
-    .fx-drawer-grid { display: flex; flex-direction: column; gap: 6px; }
-    .fx-drawer-link {
-      padding: 11px 14px; border-radius: 12px; font-weight: 600; font-size: 15px; color: var(--ink);
-    }
-    .fx-drawer-link.is-active { background: #FFF4EE; color: var(--o); font-weight: 700; }
+    .smart-open-btn:hover { background: var(--primary-hover); }
 
-    @media (max-width: 860px) {
-      .fx-nav { display: none; }
-      .fx-burger { display: inline-flex; }
-      .fx-region { display: none; }
+    /* ========== TALABAT TOP NAVBAR ========== */
+    .talabat-nav {
+      height: 72px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--neutral-border);
+      background: #FFFFFF;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
+    .nav-left { display: flex; align-items: center; gap: 32px; }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 900;
+      font-size: 26px;
+      color: var(--primary);
+      letter-spacing: -0.5px;
+    }
+    .brand-logo img { width: 40px; height: 40px; border-radius: 10px; object-fit: cover; }
+    .talabat-nav-links { display: flex; align-items: center; gap: 24px; font-size: 16px; font-weight: 600; color: var(--neutral-black); }
+    .talabat-nav-link:hover { color: var(--primary); }
+    .talabat-nav-link.is-active { color: var(--primary); font-weight: 800; }
+    @media (max-width: 860px) { .talabat-nav-links { display: none; } }
 
-    /* Sections & Cards */
-    .fx-hero {
-      background: linear-gradient(180deg, var(--cream) 0%, #FFFFFF 100%);
-      border-bottom: 1px solid var(--line);
-      padding: 52px 0 46px;
+    .nav-right { display: flex; align-items: center; gap: 14px; }
+    .lang-switcher {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 99px;
+      font-size: 13.5px;
+      font-weight: 700;
+      background: var(--neutral-light);
+      color: var(--neutral-black);
     }
-    .fx-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; align-items: center; }
-    .fx-grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
-    .fx-grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-    @media (max-width: 860px) {
-      .fx-grid-2, .fx-grid-3, .fx-grid-4 { grid-template-columns: 1fr; }
-      .fx-hero { padding: 34px 0 32px; }
+    .btn-get-app {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 800;
+      font-size: 14.5px;
+      padding: 10px 22px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s;
     }
-    .fx-pill {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
-      background: #FFF4EE; color: var(--o); border: 1px solid #FED7AA;
+    .btn-get-app:hover { background: var(--primary-hover); }
+    .nav-burger {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--neutral-light);
+      color: var(--neutral-black);
+      place-items: center;
     }
-    .fx-pill-ok { background: var(--ok-bg); color: var(--ok); border-color: #BBF7D0; }
-    .fx-h1 { font-size: clamp(30px, 4.4vw, 46px); font-weight: 900; line-height: 1.12; letter-spacing: -0.02em; margin: 14px 0 14px; }
-    .fx-lead { font-size: 17px; color: var(--mu); max-width: 60ch; margin: 0 0 24px; }
-    .fx-card {
-      background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
-      padding: 22px; box-shadow: 0 1px 3px rgba(17, 24, 39, 0.04);
-    }
-    .fx-ic-box {
-      width: 44px; height: 44px; border-radius: 12px; background: #FFF4EE; color: var(--o);
-      display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-    .fx-section { padding: 52px 0; }
-    .fx-section-muted { background: var(--surface); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-    .fx-section-title { font-size: 26px; font-weight: 900; margin: 0 0 8px; letter-spacing: -0.015em; }
-    .fx-section-sub { font-size: 15px; color: var(--mu); margin: 0 0 28px; }
+    @media (max-width: 860px) { .nav-burger { display: grid; } }
 
-    /* Forms */
-    .fx-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
-    .fx-field label { font-size: 13px; font-weight: 700; color: var(--ink); }
-    .fx-input, .fx-select, .fx-textarea {
-      width: 100%; border: 1.4px solid #D1D5DB; border-radius: 12px; padding: 11px 14px;
-      background: #fff; color: var(--ink); font-size: 15px; transition: border-color 0.15s;
+    /* Mobile Drawer */
+    .talabat-drawer {
+      display: none;
+      position: fixed;
+      top: 72px;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border-bottom: 1px solid var(--neutral-border);
+      padding: 16px 24px 24px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+      z-index: 999;
     }
-    .fx-input:focus, .fx-select:focus, .fx-textarea:focus { outline: none; border-color: var(--o); }
-    .fx-textarea { min-height: 120px; resize: vertical; }
+    .talabat-drawer.open { display: block; }
+    .talabat-drawer-grid { display: flex; flex-direction: column; gap: 12px; }
+    .talabat-drawer-link { font-size: 16px; font-weight: 700; color: var(--neutral-black); padding: 8px 0; border-bottom: 1px solid #f1f1f1; }
+    .talabat-drawer-link.is-active { color: var(--primary); }
 
-    /* Footer */
-    .fx-footer { background: #0F172A; color: #CBD5E1; padding: 48px 0 28px; margin-top: 40px; }
-    .fx-footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 28px; padding-bottom: 32px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-    @media (max-width: 860px) { .fx-footer-grid { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 520px) { .fx-footer-grid { grid-template-columns: 1fr; } }
-    .fx-footer h4 { color: #fff; font-size: 14px; font-weight: 800; margin: 0 0 12px; text-transform: uppercase; letter-spacing: 0.04em; }
-    .fx-footer ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
-    .fx-footer a { font-size: 14px; color: #94A3B8; }
-    .fx-footer a:hover { color: #fff; }
-    .fx-footer-bottom { padding-top: 22px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 13px; color: #94A3B8; }
+    /* ========== TALABAT FOOTER ========== */
+    .talabat-footer {
+      background: #FFFFFF;
+      border-top: 1px solid var(--neutral-border);
+      padding: 48px 24px 32px;
+      margin-top: 40px;
+    }
+    .footer-container { max-width: 1140px; margin: 0 auto; }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr repeat(3, 1fr);
+      gap: 32px;
+      margin-bottom: 40px;
+    }
+    @media (max-width: 860px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 520px) { .footer-grid { grid-template-columns: 1fr; } }
+    .footer-col h4 { font-size: 15px; font-weight: 900; margin-bottom: 16px; color: var(--neutral-black); text-transform: uppercase; letter-spacing: 0.04em; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-col a { color: var(--neutral-gray); font-size: 14.5px; transition: color 0.15s; }
+    .footer-col a:hover { color: var(--primary); }
+    .footer-brand p { font-size: 14px; color: var(--neutral-gray); line-height: 1.5; margin-top: 12px; max-width: 360px; }
+
+    .footer-bottom {
+      border-top: 1px solid var(--neutral-border);
+      padding-top: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 13.5px;
+      color: var(--neutral-gray);
+    }
   </style>
 </head>
 <body>
-  <header class="fx-header">
-    <div class="fx-wrap fx-header-inner">
-      <div style="display:flex;align-items:center;gap:12px">
-        <a href="/" class="fx-brand" aria-label="FixIt Home">
-          <span class="fx-wordmark">fixit</span>
-        </a>
-        <span class="fx-region">Salalah &amp; Oman</span>
-      </div>
 
-      <nav class="fx-nav" aria-label="Primary Navigation">
+  <!-- Smart App Banner -->
+  <div class="talabat-smart-banner" id="talabatSmartBanner">
+    <div style="display:flex;align-items:center;gap:10px">
+      <img src="/logo.png" alt="FixIt" style="width:36px;height:36px;border-radius:9px;object-fit:cover" />
+      <div>
+        <div style="font-weight:900;font-size:14px;color:#fff">FixIt Oman</div>
+        <div style="font-size:11.5px;color:rgba(255,255,255,0.85)">Get bids in minutes · Salalah &amp; Dhofar</div>
+      </div>
+    </div>
+    <button onclick="openApp()" class="smart-open-btn">OPEN APP</button>
+  </div>
+
+  <!-- Talabat Main Top Navigation -->
+  <nav class="talabat-nav">
+    <div class="nav-left">
+      <a href="/" class="brand-logo" aria-label="FixIt Home">
+        <img src="/logo.png" alt="FixIt Logo" />
+        <span>FixIt</span>
+      </a>
+      <div class="talabat-nav-links">
         ${navLinks}
-      </nav>
-
-      <div class="fx-header-actions">
-        <a href="/open" class="fx-btn fx-btn-primary">
-          ${ICONS.smartphone}
-          <span>Open App</span>
-        </a>
-        <button id="fxBurgerBtn" class="fx-burger" type="button" aria-label="Toggle Menu" aria-expanded="false" aria-controls="fxMobileDrawer">
-          ${ICONS.menu}
-        </button>
       </div>
     </div>
-
-    <div id="fxMobileDrawer" class="fx-drawer" aria-hidden="true">
-      <div class="fx-drawer-grid">
-        ${mobileLinks}
-        <a href="/downloads/FixIt-Consumer.apk" class="fx-btn fx-btn-outline" style="margin-top:8px">
-          ${ICONS.download}
-          <span>Download Android App</span>
-        </a>
-      </div>
+    <div class="nav-right">
+      <button class="lang-switcher" type="button" onclick="alert('Arabic &amp; English are fully supported inside the FixIt Android App.')">
+        <span>العربية</span>
+      </button>
+      <button class="btn-get-app" type="button" onclick="openApp()">
+        ${ICONS.smartphone}
+        <span>Open App</span>
+      </button>
+      <button id="talabatBurgerBtn" class="nav-burger" type="button" aria-label="Toggle navigation">
+        ${ICONS.menu}
+      </button>
     </div>
-  </header>
+  </nav>
+
+  <!-- Mobile Drawer -->
+  <div id="talabatMobileDrawer" class="talabat-drawer" aria-hidden="true">
+    <div class="talabat-drawer-grid">
+      ${mobileLinks}
+      <button onclick="openApp()" class="btn-get-app" style="justify-content:center;margin-top:10px">
+        ${ICONS.smartphone}
+        <span>Open FixIt App</span>
+      </button>
+      <a href="/downloads/FixIt-Consumer.apk" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:700;color:var(--neutral-gray);padding:10px 0">
+        ${ICONS.download}
+        <span>Direct APK Download (v3.3.5)</span>
+      </a>
+    </div>
+  </div>
 
   <main>${body}</main>
 
-  <footer class="fx-footer">
-    <div class="fx-wrap">
-      <div class="fx-footer-grid">
-        <div>
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-            <span class="fx-wordmark">fixit</span>
-            <span style="font-size:13px;font-weight:700;color:#fff">Salalah &amp; Dhofar, Oman</span>
+  <!-- Talabat Footer -->
+  <footer class="talabat-footer">
+    <div class="footer-container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand-logo">
+            <img src="/logo.png" alt="FixIt" />
+            <span>FixIt</span>
           </div>
-          <p style="font-size:14px;color:#94A3B8;max-width:34ch;margin:0 0 14px">
-            App-only marketplace connecting homeowners and motorists across Oman with verified maintenance technicians and roadside assistance. Quotes and bookings happen inside the FixIt mobile apps.
+          <p>
+            FixIt connects customers in Salalah and across Oman with skilled independent technicians and workshops. Describe your exact problem, compare competitive bids, and pay safely only after accepting.
           </p>
-          <div style="display:flex;flex-wrap:wrap;gap:10px">
-            <a href="https://wa.me/96895956361" target="_blank" rel="noopener noreferrer" class="fx-btn" style="background:#15803D;color:#fff;height:38px;padding:0 14px;font-size:13px">
+          <div style="margin-top:14px">
+            <a href="https://wa.me/96895956361" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:#15803D">
               ${ICONS.whatsapp}
-              <span>WhatsApp Care</span>
-            </a>
-            <a href="mailto:support@fixit-now.xyz" class="fx-btn" style="background:rgba(255,255,255,0.1);color:#fff;height:38px;padding:0 14px;font-size:13px">
-              ${ICONS.mail}
-              <span>support@fixit-now.xyz</span>
+              <span>Direct WhatsApp Care: +968 9595 6361</span>
             </a>
           </div>
         </div>
 
-        <div>
+        <div class="footer-col">
+          <h4>Popular Services</h4>
+          <ul>
+            <li><a href="javascript:void(0)" onclick="openApp('AC_REPAIR')">AC Repair &amp; Maintenance</a></li>
+            <li><a href="javascript:void(0)" onclick="openApp('BREAKDOWN')">Car Breakdown &amp; Towing</a></li>
+            <li><a href="javascript:void(0)" onclick="openApp('ELECTRICIAN')">Master Electrician</a></li>
+            <li><a href="javascript:void(0)" onclick="openApp('PLUMBING')">Plumbing &amp; Water Pumps</a></li>
+            <li><a href="javascript:void(0)" onclick="openApp('TAXI')">Salalah City Taxi</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
           <h4>Platform</h4>
           <ul>
-            <li><a href="/">Overview</a></li>
-            <li><a href="/services">Service Scopes</a></li>
-            <li><a href="/open">Launch FixIt App</a></li>
-            <li><a href="/reward">Redeem Reward Link</a></li>
-            <li><a href="/downloads/FixIt-Consumer.apk">Download Customer APK</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4>Partners &amp; Support</h4>
-          <ul>
-            <li><a href="/partner">Become a FixIt Pro</a></li>
-            <li><a href="/downloads/FixIt-Vendor.apk">Download Pro Vendor APK</a></li>
-            <li><a href="/support">Online Help Center</a></li>
-            <li><a href="/contact">Contact &amp; Mail Form</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4>Legal</h4>
-          <ul>
             <li><a href="/about">About FixIt</a></li>
-            <li><a href="/warranty">14-Day Service Warranty</a></li>
+            <li><a href="/partner">Become a Pro Partner</a></li>
+            <li><a href="/support">Help &amp; Support Queue</a></li>
+            <li><a href="/api/health">System Status</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Legal &amp; Trust</h4>
+          <ul>
             <li><a href="/terms">Terms of Service</a></li>
             <li><a href="/privacy">Privacy Policy</a></li>
+            <li><a href="/warranty">14-Day Workmanship Warranty</a></li>
+            <li><a href="/contact">Direct Support Desk</a></li>
           </ul>
         </div>
       </div>
 
-      <div class="fx-footer-bottom">
-        <span>FixIt Marketplace Platform · Salalah, Sultanate of Oman</span>
-        <span>All orders and vendor quotes operate exclusively inside the FixIt App.</span>
+      <div class="footer-bottom">
+        <div>© 2026 FixIt Oman. All rights reserved. Designed for the Sultanate of Oman.</div>
+        <div style="display:flex;gap:18px;align-items:center">
+          <a href="https://wa.me/96895956361" target="_blank" rel="noopener noreferrer" style="color:#15803D;font-weight:700">WhatsApp: +968 9595 6361</a>
+          <span>·</span>
+          <span>Salalah, Dhofar Governorate, Oman</span>
+        </div>
       </div>
     </div>
   </footer>
 
   <script>
     (function () {
-      var btn = document.getElementById("fxBurgerBtn");
-      var drawer = document.getElementById("fxMobileDrawer");
-      if (btn && drawer) {
-        btn.addEventListener("click", function () {
-          var isOpen = drawer.classList.toggle("open");
-          btn.setAttribute("aria-expanded", String(isOpen));
-          drawer.setAttribute("aria-hidden", String(!isOpen));
+      var burger = document.getElementById("talabatBurgerBtn");
+      var drawer = document.getElementById("talabatMobileDrawer");
+      if (burger && drawer) {
+        burger.addEventListener("click", function () {
+          var open = drawer.classList.toggle("open");
+          burger.setAttribute("aria-expanded", String(open));
+          drawer.setAttribute("aria-hidden", String(!open));
         });
       }
     })();
+
+    // Universal Android intent / custom scheme app opener
+    function openApp(service) {
+      var isAndroid = /Android/i.test(navigator.userAgent || "");
+      var qs = [];
+      if (service) qs.push("service=" + encodeURIComponent(service));
+      var qStr = qs.length ? ("?" + qs.join("&")) : "";
+      var fallbackUrl = window.location.origin + "/downloads/FixIt-Consumer.apk";
+      var intentUrl = "intent://open" + qStr + "#Intent;scheme=fixit;package=com.khxzi.fixit;S.browser_fallback_url=" + encodeURIComponent(fallbackUrl) + ";end";
+      var schemeUrl = "fixit://open" + qStr;
+
+      if (isAndroid) {
+        window.location.href = intentUrl;
+      } else {
+        window.location.href = schemeUrl;
+        setTimeout(function () {
+          window.location.href = fallbackUrl;
+        }, 1400);
+      }
+    }
   </script>
   ${scripts}
 </body>

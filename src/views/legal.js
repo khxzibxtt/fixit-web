@@ -108,7 +108,7 @@ function aboutPage() {
           </p>
           <div style="border-top:1px solid var(--line);padding-top:14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;font-size:14px">
             <div><b>Service Region</b><br /><span style="color:var(--mu)">Salalah &amp; Governorate of Dhofar, Oman</span></div>
-            <div><b>Official Support</b><br /><span style="color:var(--mu)">support@fixit-now.xyz · WhatsApp +968 9595 6361</span></div>
+            <div><b>Official Care</b><br /><span style="color:var(--mu)">WhatsApp Care +968 9595 6361</span></div>
           </div>
         </div>
       </div>
@@ -160,7 +160,7 @@ function privacyPage() {
       ["1. Information We Collect", "When ordering inside the app, FixIt collects your contact number, pinned service location, job scope descriptions, and job photos strictly to dispatch your selected pro."],
       ["2. Online Support & Security Logging", "To protect our servers and investigate support inquiries, requests submitted via the online web support/mail form record your IP address, network/ISP, and browser/OS headers alongside your message."],
       ["3. Zero Third-Party Ad Trackers", "FixIt does not sell personal contact details or serve third-party behavioral advertising cookies."],
-      ["4. Data Requests", "Contact support@fixit-now.xyz for account deletion or data export requests."]
+      ["4. Data Requests", "Submit an account deletion or data request directly via Settings in the FixIt app or via WhatsApp Care (+968 9595 6361)."]
     ]
   });
 }
