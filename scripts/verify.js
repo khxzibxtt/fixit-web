@@ -12,6 +12,30 @@ const { spawn } = require("child_process");
 const ROOT_DIR = path.resolve(__dirname, "..");
 const SERVER_ENTRY = path.join(ROOT_DIR, "server.js");
 
+const {
+  calculateProgressiveFeeRate,
+  calculateVendorPayout,
+  validateBidFloor,
+  generateDeviceFingerprint,
+  sanitizePrePaymentChat
+} = require("../src/services/pricingEngine");
+const {
+  calculateDistanceKm,
+  getDispatchWave,
+  calculateVendorRankScore,
+  matchAndRankVendors
+} = require("../src/services/dispatchEngine");
+const {
+  generateReferralCode,
+  calculateReferralCommission,
+  isReferralActive,
+  evaluateVendorToConsumerBoost
+} = require("../src/services/referralEngine");
+const {
+  getRotatingMicroReward,
+  evaluateMonthlyStreak
+} = require("../src/services/rewardEngine");
+
 const EMOJI_RE = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
 const PRICE_RE = /\b\d+(?:\.\d+)?\s*(?:OMR|ر\.ع\.|Baisa|﷼)\b/i;
 const BANNED_STRINGS = [
@@ -287,6 +311,230 @@ async function run() {
       const notFoundJson = await notFoundApi.json();
       assert.strictEqual(notFoundJson.ok, false);
       ok("Express v5 404 HTML and API JSON boundaries verified");
+    }
+
+    // ========================================================================
+    // DETERMINISTIC ALGORITHMS & VIRAL ENGINES REGRESSION TESTS
+    // ========================================================================
+
+    // 1. Progressive Vendor Fee Ladder Algorithm (1% -> 20%)
+    {
+      assert.strictEqual(calculateProgressiveFeeRate(0, false), 0.010, "0 jobs fee must be 1.0%");
+      assert.strictEqual(calculateProgressiveFeeRate(5, false), 0.010, "5 jobs fee must be 1.0%");
+      assert.strictEqual(calculateProgressiveFeeRate(6, false), 0.050, "6 jobs fee must be 5.0%");
+      assert.strictEqual(calculateProgressiveFeeRate(15, false), 0.050, "15 jobs fee must be 5.0%");
+      assert.strictEqual(calculateProgressiveFeeRate(16, false), 0.100, "16 jobs fee must be 10.0%");
+      assert.strictEqual(calculateProgressiveFeeRate(30, false), 0.100, "30 jobs fee must be 10.0%");
+      assert.strictEqual(calculateProgressiveFeeRate(31, false), 0.200, "31+ Free tier fee must be 20.0%");
+      assert.strictEqual(calculateProgressiveFeeRate(31, true), 0.150, "31+ Pro tier fee must be 15.0%");
+      assert.strictEqual(calculateProgressiveFeeRate(10, false, 0.075), 0.075, "Custom fee rate must override ladder");
+
+      const payout1 = calculateVendorPayout(10.000, 0.010);
+      assert.strictEqual(payout1.platformCut, 0.100, "10 OMR @ 1% = 0.100 OMR platform cut");
+      assert.strictEqual(payout1.vendorPayout, 9.900, "10 OMR @ 1% = 9.900 OMR vendor payout");
+
+      const payout2 = calculateVendorPayout(15.250, 0.200);
+      assert.strictEqual(payout2.platformCut, 3.050);
+      assert.strictEqual(payout2.vendorPayout, 12.200);
+      ok("Engine 1: Progressive Vendor Fee Ladder (1% -> 20%) verified");
+    }
+
+    // 2. Launch Promo & FixIt Pro Entitlement (0.300 OMR for 90 Days)
+    {
+      const promoRes = await fetch(`${base}/api/vendor/promo/claim`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          vendor_id: "v-test-123",
+          phone: "95956361",
+          device_id: "and-dev-fingerprint-001"
+        })
+      });
+      assert.strictEqual(promoRes.status, 200);
+      const promoData = await promoRes.json();
+      assert.strictEqual(promoData.ok, true);
+      assert.strictEqual(promoData.price_charged_omr, 0.300, "Launch promo price must be exactly 0.300 OMR (300 bz)");
+      assert.strictEqual(promoData.days_added, 90, "Launch promo must grant 90 days of Pro");
+      assert(promoData.pro_expires_at, "pro_expires_at must be populated");
+      assert(promoData.fingerprint_hash, "fingerprint_hash must be generated");
+      ok("Engine 2: Launch Promo & FixIt Pro Entitlement (0.300 OMR for 90 Days) verified");
+    }
+
+    // 3. Two-Sided Referral & 48h VIP Unlock (/r/:code & /reward)
+    {
+      const code = generateReferralCode("FIX");
+      assert.strictEqual(code.length, 6, "Referral code must be 6 characters");
+      assert(code.startsWith("FIX"), "Referral code prefix preserved");
+
+      assert.strictEqual(calculateReferralCommission(10.000, 0.05), 0.500, "5% of 10.000 OMR = 0.500 OMR");
+      assert.strictEqual(calculateReferralCommission(25.000, 0.05), 1.250, "5% of 25.000 OMR = 1.250 OMR");
+
+      assert.strictEqual(isReferralActive(new Date()), true);
+      const expiredDate = new Date(Date.now() - 95 * 24 * 60 * 60 * 1000);
+      assert.strictEqual(isReferralActive(expiredDate), false);
+
+      const v2c = evaluateVendorToConsumerBoost("FIX999", "FIX999", 0);
+      assert.strictEqual(v2c.isZeroFeeEligible, true);
+      assert.strictEqual(v2c.appliedFeeRate, 0.0000);
+
+      const vipRes = await fetch(`${base}/api/referral/vip-unlock`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: "u-test-999",
+          code: "FIX777"
+        })
+      });
+      assert.strictEqual(vipRes.status, 200);
+      const vipData = await vipRes.json();
+      assert.strictEqual(vipData.ok, true);
+      assert.strictEqual(vipData.price_paid_omr, 0.300, "VIP unlock price must be 0.300 OMR");
+      assert.strictEqual(vipData.bonus_credit_added_omr, 1.000, "VIP unlock must credit 1.000 OMR");
+      assert.strictEqual(vipData.min_order_for_credit_omr, 5.000, "min_order_for_credit must be 5.000 OMR");
+      ok("Engine 3: Two-Sided Referral & 48h VIP Unlock (/r & /reward) verified");
+    }
+
+    // 4. Post-Job Rotating Micro-Reward & Streak
+    {
+      assert.strictEqual(getRotatingMicroReward(0).amountOmr, 0.100, "Cycle 0 must be 0.100 OMR");
+      assert.strictEqual(getRotatingMicroReward(1).amountOmr, 0.200, "Cycle 1 must be 0.200 OMR");
+      assert.strictEqual(getRotatingMicroReward(2).amountOmr, 0.300, "Cycle 2 must be 0.300 OMR");
+      assert.strictEqual(getRotatingMicroReward(3).amountOmr, 0.100, "Cycle 3 must rotate back to 0.100 OMR");
+      assert.strictEqual(getRotatingMicroReward(0).expiryDays, 7, "Micro-rewards must expire in 7 days");
+
+      assert.strictEqual(evaluateMonthlyStreak(1).qualifiesForStreak, false);
+      const streak3 = evaluateMonthlyStreak(3);
+      assert.strictEqual(streak3.qualifiesForStreak, true);
+      assert.strictEqual(streak3.bonusOmr, 1.000, "Monthly 3-job streak must grant 1.000 OMR");
+      assert.strictEqual(streak3.expiryDays, 14, "Streak bonus must have 14 days expiry");
+      ok("Engine 4: Post-Job Rotating Micro-Reward & Streak Algorithm verified");
+    }
+
+    // 5. Hyper-Local Dispatch, Pro Head-Start & Cold-Start Expansion
+    {
+      const dist = calculateDistanceKm(17.015, 54.092, 17.025, 54.102);
+      assert(dist > 0 && dist < 3.0, `Calculated distance ${dist}km should be within 3km`);
+
+      const wave1Pro = getDispatchWave(1.5, 0);
+      assert.strictEqual(wave1Pro.wave, 1);
+      assert.strictEqual(wave1Pro.isProExclusive, true, "T+1.5m must be Pro exclusive");
+      assert.strictEqual(wave1Pro.maxRadiusKm, 3.0);
+
+      const wave1Free = getDispatchWave(4.0, 0);
+      assert.strictEqual(wave1Free.wave, 1);
+      assert.strictEqual(wave1Free.isProExclusive, false, "T+4m must broadcast to Free tier");
+      assert.strictEqual(wave1Free.maxRadiusKm, 3.0);
+
+      const wave2 = getDispatchWave(7.0, 0);
+      assert.strictEqual(wave2.wave, 2);
+      assert.strictEqual(wave2.maxRadiusKm, 8.0, "T+7m must expand to 8 km");
+
+      const wave3 = getDispatchWave(12.0, 0);
+      assert.strictEqual(wave3.wave, 3);
+      assert.strictEqual(wave3.maxRadiusKm, 15.0, "T+12m must expand to 15 km");
+      assert.strictEqual(wave3.shouldBumpBounty, true, "T+12m with 0 bids must recommend bounty bump");
+      assert.strictEqual(wave3.bumpAmountOmr, 1.000, "Bounty bump must be 1.000 OMR");
+
+      const proScore = calculateVendorRankScore(true, 5.0, 1.0);
+      const freeScore = calculateVendorRankScore(false, 5.0, 1.0);
+      assert(proScore > freeScore + 90, "Pro vendor rank score must heavily prioritize Pro (+100)");
+
+      const matchRes = await fetch(`${base}/api/dispatch/match`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          order: { lat: 17.015, lng: 54.092, category_id: "AC_REPAIR", created_at: new Date().toISOString() },
+          vendors: [
+            { id: "v1", lat: 17.018, lng: 54.094, skills: ["AC_REPAIR"], is_pro: false, avg_rating: 4.8 },
+            { id: "v2", lat: 17.020, lng: 54.095, skills: ["AC_REPAIR"], is_pro: true, avg_rating: 4.9 },
+            { id: "v3", lat: 17.500, lng: 54.500, skills: ["AC_REPAIR"], is_pro: true, avg_rating: 5.0 }, // far away (>15km)
+            { id: "v4", lat: 17.016, lng: 54.093, skills: ["PLUMBING"], is_pro: true, avg_rating: 5.0 }   // wrong category
+          ]
+        })
+      });
+      assert.strictEqual(matchRes.status, 200);
+      const matchData = await matchRes.json();
+      assert.strictEqual(matchData.ok, true);
+      assert(matchData.matchedVendors.length >= 1);
+      assert.strictEqual(matchData.matchedVendors[0].id, "v2", "FixIt Pro vendor must be ranked #1");
+      ok("Engine 5: Hyper-Local Dispatch, Pro Head-Start & Cold-Start Expansion verified");
+    }
+
+    // 6 & 7. Warranty Enforcement Without Cash Freezing
+    {
+      const claimRes = await fetch(`${base}/api/warranty/claim`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          order_id: "ord-test-claim-1",
+          reason: "AC unit stopped cooling within 14-day warranty"
+        })
+      });
+      assert.strictEqual(claimRes.status, 200);
+      const claimData = await claimRes.json();
+      assert.strictEqual(claimData.ok, true);
+      assert.strictEqual(claimData.response_window_hours, 24, "Vendor must be given 24h response window");
+      assert(claimData.claim_deadline, "claim_deadline must be returned");
+      ok("Engine 6 & 7: Warranty Strike & Lockout Enforcement verified");
+    }
+
+    // 8. Statistical Bid-Floor Guard (Reject bids < 40% of median)
+    {
+      const check1 = validateBidFloor(1.000, 4.000); // 40% of 4.000 = 1.600
+      assert.strictEqual(check1.allowed, false, "1.000 OMR bid must be rejected against 4.000 OMR median");
+      assert.strictEqual(check1.minAllowedBid, 1.600);
+
+      const check2 = validateBidFloor(2.000, 4.000);
+      assert.strictEqual(check2.allowed, true, "2.000 OMR bid must be accepted");
+
+      const floorApiLow = await fetch(`${base}/api/bids/validate-floor?category=AC_REPAIR&amount=1.000`);
+      assert.strictEqual(floorApiLow.status, 200);
+      const floorDataLow = await floorApiLow.json();
+      assert.strictEqual(floorDataLow.allowed, false);
+
+      const floorApiOk = await fetch(`${base}/api/bids/validate-floor?category=AC_REPAIR&amount=3.000`);
+      assert.strictEqual(floorApiOk.status, 200);
+      const floorDataOk = await floorApiOk.json();
+      assert.strictEqual(floorDataOk.allowed, true);
+      ok("Engine 8: Statistical Bid-Floor Guard (40% median floor) verified");
+    }
+
+    // 9. Multi-Account Fingerprint, Anti-Poaching Chat Regex & Live Activity Feed
+    {
+      const fp = generateDeviceFingerprint("95956361", "device_id_abc", "192.168.1.100");
+      assert.strictEqual(typeof fp, "string");
+      assert.strictEqual(fp.length, 64, "SHA-256 fingerprint must be 64 hexadecimal characters");
+
+      const chatMask1 = sanitizePrePaymentChat("Call me at 95956361 directly", "OPEN");
+      assert.strictEqual(chatMask1.intercepted, true, "Omani phone number must be intercepted pre-payment");
+      assert(!chatMask1.cleanText.includes("95956361"), "Phone number must be masked");
+
+      const chatMask2 = sanitizePrePaymentChat("Send details to my whatsapp please", "OPEN");
+      assert.strictEqual(chatMask2.intercepted, true, "WhatsApp mention must be intercepted pre-payment");
+
+      const chatPaid = sanitizePrePaymentChat("Location is villa 4, call 95956361", "ACTIVE_PAID");
+      assert.strictEqual(chatPaid.intercepted, false, "Contact details must be allowed once order is ACTIVE_PAID");
+
+      const chatApi = await fetch(`${base}/api/chat/filter`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: "My number is +968 95956361",
+          order_status: "OPEN"
+        })
+      });
+      assert.strictEqual(chatApi.status, 200);
+      const chatApiData = await chatApi.json();
+      assert.strictEqual(chatApiData.intercepted, true);
+
+      const feedRes = await fetch(`${base}/api/activity-feed`);
+      assert.strictEqual(feedRes.status, 200);
+      const feedData = await feedRes.json();
+      assert.strictEqual(feedData.ok, true);
+      assert(feedData.online_vendors_count >= 1, "online_vendors_count must be reported");
+      assert(Array.isArray(feedData.events), "events must be an array");
+      assert(feedData.events.length > 0, "events must contain social proof entries");
+      ok("Engine 9: Multi-Account Fingerprint, Anti-Poaching Chat Regex & Live Activity Feed verified");
     }
 
     await serverA.stop();

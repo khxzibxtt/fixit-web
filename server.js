@@ -10,6 +10,8 @@ const cors = require("cors");
 const { createRateLimiter } = require("./src/middleware/rateLimit");
 const { createApiRouter } = require("./src/routes/api");
 const { createWebRouter, renderNotFoundPage } = require("./src/routes/web");
+const { createEnginesRouter } = require("./src/routes/engines");
+const { startAutoConfirmCron } = require("./src/workers/autoConfirmCron");
 
 function positiveIntEnv(name, fallback) {
   const parsed = Number.parseInt(process.env[name] || "", 10);
@@ -43,6 +45,9 @@ function createApp() {
     message: "Too many requests from your IP. Please try again shortly."
   });
   app.use(globalLimiter);
+
+  // Deterministic Algorithms & Viral Engines routes
+  app.use(createEnginesRouter());
 
   // API & Digital Asset Links routes
   app.use(createApiRouter());
@@ -88,6 +93,7 @@ if (require.main === module) {
   const PORT = positiveIntEnv("PORT", 3000);
   const HOST = process.env.HOST || (process.env.NODE_ENV === "production" ? "0.0.0.0" : "127.0.0.1");
   const app = createApp();
+  startAutoConfirmCron();
   app.listen(PORT, HOST, () => {
     console.log(`[OK] FixIt Pure-JS server listening on http://${HOST}:${PORT}`);
   });

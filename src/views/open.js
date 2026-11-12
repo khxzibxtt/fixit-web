@@ -31,9 +31,7 @@ function openAppPage({ reqHost = "fixit-web.onrender.com", reqPath = "/open", qu
     <section class="fx-hero" style="min-height:62vh;display:flex;align-items:center">
       <div class="fx-wrap" style="max-width:600px">
         <div class="fx-card" style="text-align:center;padding:34px 26px">
-          <div style="width:68px;height:68px;border-radius:18px;background:var(--o);color:#fff;display:grid;place-items:center;margin:0 auto 16px;font-weight:900;font-size:26px;letter-spacing:-1px">
-            fixit
-          </div>
+          <img src="/logo.png" alt="FixIt" style="width:72px;height:72px;border-radius:18px;object-fit:cover;box-shadow:0 6px 18px rgba(255,90,0,.22);display:block;margin:0 auto 16px" />
 
           ${cleanPromo ? `
             <span class="fx-pill fx-pill-ok" style="margin-bottom:10px">${ICONS.tag}<span>Reward Promo Ready: ${escapeHtml(cleanPromo)}</span></span>
