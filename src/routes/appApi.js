@@ -911,11 +911,16 @@ function createAppApiRouter() {
       notifsRes, revRes, vLocRes, vProfRes, addrRes, cpnRes, tktRes, supMsgRes, allUsersRes, allWalletsRes
     ] = await Promise.all(queries);
 
+    const rawSettings = setRes.ok && Array.isArray(setRes.data) && setRes.data[0] && setRes.data[0].settings
+      ? { ...setRes.data[0].settings }
+      : {};
+    delete rawSettings.wa_auth_bundle;
+
     return res.json({
       ok: true,
       serverTime: new Date().toISOString(),
       user: uRes.ok && Array.isArray(uRes.data) ? (uRes.data[0] || null) : null,
-      settings: setRes.ok && Array.isArray(setRes.data) && setRes.data[0] ? (setRes.data[0].settings || {}) : {},
+      settings: rawSettings,
       wallet: wRes.ok && Array.isArray(wRes.data) ? (wRes.data[0] || null) : null,
       walletTransactions: txRes.ok && Array.isArray(txRes.data) ? txRes.data : [],
       jobs: jobsRes.ok && Array.isArray(jobsRes.data) ? jobsRes.data : [],
@@ -1067,6 +1072,14 @@ function createAppApiRouter() {
     return res.json(st);
   });
 
+  router.post("/api/app/admin/whatsapp-qr", requireAppSession, async (req, res) => {
+    const role = String(req.fixitSession.role || "").toLowerCase();
+    if (role !== "admin") return res.status(403).json({ ok: false, error: "Admin access required" });
+    const b = req.body || {};
+    const qrRes = await waWeb.requestQrSession({ reset: Boolean(b.reset) });
+    return res.json(qrRes);
+  });
+
   router.post("/api/app/admin/whatsapp-pair", requireAppSession, async (req, res) => {
     const role = String(req.fixitSession.role || "").toLowerCase();
     if (role !== "admin") return res.status(403).json({ ok: false, error: "Admin access required" });
@@ -1074,6 +1087,13 @@ function createAppApiRouter() {
     const phone = b.phone || "";
     const pairRes = await waWeb.requestPairing(phone, { reset: Boolean(b.reset) });
     return res.json(pairRes);
+  });
+
+  router.post("/api/app/admin/whatsapp-disconnect", requireAppSession, async (req, res) => {
+    const role = String(req.fixitSession.role || "").toLowerCase();
+    if (role !== "admin") return res.status(403).json({ ok: false, error: "Admin access required" });
+    const out = await waWeb.disconnectWhatsApp();
+    return res.json(out);
   });
 
   return router;

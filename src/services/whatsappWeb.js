@@ -1,14 +1,19 @@
 const path = require("path");
 const fs = require("fs");
 const pino = require("pino");
+const QRCode = require("qrcode");
 const {
   default: makeWASocket,
   useMultiFileAuthState,
   DisconnectReason,
+  Browsers,
   fetchLatestBaileysVersion
 } = require("@whiskeysockets/baileys");
+const { isConfigured: isSupabaseConfigured, supabaseRequest } = require("./supabase");
 
 const AUTH_DIR = path.join(__dirname, "../../.wa_auth");
+const ADMIN_USER_ID = process.env.ADMIN_USER_ID || "b3264964-ab0e-4638-8514-62de24ba511f";
+
 if (!fs.existsSync(AUTH_DIR)) {
   fs.mkdirSync(AUTH_DIR, { recursive: true });
 }
@@ -16,10 +21,16 @@ if (!fs.existsSync(AUTH_DIR)) {
 let sock = null;
 let isConnected = false;
 let isConnecting = false;
+let currentQr = null;
+let currentQrDataUrl = null;
 let currentPairingCode = null;
 let connectionError = null;
 let boundPhoneNumber = null;
+let meInfo = null;
 let reconnectTimer = null;
+let startPromise = null;
+let backupTimer = null;
+let sessionNonce = 0;
 
 const logger = pino({ level: "silent" });
 
@@ -38,153 +49,358 @@ function resetAuthDir() {
   } catch (_) {}
 }
 
-async function requestCodeFromSocket(cleanNumber, timeoutMs = 10000) {
-  const start = Date.now();
-  while (Date.now() - start < timeoutMs) {
-    if (isConnected) {
-      return { ok: true, status: "CONNECTED", pairingCode: null, phone: boundPhoneNumber };
-    }
-    if (sock && typeof sock.requestPairingCode === "function") {
-      try {
-        const code = await sock.requestPairingCode(cleanNumber);
-        if (code) {
-          currentPairingCode = String(code).trim();
-          boundPhoneNumber = cleanNumber;
-          connectionError = null;
-          console.log(`[WA-WEB] Pairing code generated for ${cleanNumber}: ${currentPairingCode}`);
-          return {
-            ok: true,
-            pairingCode: currentPairingCode,
-            status: "WAITING_CODE",
-            phone: cleanNumber
-          };
-        }
-      } catch (err) {
-        const msg = String((err && err.message) || err || "");
-        if (!/not open|connecting|wait|stream|connection/i.test(msg)) {
-          connectionError = msg;
-        }
-      }
-    }
-    await new Promise(r => setTimeout(r, 800));
-  }
-  return {
-    ok: Boolean(currentPairingCode),
-    status: currentPairingCode ? "WAITING_CODE" : (isConnecting ? "CONNECTING" : "ERROR"),
-    pairingCode: currentPairingCode,
-    phone: boundPhoneNumber,
-    error: currentPairingCode ? null : (connectionError || "Timed out waiting for WhatsApp pairing code. Tap Get Code again.")
-  };
-}
-
-async function initWhatsAppSession(phoneNumber = null, forceReset = false) {
+function closeExistingSocket() {
   if (reconnectTimer) {
     clearTimeout(reconnectTimer);
     reconnectTimer = null;
   }
-
-  if (forceReset || (phoneNumber && !isConnected && sock)) {
+  if (sock) {
     try {
-      if (sock && sock.ws && typeof sock.ws.close === "function") sock.ws.close();
+      sock.ev.removeAllListeners("connection.update");
+      sock.ev.removeAllListeners("creds.update");
+      if (sock.ws && typeof sock.ws.close === "function") sock.ws.close();
     } catch (_) {}
-    sock = null;
-    isConnected = false;
-    isConnecting = false;
-    currentPairingCode = null;
   }
+  sock = null;
+  isConnected = false;
+  isConnecting = false;
+}
 
-  if (sock && isConnected) {
-    return { ok: true, status: "CONNECTED", pairingCode: null, phone: boundPhoneNumber };
-  }
-
-  isConnecting = true;
-  connectionError = null;
-
+async function backupAuthToSupabase(clearBundle = false) {
+  if (!isSupabaseConfigured()) return;
   try {
-    if (forceReset) {
-      resetAuthDir();
+    const q = await supabaseRequest(`/user_settings?user_id=eq.${encodeURIComponent(ADMIN_USER_ID)}&limit=1`);
+    const existing = (q.ok && Array.isArray(q.data) && q.data[0] && q.data[0].settings) || {};
+    const nextSettings = { ...(typeof existing === "object" && existing ? existing : {}) };
+
+    if (clearBundle) {
+      delete nextSettings.wa_auth_bundle;
+    } else {
+      if (!fs.existsSync(AUTH_DIR)) return;
+      const files = {};
+      for (const fname of fs.readdirSync(AUTH_DIR)) {
+        if (!fname.endsWith(".json")) continue;
+        try {
+          files[fname] = fs.readFileSync(path.join(AUTH_DIR, fname), "utf8");
+        } catch (_) {}
+      }
+      if (!files["creds.json"]) return;
+      nextSettings.wa_auth_bundle = {
+        updatedAt: new Date().toISOString(),
+        files
+      };
     }
+
+    await supabaseRequest("/user_settings", "POST", {
+      user_id: ADMIN_USER_ID,
+      settings: nextSettings,
+      updated_at: new Date().toISOString()
+    }, { Prefer: "resolution=merge-duplicates,return=minimal" });
+  } catch (err) {
+    console.error("[WA-WEB] Failed to sync auth bundle to Supabase:", err && err.message ? err.message : err);
+  }
+}
+
+function scheduleSupabaseBackup() {
+  if (backupTimer) clearTimeout(backupTimer);
+  backupTimer = setTimeout(() => {
+    backupAuthToSupabase(false);
+  }, 1200);
+}
+
+async function restoreAuthFromSupabase() {
+  if (!isSupabaseConfigured()) return false;
+  try {
+    const q = await supabaseRequest(`/user_settings?user_id=eq.${encodeURIComponent(ADMIN_USER_ID)}&limit=1`);
+    const settings = q.ok && Array.isArray(q.data) && q.data[0] ? q.data[0].settings : null;
+    const bundle = settings && settings.wa_auth_bundle && settings.wa_auth_bundle.files;
+    if (!bundle || !bundle["creds.json"]) return false;
+    resetAuthDir();
+    for (const [fname, raw] of Object.entries(bundle)) {
+      if (!fname.endsWith(".json") || typeof raw !== "string") continue;
+      const safeName = path.basename(fname);
+      fs.writeFileSync(path.join(AUTH_DIR, safeName), raw, "utf8");
+    }
+    console.log("[WA-WEB] Restored WhatsApp session files from permanent Supabase backup");
+    return true;
+  } catch (err) {
+    console.error("[WA-WEB] Failed restoring auth bundle:", err && err.message ? err.message : err);
+    return false;
+  }
+}
+
+async function startSocket({ mode = "qr", phoneNumber = null, reset = false } = {}) {
+  if (startPromise) {
+    try { await startPromise; } catch (_) {}
+  }
+
+  let runFn = async () => {
+    const myNonce = ++sessionNonce;
+    const cleanPhone = phoneNumber ? normalizeWaPhone(phoneNumber) : null;
+
+    if (reset || (mode === "pair" && !isConnected)) {
+      closeExistingSocket();
+      currentQr = null;
+      currentQrDataUrl = null;
+      currentPairingCode = null;
+      if (reset) {
+        resetAuthDir();
+        await backupAuthToSupabase(true);
+      }
+    }
+
+    if (sock && isConnected) {
+      return { ok: true, isConnected: true, status: "CONNECTED", me: meInfo };
+    }
+
+    if (sock && isConnecting && mode === "qr" && currentQrDataUrl) {
+      return {
+        ok: true,
+        isConnected: false,
+        isConnecting: true,
+        qrDataUrl: currentQrDataUrl,
+        qr: currentQr,
+        status: "WAITING_QR"
+      };
+    }
+
+    if (sock && isConnecting && mode === "qr" && !reset) {
+      const waitEnd = Date.now() + 8000;
+      while (Date.now() < waitEnd && !currentQrDataUrl && !isConnected && isConnecting) {
+        await new Promise(r => setTimeout(r, 400));
+      }
+      if (currentQrDataUrl || isConnected) {
+        return {
+          ok: true,
+          isConnected,
+          isConnecting,
+          qrDataUrl: currentQrDataUrl,
+          qr: currentQr,
+          status: isConnected ? "CONNECTED" : "WAITING_QR",
+          me: meInfo
+        };
+      }
+    }
+
+    closeExistingSocket();
+    isConnecting = true;
+    connectionError = null;
+    currentQr = null;
+    currentQrDataUrl = null;
+    currentPairingCode = null;
+
     let { state, saveCreds } = await useMultiFileAuthState(AUTH_DIR);
-    if (phoneNumber && state.creds && state.creds.registered) {
+    if ((mode === "qr" || mode === "pair") && state.creds && state.creds.registered && reset) {
       resetAuthDir();
       ({ state, saveCreds } = await useMultiFileAuthState(AUTH_DIR));
     }
 
-    const { version } = await fetchLatestBaileysVersion().catch(() => ({ version: [2, 3000, 1015901307] }));
+    if (mode === "auto" && (!state.creds || !state.creds.registered)) {
+      isConnecting = false;
+      return { ok: true, isConnected: false, isConnecting: false, status: "NOT_LINKED" };
+    }
+
+    const { version } = await fetchLatestBaileysVersion().catch(() => ({ version: [2, 3000, 1025190524] }));
+
+    let resolveHandshakeReady;
+    const handshakeReadyPromise = new Promise(resolve => {
+      resolveHandshakeReady = resolve;
+    });
+    let handshakeResolved = false;
+    const markHandshakeReady = () => {
+      if (!handshakeResolved) {
+        handshakeResolved = true;
+        resolveHandshakeReady();
+      }
+    };
 
     sock = makeWASocket({
       version,
       logger,
       auth: state,
       printQRInTerminal: false,
-      browser: ["Ubuntu", "Chrome", "20.0.04"],
-      syncFullHistory: false
+      browser: Browsers.ubuntu("Chrome"),
+      syncFullHistory: false,
+      markOnlineOnConnect: false,
+      connectTimeoutMs: 30000
     });
 
-    sock.ev.on("creds.update", saveCreds);
+    const activeSock = sock;
 
-    sock.ev.on("connection.update", async (update) => {
-      const { connection, lastDisconnect } = update;
+    activeSock.ev.on("creds.update", async () => {
+      try {
+        await saveCreds();
+        if (activeSock.authState?.creds?.registered) {
+          scheduleSupabaseBackup();
+        }
+      } catch (_) {}
+    });
+
+    activeSock.ev.on("connection.update", async (update) => {
+      if (myNonce !== sessionNonce) return;
+      const { connection, lastDisconnect, qr } = update;
+
+      if (qr) {
+        currentQr = qr;
+        markHandshakeReady();
+        try {
+          currentQrDataUrl = await QRCode.toDataURL(qr, { width: 320, margin: 2 });
+        } catch (qErr) {
+          console.error("[WA-WEB] QR encode error:", qErr);
+        }
+      }
 
       if (connection === "open") {
         isConnected = true;
         isConnecting = false;
+        currentQr = null;
+        currentQrDataUrl = null;
         currentPairingCode = null;
         connectionError = null;
-        console.log("[WA-WEB] WhatsApp connected successfully as primary sender!");
+        meInfo = activeSock.user || activeSock.authState?.creds?.me || null;
+        if (meInfo && meInfo.id) {
+          boundPhoneNumber = String(meInfo.id).split(":")[0].split("@")[0];
+        }
+        markHandshakeReady();
+        console.log(`[WA-WEB] WhatsApp connected successfully (${boundPhoneNumber || "linked"})!`);
+        scheduleSupabaseBackup();
       }
 
       if (connection === "close") {
         isConnected = false;
         isConnecting = false;
-        const code = lastDisconnect?.error?.output?.statusCode;
-        const shouldReconnect = code !== DisconnectReason.loggedOut;
-        connectionError = lastDisconnect?.error?.message || null;
-        console.log(`[WA-WEB] Connection closed (code=${code}, shouldReconnect=${shouldReconnect})`);
-        if (shouldReconnect && state.creds && state.creds.registered) {
-          reconnectTimer = setTimeout(() => initWhatsAppSession(), 5000);
-        } else if (!shouldReconnect) {
+        markHandshakeReady();
+        const statusCode = lastDisconnect?.error?.output?.statusCode;
+        const msg = lastDisconnect?.error?.message || "";
+        const isLoggedOut = statusCode === DisconnectReason.loggedOut;
+        const hasRegisteredCreds = Boolean(state.creds && state.creds.registered);
+        const needsPostPairRestart = statusCode === DisconnectReason.restartRequired || statusCode === 515;
+
+        console.log(`[WA-WEB] Connection closed (code=${statusCode}, registered=${hasRegisteredCreds}, restart=${needsPostPairRestart})`);
+
+        if (isLoggedOut) {
+          connectionError = "WhatsApp session logged out. Scan QR or pair again.";
+          currentQr = null;
+          currentQrDataUrl = null;
+          currentPairingCode = null;
           resetAuthDir();
+          await backupAuthToSupabase(true);
           sock = null;
+          return;
+        }
+
+        if (hasRegisteredCreds || needsPostPairRestart) {
+          reconnectTimer = setTimeout(() => {
+            startSocket({ mode: "auto", reset: false }).catch(() => {});
+          }, 1500);
+        } else if (statusCode) {
+          connectionError = msg || `Connection closed (${statusCode})`;
         }
       }
     });
 
-    if (phoneNumber) {
-      const cleanNumber = normalizeWaPhone(phoneNumber);
-      boundPhoneNumber = cleanNumber;
-      return await requestCodeFromSocket(cleanNumber, 10000);
+    if (mode === "pair" && cleanPhone) {
+      boundPhoneNumber = cleanPhone;
+      // Wait for Baileys WebSocket handshake / initial pair-device frame BEFORE requesting pairing code once
+      await Promise.race([
+        handshakeReadyPromise,
+        new Promise(r => setTimeout(r, 7000))
+      ]);
+      if (myNonce === sessionNonce && sock === activeSock && !isConnected && !state.creds.registered) {
+        try {
+          const rawCode = await activeSock.requestPairingCode(cleanPhone);
+          if (rawCode) {
+            currentPairingCode = String(rawCode).trim();
+            connectionError = null;
+            console.log(`[WA-WEB] Pairing code generated for ${cleanPhone}: ${currentPairingCode}`);
+            return {
+              ok: true,
+              isConnected: false,
+              isConnecting: true,
+              pairingCode: currentPairingCode,
+              qrDataUrl: currentQrDataUrl,
+              phone: cleanPhone,
+              status: "WAITING_CODE"
+            };
+          }
+        } catch (err) {
+          connectionError = (err && err.message) || "Failed to generate pairing code";
+          console.error("[WA-WEB] requestPairingCode error:", connectionError);
+          return {
+            ok: false,
+            error: connectionError,
+            qrDataUrl: currentQrDataUrl
+          };
+        }
+      }
     }
 
-    return { ok: true, status: isConnected ? "CONNECTED" : "CONNECTING", pairingCode: currentPairingCode };
-  } catch (err) {
-    isConnecting = false;
-    connectionError = err.message;
-    console.error("[WA-WEB] Initialization failed:", err);
-    return { ok: false, error: err.message };
-  }
+    // Wait up to 10s for first QR or Open when in QR mode
+    if (mode === "qr") {
+      const waitEnd = Date.now() + 10000;
+      while (Date.now() < waitEnd && myNonce === sessionNonce && !currentQrDataUrl && !isConnected && isConnecting) {
+        await new Promise(r => setTimeout(r, 350));
+      }
+    }
+
+    return {
+      ok: Boolean(isConnected || currentQrDataUrl || currentPairingCode || isConnecting),
+      isConnected,
+      isConnecting,
+      qrDataUrl: currentQrDataUrl,
+      qr: currentQr,
+      pairingCode: currentPairingCode,
+      phone: boundPhoneNumber,
+      me: meInfo,
+      error: (!currentQrDataUrl && !isConnected && connectionError) ? connectionError : null,
+      status: isConnected
+        ? "CONNECTED"
+        : currentQrDataUrl
+          ? "WAITING_QR"
+          : currentPairingCode
+            ? "WAITING_CODE"
+            : (isConnecting ? "CONNECTING" : "IDLE")
+    };
+  };
+
+  startPromise = runFn().finally(() => {
+    startPromise = null;
+  });
+  return startPromise;
 }
 
-// Auto-boot existing session ONLY if already registered
-try {
-  const credsPath = path.join(AUTH_DIR, "creds.json");
-  if (fs.existsSync(credsPath)) {
-    const raw = JSON.parse(fs.readFileSync(credsPath, "utf8"));
-    if (raw && raw.registered) {
-      initWhatsAppSession();
+// Auto-boot on server start from local disk or Supabase backup
+(async function bootWhatsApp() {
+  try {
+    const credsPath = path.join(AUTH_DIR, "creds.json");
+    let hasCreds = fs.existsSync(credsPath);
+    if (!hasCreds) {
+      hasCreds = await restoreAuthFromSupabase();
     }
-  }
-} catch (_) {}
+    if (hasCreds) {
+      const raw = JSON.parse(fs.readFileSync(credsPath, "utf8"));
+      if (raw && raw.registered) {
+        await startSocket({ mode: "auto", reset: false });
+      }
+    }
+  } catch (_) {}
+})();
 
 async function getWhatsAppStatus() {
   return {
     ok: true,
     isConnected,
     isConnecting,
+    qrDataUrl: currentQrDataUrl,
     pairingCode: currentPairingCode,
     phone: boundPhoneNumber,
+    me: meInfo,
     error: connectionError
   };
+}
+
+async function requestQrSession(opts = {}) {
+  return await startSocket({ mode: "qr", reset: Boolean(opts.reset) });
 }
 
 async function requestPairing(phone, opts = {}) {
@@ -192,12 +408,31 @@ async function requestPairing(phone, opts = {}) {
   if (!cleanNumber || cleanNumber.length < 10) {
     return { ok: false, error: "Enter full phone number with country code (e.g. +96877956361)" };
   }
-  return await initWhatsAppSession(cleanNumber, Boolean(opts.reset));
+  return await startSocket({ mode: "pair", phoneNumber: cleanNumber, reset: Boolean(opts.reset) });
+}
+
+async function disconnectWhatsApp() {
+  sessionNonce++;
+  try {
+    if (sock && typeof sock.logout === "function" && isConnected) {
+      await sock.logout().catch(() => {});
+    }
+  } catch (_) {}
+  closeExistingSocket();
+  currentQr = null;
+  currentQrDataUrl = null;
+  currentPairingCode = null;
+  boundPhoneNumber = null;
+  meInfo = null;
+  connectionError = null;
+  resetAuthDir();
+  await backupAuthToSupabase(true);
+  return { ok: true, isConnected: false };
 }
 
 async function sendWhatsAppMessage(toPhone, message) {
   if (!isConnected || !sock) {
-    return { ok: false, error: "WhatsApp Web not connected. Please pair in Admin panel." };
+    return { ok: false, error: "WhatsApp Web not connected. Link via QR or code in Admin first." };
   }
 
   try {
@@ -216,7 +451,9 @@ async function sendWhatsAppMessage(toPhone, message) {
 
 module.exports = {
   getWhatsAppStatus,
+  requestQrSession,
   requestPairing,
+  disconnectWhatsApp,
   sendWhatsAppMessage,
   isWhatsAppConnected: () => isConnected
 };

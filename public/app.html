@@ -9582,27 +9582,8 @@ function aOverview() {
       ${tile("users", ar ? "المستخدمين والمعرفات" : "Users & Unique IDs", S.users.length + (S.shops || []).reduce((a, s) => a + (s.workers ? s.workers.length : 0), 0), "tab('users')")}
     </div>
 
-    <!-- WhatsApp Web Pairing Station -->
-    <div class="card" style="margin-top:12px;padding:16px;border:1.5px solid #22C55E">
-      <div class="row" style="justify-content:space-between;margin-bottom:8px">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div style="width:28px;height:28px;border-radius:50%;background:#DCFCE7;color:#16A34A;display:grid;place-items:center">${I("whatsapp")}</div>
-          <span style="font-weight:900;font-size:14.5px">${ar ? "ربط واتساب الشركة (بدون كاميرا)" : "Company WhatsApp Link (No Camera)"}</span>
-        </div>
-        <span id="waStatusPill" class="pill" style="background:#F3F4F6;color:#6B7280;font-size:11px">Checking...</span>
-      </div>
-      <p style="font-size:12.5px;color:#6B7280;margin:0 0 10px;line-height:1.4">
-        ${ar ? "اربط رقمك العُماني لإرسال رموز التحقق وإشعارات العملاء مجاناً دون الحاجة لكاميرا." : "Link your Oman number to send live OTPs & job notices with zero Twilio fees using phone pairing code."}
-      </p>
-      <div id="waPairBox" style="display:flex;gap:8px">
-        <input id="waPhoneInput" type="tel" placeholder="+96877956361" style="flex:1;height:42px;padding:0 12px;border:1px solid #D1D5DB;border-radius:10px;font-size:14px" value="${esc(S.profile?.phone || '+96877956361')}" />
-        <button class="btn" style="width:auto;height:42px;padding:0 14px;font-size:13px;background:#16A34A" onclick="requestWhatsAppPairCode()">${ar ? "الحصول على الرمز" : "Get Code"}</button>
-      </div>
-      <div id="waCodeResult" style="margin-top:10px;display:none;background:#F0FDF4;border:1px dashed #22C55E;border-radius:10px;padding:12px;text-align:center">
-        <div style="font-size:12px;color:#166534;margin-bottom:4px">${ar ? "افتح واتساب > الأجهزة المرتبطة > ربط باستخدام رقم الهاتف وأدخل الرمز التالي:" : "Open WhatsApp > Linked Devices > Link with phone number instead:"}</div>
-        <div id="waPairCodeText" style="font-size:24px;font-weight:900;letter-spacing:4px;color:#15803D;font-family:monospace">----</div>
-      </div>
-    </div>
+    <!-- WhatsApp Web Link Card (QR + Phone Pairing Code) -->
+    <div id="waCardRoot">${renderWaCardHtml()}</div>
 
     ${(S.tickets && S.tickets.length) ? `<div class="card" style="display:flex;flex-direction:column;gap:8px;border:1.5px solid ${webTickets.length ? "#3B82F6" : "var(--ln)"}">
       <div class="row" style="justify-content:space-between">
@@ -9655,49 +9636,224 @@ function aOverview() {
 let _waPollTimer = null;
 let _lastWaCheckAt = 0;
 
-function updateWaUiFromStatus(res) {
-  const pill = document.getElementById("waStatusPill");
-  const box = document.getElementById("waCodeResult");
-  const txt = document.getElementById("waPairCodeText");
-  if (!pill) return;
-  if (res && res.isConnected) {
-    pill.textContent = "● Connected";
-    pill.style.background = "#DCFCE7";
-    pill.style.color = "#16A34A";
-    if (box) box.style.display = "none";
-    if (_waPollTimer) { clearInterval(_waPollTimer); _waPollTimer = null; }
-  } else if (res && res.pairingCode) {
-    pill.textContent = "Code Ready";
-    pill.style.background = "#FEF3C7";
-    pill.style.color = "#B45309";
-    if (box && txt) {
-      txt.textContent = res.pairingCode;
-      box.style.display = "block";
-    }
-  } else if (res && res.isConnecting) {
-    pill.textContent = "Connecting...";
-    pill.style.background = "#DBEAFE";
-    pill.style.color = "#1D4ED8";
+window._waState = window._waState || {
+  tab: "qr",
+  isConnected: false,
+  isConnecting: false,
+  qrDataUrl: null,
+  pairingCode: null,
+  phone: "",
+  phoneInput: "",
+  me: null,
+  error: "",
+  busy: false,
+  loaded: false
+};
+
+function formatWaPhoneDisplay(raw) {
+  const digits = String(raw || "").split("@")[0].split(":")[0].replace(/\D/g, "");
+  if (!digits) return "";
+  if (digits.startsWith("968") && digits.length >= 11) {
+    return `+968 ${digits.slice(3, 7)} ${digits.slice(7, 11)}`;
+  }
+  return `+${digits}`;
+}
+
+function formatWaCodeDisplay(code) {
+  const clean = String(code || "").replace(/[^A-Za-z0-9]/g, "").toUpperCase();
+  if (clean.length === 8) return `${clean.slice(0, 4)}-${clean.slice(4)}`;
+  return String(code || "").trim();
+}
+
+function getWaPillMeta(st, ar) {
+  if (st.isConnected) return { text: ar ? "● متصل" : "● Connected", bg: "#DCFCE7", fg: "#15803D" };
+  if (st.tab === "qr" && st.qrDataUrl) return { text: ar ? "امسح QR" : "Scan QR", bg: "#FEF3C7", fg: "#B45309" };
+  if (st.pairingCode) return { text: ar ? "الرمز جاهز" : "Code Ready", bg: "#FEF3C7", fg: "#B45309" };
+  if (st.qrDataUrl) return { text: ar ? "امسح QR" : "Scan QR", bg: "#FEF3C7", fg: "#B45309" };
+  if (st.busy || st.isConnecting) return { text: ar ? "جاري الاتصال..." : "Connecting...", bg: "#DBEAFE", fg: "#1D4ED8" };
+  if (!st.loaded) return { text: ar ? "جاري الفحص..." : "Checking...", bg: "#F1F5F9", fg: "#64748B" };
+  if (st.error === "OFFLINE") return { text: ar ? "غير متصل" : "Offline", bg: "#FEE2E2", fg: "#DC2626" };
+  return { text: ar ? "غير مرتبط" : "Not Linked", bg: "#FEE2E2", fg: "#DC2626" };
+}
+
+function renderWaCardHtml() {
+  const ar = L === "ar";
+  const st = window._waState;
+  const pill = getWaPillMeta(st, ar);
+  const linkedDisplay = formatWaPhoneDisplay(st.phone || st.me?.id || "");
+  const phoneVal = st.phoneInput || S.profile?.phone || "+96877956361";
+  const tabBtnStyle = (active) => `height:44px;border-radius:10px;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;${active ? "background:#FFFFFF;color:#0F172A;box-shadow:0 1px 3px rgba(0,0,0,0.08)" : "background:transparent;color:#64748B"}`;
+
+  let bodyHtml = "";
+  if (st.isConnected) {
+    bodyHtml = `
+      <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:12px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div style="min-width:0">
+          <div style="font-size:11.5px;font-weight:700;color:#166534">${ar ? "الرقم المرتبط" : "Linked number"}</div>
+          <div style="font-size:16px;font-weight:900;color:#0F172A;margin-top:2px" dir="ltr">${esc(linkedDisplay || (ar ? "متصل" : "Active"))}</div>
+        </div>
+        <button class="btn outline" style="width:auto;min-width:88px;height:44px;padding:0 14px;border-color:#FCA5A5!important;color:#DC2626;background:#FFFFFF;font-size:13px;flex-shrink:0" ${st.busy ? "disabled" : ""} onclick="disconnectWhatsApp()">${ar ? "إلغاء الربط" : "Unlink"}</button>
+      </div>`;
   } else {
-    pill.textContent = "Not Linked";
-    pill.style.background = "#FEE2E2";
-    pill.style.color = "#DC2626";
+    const segTabs = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;background:#F1F5F9;padding:4px;border-radius:12px;margin-bottom:12px">
+        <button type="button" style="${tabBtnStyle(st.tab === "qr")}" onclick="setWaLinkTab('qr')">${ar ? "رمز QR" : "QR Code"}</button>
+        <button type="button" style="${tabBtnStyle(st.tab === "code")}" onclick="setWaLinkTab('code')">${ar ? "رمز الهاتف" : "Phone Code"}</button>
+      </div>`;
+
+    if (st.tab === "qr") {
+      if (st.qrDataUrl) {
+        bodyHtml = segTabs + `
+          <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;text-align:center">
+            <div style="display:inline-flex;padding:12px;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px">
+              <img src="${st.qrDataUrl}" alt="WhatsApp QR Code" style="width:220px;height:220px;display:block;border-radius:8px" />
+            </div>
+            <div style="font-size:12.5px;color:#475569;margin-top:12px;line-height:1.45">${ar ? "افتح واتساب ← الأجهزة المرتبطة ← ربط جهاز" : "Open WhatsApp > Linked Devices > Link a Device"}</div>
+            <button type="button" class="btn outline" style="width:100%;height:44px;margin-top:12px;font-size:13.5px;border-color:#CBD5E1!important;color:#0F172A;background:#FFFFFF" ${st.busy ? "disabled" : ""} onclick="requestWhatsAppQr(true)">${st.busy ? (ar ? "جاري التحديث..." : "Refreshing...") : (ar ? "تحديث رمز QR" : "Refresh QR")}</button>
+          </div>`;
+      } else {
+        bodyHtml = segTabs + `
+          <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;text-align:center">
+            <div style="font-size:13px;color:#475569;margin-bottom:12px;line-height:1.45">${ar ? "اعرض رمز QR ثم امسحه بكاميرا واتساب من جهاز آخر لمرة واحدة." : "Show the QR code and scan it once from WhatsApp on your phone."}</div>
+            <button type="button" class="btn" style="width:100%;height:46px;background:#15803D;font-size:14px;font-weight:800" ${st.busy ? "disabled" : ""} onclick="requestWhatsAppQr(false)">${st.busy || st.isConnecting ? (ar ? "جاري تحضير رمز QR..." : "Preparing QR Code...") : (ar ? "إظهار رمز QR" : "Show QR Code")}</button>
+          </div>`;
+      }
+    } else {
+      const cleanRawCode = String(st.pairingCode || "").replace(/[^A-Za-z0-9]/g, "").toUpperCase();
+      bodyHtml = segTabs + `
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="waPhoneInput" type="tel" dir="ltr" placeholder="+968 7795 6361" style="flex:1;height:46px;padding:0 12px;border:1px solid #CBD5E1;border-radius:12px;font-size:14.5px;background:#FFFFFF" value="${esc(phoneVal)}" oninput="window._waState.phoneInput=this.value" />
+          <button type="button" class="btn" style="width:auto;min-width:108px;height:46px;padding:0 16px;font-size:13.5px;font-weight:800;background:#15803D;flex-shrink:0" ${st.busy ? "disabled" : ""} onclick="requestWhatsAppPairCode(true)">${st.busy ? (ar ? "جاري الطلب..." : "Wait...") : (ar ? "طلب الرمز" : "Get Code")}</button>
+        </div>
+        ${st.pairingCode ? `
+          <div style="margin-top:12px;background:#F0FDF4;border:1px dashed #22C55E;border-radius:12px;padding:12px;text-align:center">
+            <div style="font-size:12px;color:#166534;margin-bottom:6px">${ar ? "واتساب ← الأجهزة المرتبطة ← الربط برقم الهاتف" : "WhatsApp > Linked Devices > Link with phone number"}</div>
+            <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap">
+              <div style="font-size:24px;font-weight:900;letter-spacing:3px;color:#15803D;font-family:monospace" dir="ltr">${esc(formatWaCodeDisplay(st.pairingCode))}</div>
+              <button type="button" class="btn outline" style="width:auto;min-width:44px;height:44px;padding:0 12px;border-color:#86EFAC!important;color:#15803D;background:#FFFFFF;font-size:12.5px;display:inline-flex;align-items:center;gap:6px" onclick="copyWaCode('${esc(cleanRawCode)}')">${I("copy")}<span>${ar ? "نسخ" : "Copy"}</span></button>
+            </div>
+          </div>` : ""}`;
+    }
+
+    if (st.error && st.error !== "OFFLINE") {
+      bodyHtml += `<div style="margin-top:10px;padding:8px 12px;border-radius:10px;background:#FEF2F2;color:#B91C1C;font-size:12.5px;line-height:1.4">${esc(st.error)}</div>`;
+    }
+  }
+
+  return `
+    <div class="card" style="margin-top:12px;padding:16px;border-radius:14px;border:1px solid ${st.isConnected ? "#86EFAC" : "rgba(0,0,0,0.08)"};box-shadow:0 1px 3px rgba(0,0,0,0.05),0 4px 12px rgba(0,0,0,0.03)">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:32px;height:32px;border-radius:50%;background:#DCFCE7;color:#15803D;display:grid;place-items:center;flex-shrink:0">${I("whatsapp")}</div>
+          <span style="font-weight:900;font-size:15px">${ar ? "ربط واتساب" : "WhatsApp Link"}</span>
+        </div>
+        <span id="waStatusPill" class="pill" style="background:${pill.bg};color:${pill.fg};font-size:11.5px;font-weight:700">${pill.text}</span>
+      </div>
+      <p style="font-size:12.5px;color:#64748B;margin:0 0 12px;line-height:1.45">
+        ${st.isConnected ? (ar ? "متصل لإرسال رموز التحقق وتحديثات الطلبات." : "Ready to send OTPs and job updates.") : (ar ? "اربط واتساب الشركة مرة واحدة عبر QR أو رقم الهاتف." : "Scan QR or use a one-time phone code to stay linked.")}
+      </p>
+      ${bodyHtml}
+    </div>`;
+}
+
+function renderWaCard() {
+  const root = document.getElementById("waCardRoot");
+  if (!root) return;
+  const st = window._waState;
+  const ar = L === "ar";
+  const pillMeta = getWaPillMeta(st, ar);
+  const pill = document.getElementById("waStatusPill");
+  if (pill) {
+    pill.textContent = pillMeta.text;
+    pill.style.background = pillMeta.bg;
+    pill.style.color = pillMeta.fg;
+  }
+  if (document.activeElement && document.activeElement.id === "waPhoneInput") return;
+  const sig = JSON.stringify([
+    st.tab,
+    st.isConnected,
+    st.isConnecting,
+    st.busy,
+    st.loaded,
+    st.qrDataUrl ? st.qrDataUrl.slice(-32) : "",
+    st.pairingCode || "",
+    st.phone || "",
+    st.me?.id || "",
+    st.error || "",
+    ar
+  ]);
+  if (root.dataset.waSig === sig) return;
+  root.dataset.waSig = sig;
+  root.innerHTML = renderWaCardHtml();
+}
+
+function setWaLinkTab(tab) {
+  window._waState.tab = tab === "code" ? "code" : "qr";
+  window._waState.error = "";
+  const root = document.getElementById("waCardRoot");
+  if (root) root.dataset.waSig = "";
+  renderWaCard();
+}
+
+async function copyWaCode(rawCode) {
+  const text = String(rawCode || "").trim();
+  if (!text) return;
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+    toast(L === "ar" ? "تم نسخ الرمز ✓" : "Code copied ✓");
+  } catch (_) {
+    toast(L === "ar" ? "انسخ الرمز يدوياً" : "Copy code manually");
   }
 }
 
-async function checkWhatsAppStatus() {
-  const pill = document.getElementById("waStatusPill");
-  if (!pill) return;
+function updateWaUiFromStatus(res) {
+  const st = window._waState;
+  st.loaded = true;
+  if (!res) {
+    st.error = "OFFLINE";
+    renderWaCard();
+    return;
+  }
+  st.isConnected = Boolean(res.isConnected);
+  st.isConnecting = Boolean(res.isConnecting);
+  st.qrDataUrl = res.isConnected ? null : (res.qrDataUrl || null);
+  st.pairingCode = res.isConnected ? null : (res.pairingCode || null);
+  if (res.phone !== undefined) st.phone = res.phone || "";
+  if (res.me !== undefined) st.me = res.me || null;
+  st.error = res.error ? String(res.error) : "";
+  if (st.isConnected && _waPollTimer) {
+    clearInterval(_waPollTimer);
+    _waPollTimer = null;
+  } else if (!st.isConnected && (st.isConnecting || st.qrDataUrl || st.pairingCode) && !_waPollTimer) {
+    startWaPoll();
+  }
+  renderWaCard();
+}
+
+async function checkWhatsAppStatus(force = false) {
+  const root = document.getElementById("waCardRoot");
+  if (!root) return;
   const now = Date.now();
-  if (now - _lastWaCheckAt < 1200) return;
+  if (!force && now - _lastWaCheckAt < 1200) return;
   _lastWaCheckAt = now;
   try {
     const res = await apiCall("/api/app/admin/whatsapp-status", { method: "GET", timeoutMs: 12000 });
     updateWaUiFromStatus(res);
   } catch (e) {
-    pill.textContent = "Offline";
-    pill.style.background = "#FEE2E2";
-    pill.style.color = "#DC2626";
+    window._waState.loaded = true;
+    window._waState.error = "OFFLINE";
+    renderWaCard();
   }
 }
 
@@ -9706,28 +9862,63 @@ function startWaPoll() {
   let tries = 0;
   _waPollTimer = setInterval(() => {
     tries++;
-    if (tries > 45 || !document.getElementById("waStatusPill")) {
+    if (tries > 45 || !document.getElementById("waCardRoot")) {
       clearInterval(_waPollTimer);
       _waPollTimer = null;
       return;
     }
-    checkWhatsAppStatus();
+    checkWhatsAppStatus(true);
   }, 2000);
 }
 
-async function requestWhatsAppPairCode(forceReset = false) {
+async function requestWhatsAppQr(forceReset = false) {
+  const st = window._waState;
+  st.tab = "qr";
+  st.busy = true;
+  st.error = "";
+  if (forceReset) st.qrDataUrl = null;
+  renderWaCard();
+  toast(L === "ar" ? "جاري تحضير رمز QR..." : "Generating QR code...");
+  try {
+    const res = await apiCall("/api/app/admin/whatsapp-qr", {
+      method: "POST",
+      body: { reset: Boolean(forceReset) },
+      timeoutMs: 25000
+    });
+    st.busy = false;
+    updateWaUiFromStatus(res);
+    if (res && res.ok && res.isConnected) {
+      toast(L === "ar" ? "واتساب متصل بالفعل ✓" : "WhatsApp already connected ✓");
+    } else if (res && res.qrDataUrl) {
+      toast(L === "ar" ? "امسح رمز QR من واتساب الآن" : "Scan QR code in WhatsApp now");
+      startWaPoll();
+    } else if (res && res.ok) {
+      startWaPoll();
+    } else {
+      toast((res && res.error) || "Failed to load QR code");
+    }
+  } catch (err) {
+    st.busy = false;
+    st.error = (err && err.message) || "Failed to request QR code";
+    renderWaCard();
+    toast(st.error);
+  }
+}
+
+async function requestWhatsAppPairCode(forceReset = true) {
   const inp = document.getElementById("waPhoneInput");
-  const phone = (inp ? inp.value : "").trim();
+  const phone = ((inp ? inp.value : "") || window._waState.phoneInput || S.profile?.phone || "").trim();
   if (!phone) {
     toast(L === "ar" ? "أدخل رقم الهاتف أولاً" : "Enter phone number first");
     return;
   }
-  const pill = document.getElementById("waStatusPill");
-  if (pill) {
-    pill.textContent = "Connecting...";
-    pill.style.background = "#DBEAFE";
-    pill.style.color = "#1D4ED8";
-  }
+  const st = window._waState;
+  st.tab = "code";
+  st.phoneInput = phone;
+  st.busy = true;
+  st.error = "";
+  if (forceReset) st.pairingCode = null;
+  renderWaCard();
   toast(L === "ar" ? "جاري طلب رمز الربط..." : "Requesting pairing code...");
   try {
     const res = await apiCall("/api/app/admin/whatsapp-pair", {
@@ -9735,11 +9926,12 @@ async function requestWhatsAppPairCode(forceReset = false) {
       body: { phone, reset: Boolean(forceReset) },
       timeoutMs: 25000
     });
+    st.busy = false;
     updateWaUiFromStatus(res);
     if (res && res.ok && res.isConnected) {
       toast(L === "ar" ? "واتساب متصل بالفعل ✓" : "WhatsApp already connected ✓");
     } else if (res && res.ok && res.pairingCode) {
-      toast(L === "ar" ? `تم استلام الرمز: ${res.pairingCode}` : `Pairing code: ${res.pairingCode}`);
+      toast(L === "ar" ? `تم استلام الرمز: ${formatWaCodeDisplay(res.pairingCode)}` : `Pairing code: ${formatWaCodeDisplay(res.pairingCode)}`);
       startWaPoll();
     } else if (res && res.ok && res.status === "CONNECTING") {
       toast(L === "ar" ? "جاري توليد رمز الربط..." : "Generating pairing code...");
@@ -9748,7 +9940,34 @@ async function requestWhatsAppPairCode(forceReset = false) {
       toast((res && res.error) || "Failed to generate pairing code");
     }
   } catch (err) {
-    toast((err && err.message) || "Failed to request pairing code");
+    st.busy = false;
+    st.error = (err && err.message) || "Failed to request pairing code";
+    renderWaCard();
+    toast(st.error);
+  }
+}
+
+async function disconnectWhatsApp() {
+  const st = window._waState;
+  st.busy = true;
+  renderWaCard();
+  try {
+    await apiCall("/api/app/admin/whatsapp-disconnect", { method: "POST", body: {}, timeoutMs: 15000 });
+    st.busy = false;
+    st.isConnected = false;
+    st.isConnecting = false;
+    st.qrDataUrl = null;
+    st.pairingCode = null;
+    st.phone = "";
+    st.me = null;
+    st.error = "";
+    renderWaCard();
+    toast(L === "ar" ? "تم إلغاء ربط واتساب" : "WhatsApp unlinked");
+  } catch (err) {
+    st.busy = false;
+    st.error = (err && err.message) || "Failed to unlink WhatsApp";
+    renderWaCard();
+    toast(st.error);
   }
 }
 
