@@ -9,9 +9,10 @@ Official Node.js / Express v5 server for **FixIt (Salalah & Oman)** powering the
 - **Phone Validation & Anti-Abuse (`src/services/phoneValidator.js`):** Enforces strict Oman (`+968`) numbers (`^[79]\d{7}$`, exact 8 digits starting with `9` or `7`), supports all international tourist dial codes in E.164 format, throttles OTP sends/verifies by IP + phone (`HTTP 429`), and rejects duplicate phone linking on Google Sign-Up (`409 PHONE_ALREADY_LINKED`).
 - **Mandatory Post-Signup Onboarding (`src/routes/appApi.js`):**
   - New Google users get `pendingToken` + Google profile (`fullName`, `email`, `avatarUrl`), confirm details + Google PFP (kept until changed), and verify a unique phone number before receiving a session.
-  - New Phone OTP users verify OTP and complete required profile details via `POST /api/auth/profile/complete`.
-- **100% Pure-JS Server-Rendered Views (`src/views/*.js`):** Zero static `.html` files. Every HTML page is generated dynamically with SVG iconography (no emojis), zero speculative pricing, and responsive navigation.
-- **No Web Ordering & No Admin Exposure:** Only `FixIt-Consumer.apk` and `FixIt-Vendor.apk` are distributed via `/downloads/:file`; `FixIt-Admin.apk` is strictly excluded (`404`).
+  - New Phone OTP users verify OTP and complete required profile details via `POST /api/auth/profile/complete`. Returning verified users with saved profiles bypass onboarding and sign straight in.
+- **Biometric Device Login (`src/routes/appApi.js`):** Consumer and Vendor apps support Fingerprint / Face Unlock via `POST /api/auth/biometric/register`, `POST /api/auth/biometric/login`, and `POST /api/auth/biometric/revoke`, storing SHA-256 hashed 256-bit device tokens in `user_settings` and returning fresh `sessionCode` credentials after OS `BiometricPrompt` verification.
+- **Pure-JS Server-Rendered Views (`src/views/*.js`) & Web App (`public/app.html`):** Server-rendered marketing/legal routes plus `/app` SPA, `/auth/callback` role-aware app deep-linking (`fixit://` vs `fixitvendor://`), and `/ad.html` frameable banner slot (`frame-ancestors *`).
+- **No Admin Exposure:** Only `FixIt-Consumer.apk` and `FixIt-Vendor.apk` are distributed via `/downloads/:file`; `FixIt-Admin.apk` is strictly excluded (`404`).
 
 ## Project Layout
 
@@ -21,15 +22,15 @@ render.yaml                   Render.com Blueprint (Node >=20, health check `/ap
 src/
   middleware/rateLimit.js     Sliding-window IP + keyGenerator rate limiter (HTTP 429 JSON/HTML)
   routes/api.js               `/.well-known/assetlinks.json`, `/api/health`, `/api/ip`, `/api/support`, `/api/mail`, `/api/otp/*`
-  routes/appApi.js            `/api/auth/*` (OTP, Google OAuth, profile complete, admin code, heartbeat, logout) & `/api/app/*` (`bootstrap`, `notifications`, `audit-logs`, `rest/:table`)
-  routes/web.js               Pure-JS HTML routes & strict APK download whitelist
-  services/authSession.js     Rotating/sliding `sessionCode` lifecycle, DB role check, heartbeat touch & audit log buffer
+  routes/appApi.js            `/api/auth/*` (OTP, Google OAuth, biometrics, profile complete, admin code, heartbeat, logout) & `/api/app/*` (`bootstrap`, `notifications`, `audit-logs`, `rest/:table`)
+  routes/web.js               Pure-JS HTML routes, `/ad.html`, `/auth/callback`, `/app`, & strict APK download whitelist
+  services/authSession.js     Rotating/sliding `sessionCode` lifecycle, DB role check, heartbeat touch & quiet polling audit filter
   services/ipDetector.js      Client IP, UA parsing, geo/ISP lookup
-  services/otp.js             Twilio WhatsApp/SMS 6-digit SHA-256 OTP store, cooldowns & Supabase DB fallback
+  services/otp.js             WhatsApp Web / Twilio WhatsApp & SMS bilingual 6-digit SHA-256 OTP store, cooldowns & Supabase DB fallback
   services/phoneValidator.js  Strict Oman `+968` (`^[79]\d{7}$`) & international E.164 parser/validator
   services/supabase.js        Server-side Supabase REST + Auth `/auth/v1/user` client
   views/*.js                  Modular layout, home, support/contact, legal, and deep-link views
-scripts/verify.js             Automated HTTP, BFF auth & rate-limit regression suite
+scripts/verify.js             Automated HTTP, BFF auth, biometrics & rate-limit regression suite
 public/
   downloads/                  `FixIt-Consumer.apk` & `FixIt-Vendor.apk` only (no Admin APK)
   fonts/, icons/, logo.png, manifest.json

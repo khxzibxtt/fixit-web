@@ -923,6 +923,7 @@ const P = {
   power:'<path d="M12 3v9M6.3 6.3a8 8 0 1 0 11.4 0"/>',
   refresh:'<path d="M21 12a9 9 0 0 1-15.5 6.3L3 16M3 12a9 9 0 0 1 15.5-6.3L21 8M21 3v5h-5M3 21v-5h5"/>',
   shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  fingerprint:'<path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/><path d="M14 13.12c0 2.38 0 6.38-1 8.88"/><path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/><path d="M2 12a10 10 0 0 1 18-6"/><path d="M2 16h.01"/><path d="M21.8 16c.2-2 .131-5.354 0-6"/><path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2"/><path d="M8.65 22c.21-.66.45-1.32.57-2"/><path d="M9 6.8a6 6 0 0 1 9 5.2v2"/>',
   tag:'<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>',
   camera:'<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
   trash:'<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
@@ -2394,139 +2395,37 @@ const PRO_AVATAR_PHOTOS = {
 
 const DEFAULT_SHOPS_DATA = [
   {
-    shop_id: "FX-SHP-104821",
+    shop_id: "shop-primary",
     vendor_id: VENDOR_ID,
-    owner_user_id: "FX-USR-884001",
+    owner_user_id: "",
     cr_number: "",
-    shop_name: "Al-Mahdoud Technical Services",
-    shop_name_ar: "المحدود للخدمات الفنية والهندسية",
-    branch_name: "Salalah Central HQ (Shop #1)",
-    trade_activities: ["AC_REPAIR", "ELECTRICIAN", "PLUMBER", "CCTV", "CARPENTER", "PAINTER", "CLEANING"],
-    obp_status: "PERMITTED",
-    obp_checked_at: "2026-11-11T05:00:00Z",
-    kyc_status: "APPROVED",
+    shop_name: "",
+    shop_name_ar: "",
+    branch_name: "Salalah",
+    trade_activities: ["AC_REPAIR", "ELECTRICIAN", "PLUMBER"],
+    obp_status: "PENDING",
+    obp_checked_at: "",
+    kyc_status: "PENDING",
     conflict_note: "",
     is_pro_shop: true,
-    board_photo: makeBadgeSvgDataUri("#0F172A", "#1E3A8A", "AL-MAHDOUD TECHNICAL", "Verified Partner · Salalah HQ", "HQ"),
-    workers: [
-      {
-        worker_id: "FX-WRK-884101",
-        user_id: VENDOR_ID,
-        name: "Khalid Al Balushi",
-        name_ar: "خالد البلوشي",
-        title: "Chief Master Electrician & AC Lead",
-        title_ar: "كبير فنيي الكهرباء والتكييف",
-        phone: "+96892004411",
-        email: "khalid.albalushi@fixit-now.xyz",
-        id_number: "OM-ID-99284102",
-        certified: true,
-        cert_authority: "Oman Energy & Water Vocational Certified",
-        face_photo: PRO_AVATAR_PHOTOS[VENDOR_ID],
-        id_passport_photo: makeBadgeSvgDataUri("#065F46", "#047857", "OMAN RESIDENT ID CARD", "Khalid Al Balushi", "ID")
-      },
-      {
-        worker_id: "FX-WRK-884102",
-        user_id: "cbdf4b04-222e-45bd-8b68-266c4cac7732",
-        name: "Salim Al Kathiri",
-        name_ar: "سالم الكثيري",
-        title: "Senior HVAC & Plumbing Specialist",
-        title_ar: "أخصائي تكييف وسباكة أول",
-        phone: "+96892114480",
-        email: "salim.kathiri@gmail.com",
-        id_number: "OM-ID-88412099",
-        certified: true,
-        cert_authority: "Commercial Registration #4419",
-        face_photo: PRO_AVATAR_PHOTOS["pro-salim"],
-        id_passport_photo: makeBadgeSvgDataUri("#1E40AF", "#1D4ED8", "OMAN NATIONAL ID / PASSPORT", "Salim Al Kathiri", "ID")
-      }
-    ],
-    vehicles: [
-      {
-        vehicle_id: "FX-VEH-55101",
-        model: "Toyota Hilux Service Van 2025",
-        model_ar: "تويوتا هايلكس فان خدمة 2025",
-        color: "White / Orange FixIt Wrap",
-        plate: "74821 · B (Salalah)",
-        driver_phone: "+96892004411",
-        assigned_worker_id: "FX-WRK-884101",
-        photo: makeBadgeSvgDataUri("#C2410C", "#EA580C", "TOYOTA HILUX VAN · WHITE", "PLATE: 74821 B · SALALAH", "VAN")
-      },
-      {
-        vehicle_id: "FX-VEH-55102",
-        model: "Nissan Urvan Mobile Workshop",
-        model_ar: "نيسان أورفان ورشة متنقلة",
-        color: "Silver Metallic",
-        plate: "39104 · D (Dhofar)",
-        driver_phone: "+96892114480",
-        assigned_worker_id: "FX-WRK-884102",
-        photo: makeBadgeSvgDataUri("#334155", "#475569", "NISSAN URVAN WORKSHOP", "PLATE: 39104 D · DHOFAR", "VAN")
-      }
-    ]
-  },
-  {
-    shop_id: "FX-SHP-104822",
-    vendor_id: VENDOR_ID,
-    owner_user_id: "FX-USR-884001",
-    cr_number: "",
-    shop_name: "Al-Mahdoud Auto Care, Towing & Taxi Fleet",
-    shop_name_ar: "المحدود لخدمات السيارات والسطحة والتاكسي",
-    branch_name: "Auqad Industrial Area (Branch #2)",
-    trade_activities: ["TAXI", "BREAKDOWN", "TOW_TRUCK", "MECHANIC", "TIRE_FIX", "CAR_WASH"],
-    obp_status: "PERMITTED",
-    obp_checked_at: "2026-11-11T05:10:00Z",
-    kyc_status: "APPROVED",
-    conflict_note: "",
-    is_pro_shop: true,
-    board_photo: makeBadgeSvgDataUri("#4C1D95", "#6D28D9", "AL-MAHDOUD AUTO & TOWING", "Branch #2 · Auqad Industrial", "AUTO"),
-    workers: [
-      {
-        worker_id: "FX-WRK-884103",
-        user_id: "pro-tariq",
-        name: "Tariq Al Shanfari",
-        name_ar: "طارق الشنفري",
-        title: "Lead Auto Mechanic & Flatbed Recovery Captain",
-        title_ar: "كبير ميكانيكيي السيارات وقائد السطحة",
-        phone: "+96899441122",
-        email: "tariq.shanfari@gmail.com",
-        id_number: "OM-ID-77319044",
-        certified: true,
-        cert_authority: "ROP Heavy Recovery & Auto Certified",
-        face_photo: PRO_AVATAR_PHOTOS["pro-tariq"],
-        id_passport_photo: makeBadgeSvgDataUri("#065F46", "#059669", "ROP DRIVER & MECHANIC ID", "Tariq Al Shanfari", "ID")
-      }
-    ],
-    vehicles: [
-      {
-        vehicle_id: "FX-VEH-55103",
-        model: "Isuzu NPR Hydro-Flatbed Tow Truck",
-        model_ar: "سطحة إيسوزو هيدروليك للإنقاذ",
-        color: "Safety Yellow",
-        plate: "11980 · K (Commercial)",
-        driver_phone: "+96899441122",
-        assigned_worker_id: "FX-WRK-884103",
-        photo: makeBadgeSvgDataUri("#B45309", "#D97706", "ISUZU FLATBED TOW TRUCK", "PLATE: 11980 K · DHOFAR", "TOW")
-      },
-      {
-        vehicle_id: "FX-VEH-55104",
-        model: "Toyota Camry Salalah Taxi",
-        model_ar: "تاكسي تويوتا كامري صلالة",
-        color: "Orange & White",
-        plate: "50291 · T (Taxi)",
-        driver_phone: "+96899441122",
-        assigned_worker_id: "FX-WRK-884103",
-        photo: makeBadgeSvgDataUri("#EA580C", "#F97316", "TOYOTA CAMRY SALALAH TAXI", "PLATE: 50291 T · TAXI", "TAXI")
-      }
-    ]
+    board_photo: makeBadgeSvgDataUri("#0F172A", "#1E3A8A", "SHOP SIGNBOARD", "Tap Camera to Capture Signboard", "SHOP"),
+    workers: [],
+    vehicles: []
   }
 ];
 
-// Initialize v14 state extensions
+// Initialize single-shop KYC state per partner account
 S.shops = load("shops", DEFAULT_SHOPS_DATA);
 if (!Array.isArray(S.shops) || !S.shops.length) {
   S.shops = DEFAULT_SHOPS_DATA;
   save("shops", S.shops);
+} else if (S.shops.length > 1 || (S.shops[0] && (S.shops[0].shop_id === "FX-SHP-104821" || (S.shops[0].workers && S.shops[0].workers.length)))) {
+  const first = S.shops[0];
+  S.shops = first.shop_id === "FX-SHP-104821" ? DEFAULT_SHOPS_DATA : [{ ...first, workers: [], vehicles: [] }];
+  save("shops", S.shops);
 }
-S.activeShopId = load("activeShopId", S.shops[0].shop_id);
+S.activeShopId = S.shops[0].shop_id;
+save("activeShopId", S.activeShopId);
 S.onboardingPreviewGate = load("onboardingPreviewGate", false);
 S.rateLimits = load("rateLimits", {});
 S.rateLimitHits = load("rateLimitHits", 0);
@@ -2663,48 +2562,31 @@ function isProCustomerJob(j) {
 
 function getBidDispatchMeta(b) {
   const shop = getActiveShop();
-  const defWorker = (shop.workers && shop.workers[0]) || DEFAULT_SHOPS_DATA[0].workers[0];
-  const defVehicle = (shop.vehicles && shop.vehicles[0]) || DEFAULT_SHOPS_DATA[0].vehicles[0];
+  const vId = (b && b.vendor_id) || VENDOR_ID;
+  const fallbackName = shop.shop_name || "FixIt Verified Partner";
+  const fallbackAvatar = shop.board_photo || (PRO_AVATAR_PHOTOS && PRO_AVATAR_PHOTOS[vId]) || "";
   if (b && Array.isArray(b.proposed_milestones) && b.proposed_milestones[0] && typeof b.proposed_milestones[0] === "object") {
     const m = b.proposed_milestones[0];
-    if (m.worker_name || m.vehicle_plate || m.shop_name) {
+    if (m.shop_name || m.owner_name || m.worker_name) {
       return {
         shop_id: m.shop_id || shop.shop_id,
-        shop_name: m.shop_name || shop.shop_name,
-        cr_number: m.cr_number || shop.cr_number,
-        shop_pfp: m.shop_pfp || shop.board_photo,
+        shop_name: m.shop_name || fallbackName,
+        cr_number: m.cr_number || shop.cr_number || "",
+        shop_pfp: m.shop_pfp || m.owner_avatar || fallbackAvatar,
         is_pro_shop: m.is_pro_shop !== false,
-        worker_id: m.worker_id || defWorker.worker_id,
-        worker_name: m.worker_name || defWorker.name,
-        worker_title: m.worker_title || defWorker.title,
-        worker_phone: m.worker_phone || defWorker.phone,
-        worker_face: m.worker_face || defWorker.face_photo,
-        worker_certified: m.worker_certified !== false,
-        vehicle_id: m.vehicle_id || defVehicle.vehicle_id,
-        vehicle_model: m.vehicle_model || defVehicle.model,
-        vehicle_color: m.vehicle_color || defVehicle.color,
-        vehicle_plate: m.vehicle_plate || defVehicle.plate,
-        vehicle_photo: m.vehicle_photo || defVehicle.photo
+        owner_name: m.owner_name || m.worker_name || "",
+        owner_avatar: m.owner_avatar || m.worker_face || fallbackAvatar
       };
     }
   }
   return {
     shop_id: shop.shop_id,
-    shop_name: shop.shop_name,
-    cr_number: shop.cr_number,
-    shop_pfp: shop.board_photo,
+    shop_name: fallbackName,
+    cr_number: shop.cr_number || "",
+    shop_pfp: fallbackAvatar,
     is_pro_shop: shop.is_pro_shop !== false,
-    worker_id: defWorker.worker_id,
-    worker_name: defWorker.name,
-    worker_title: defWorker.title,
-    worker_phone: defWorker.phone,
-    worker_face: defWorker.face_photo,
-    worker_certified: defWorker.certified !== false,
-    vehicle_id: defVehicle.vehicle_id,
-    vehicle_model: defVehicle.model,
-    vehicle_color: defVehicle.color,
-    vehicle_plate: defVehicle.plate,
-    vehicle_photo: defVehicle.photo
+    owner_name: "",
+    owner_avatar: fallbackAvatar
   };
 }
 
@@ -3378,6 +3260,9 @@ function applyAuthenticatedSession(data) {
     L = data.settings.preferred_language === "ar" ? "ar" : "en";
     try { localStorage.setItem("fixit_lang", L); document.documentElement.dir = L === "ar" ? "rtl" : "ltr"; } catch (e) {}
   }
+  if (data.settings && typeof data.settings.biometric_enabled === "boolean") {
+    S.profile.biometric_enabled = data.settings.biometric_enabled;
+  }
   S.auth.pendingGoogleToken = "";
   S.auth.linkGoogleMode = false;
   S.auth.channelSheetOpen = false;
@@ -3448,9 +3333,11 @@ async function verifyTalabatOtp() {
     const wasGoogleLink = Boolean(S.auth.linkGoogleMode);
     applyAuthenticatedSession(data);
 
-    if (ROLE === "vendor" && S.auth.accountType === "shop_owner") {
-      S.onboardingPreviewGate = true;
-      save("onboardingPreviewGate", true);
+    if (ROLE === "vendor") {
+      S.auth.accountType = "shop_owner";
+      const curShop = typeof getActiveShop === "function" ? getActiveShop() : null;
+      S.onboardingPreviewGate = !(curShop && curShop.kyc_status === "APPROVED");
+      save("onboardingPreviewGate", S.onboardingPreviewGate);
     }
 
     if (!wasGoogleLink && data.needsProfileCompletion) {
@@ -3476,6 +3363,7 @@ async function verifyTalabatOtp() {
     render();
     sync();
     toast(ar ? "تم تسجيل الدخول بنجاح" : "Verified and signed in to FixIt.");
+    maybeOfferBiometricEnrollment();
   } catch (e) {
     toast(ar ? "تعذر الاتصال بالخادم للتحقق من الرمز" : "Network error while verifying code. Try again.");
   } finally {
@@ -3560,6 +3448,7 @@ async function submitPhoneProfileDetails() {
   render();
   sync();
   toast(ar ? "أهلاً بك في FixIt!" : "Profile saved. Welcome to FixIt!");
+  maybeOfferBiometricEnrollment();
 }
 
 async function submitAdminAccessCode() {
@@ -3599,30 +3488,53 @@ const GOOGLE_CLIENT_ID = GOOGLE_WEB_CLIENT_ID;
 
 function initiateGoogleSignIn() {
   if (!checkRateLimit("google_login", 5, 60000, "Google Sign-In", "تسجيل دخول Google")) return;
-  const oauthUrl = `${FIXIT_BACKEND_URL}/api/auth/google/start?role=${encodeURIComponent(ROLE)}`;
-  if (typeof window !== "undefined" && window.FixItNative && window.FixItNative.openExternalUrl) {
+  const isNative = Boolean(typeof window !== "undefined" && window.FixItNative && window.FixItNative.openExternalUrl);
+  const oauthUrl = `${FIXIT_BACKEND_URL}/api/auth/google/start?role=${encodeURIComponent(ROLE)}${isNative ? "" : "&web=1"}`;
+  if (isNative) {
     window.FixItNative.openExternalUrl(oauthUrl);
   } else {
     window.location.href = oauthUrl;
   }
 }
 
+window._handledOAuthKeys = window._handledOAuthKeys || new Set();
 window.onInAppGoogleOAuthCallback = async function(uriStr) {
   const ar = L === "ar";
   try {
     if (!uriStr) return;
-    const errDescMatch = uriStr.match(/[#&?](?:error_description)=([^&]+)/);
-    const errMatch = uriStr.match(/[#&?](?:error)=([^&]+)/);
-    if (errDescMatch || errMatch) {
-      const errText = errDescMatch ? decodeURIComponent(errDescMatch[1].replace(/\+/g, " ")) : decodeURIComponent((errMatch && errMatch[1]) || "OAuth Error");
-      toast(ar ? `تعذر تسجيل الدخول عبر Google: ${errText}` : `Google Sign-In error: ${errText}`);
+    if (typeof window !== "undefined" && window.FixItNative && typeof window.FixItNative.consumePendingOAuthUri === "function") {
+      try { window.FixItNative.consumePendingOAuthUri(); } catch (ignored) {}
+    }
+
+    let parsedUrl = null;
+    try {
+      const normalized = String(uriStr).includes("://")
+        ? String(uriStr)
+        : "https://fixit-now.xyz/" + String(uriStr).replace(/^\/+/, "");
+      parsedUrl = new URL(normalized);
+    } catch (e) {
+      parsedUrl = null;
+    }
+
+    const searchParams = parsedUrl ? parsedUrl.searchParams : new URLSearchParams("");
+    const rawHash = parsedUrl && parsedUrl.hash ? parsedUrl.hash.replace(/^#/, "") : "";
+    const hashParams = new URLSearchParams(rawHash.startsWith("?") ? rawHash.slice(1) : rawHash);
+    const getParam = name => (searchParams.get(name) || hashParams.get(name) || "").trim();
+
+    if (!window.FixItNative && typeof window !== "undefined" && window.history && window.location && (window.location.search || window.location.hash)) {
+      try { window.history.replaceState({}, "", window.location.pathname || "/app"); } catch (ignored) {}
+    }
+
+    const errDesc = getParam("error_description");
+    const errCode = getParam("error");
+    if (errDesc || errCode) {
+      const dedupeErrKey = "err:" + (errDesc || errCode);
+      if (window._handledOAuthKeys.has(dedupeErrKey)) return;
+      window._handledOAuthKeys.add(dedupeErrKey);
+      toast(ar ? `تعذر تسجيل الدخول عبر Google: ${errDesc || errCode}` : `Google Sign-In error: ${errDesc || errCode}`);
       return;
     }
 
-    const getParam = name => {
-      const m = uriStr.match(new RegExp(`[#&?]${name}=([^&#]+)`));
-      return m ? decodeURIComponent(m[1]) : "";
-    };
     const pendingToken = getParam("pending_token");
     const accessToken = getParam("access_token");
     const idToken = getParam("id_token");
@@ -3633,6 +3545,10 @@ window.onInAppGoogleOAuthCallback = async function(uriStr) {
       return;
     }
 
+    const dedupeKey = pendingToken || code || idToken || accessToken;
+    if (window._handledOAuthKeys.has(dedupeKey)) return;
+    window._handledOAuthKeys.add(dedupeKey);
+
     toast(ar ? "جاري التحقق من حساب Google..." : "Verifying your Google account...");
     const res = await fetch(`${FIXIT_BACKEND_URL}/api/auth/google/exchange`, {
       method: "POST",
@@ -3641,6 +3557,7 @@ window.onInAppGoogleOAuthCallback = async function(uriStr) {
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok || !data || !data.ok) {
+      window._handledOAuthKeys.delete(dedupeKey);
       toast(ar ? (data.errorAr || data.error || "تعذر إكمال تسجيل دخول Google") : (data.error || "Could not verify Google account"));
       return;
     }
@@ -3663,6 +3580,7 @@ window.onInAppGoogleOAuthCallback = async function(uriStr) {
     }
 
     applyAuthenticatedSession(data);
+    if (ROLE === "vendor") S.auth.accountType = "shop_owner";
     S.auth.needsProfileCompletion = false;
     S.auth.mode = "welcome";
     S.sheet = null;
@@ -3671,6 +3589,7 @@ window.onInAppGoogleOAuthCallback = async function(uriStr) {
     render();
     sync();
     toast(ar ? `مرحباً بعودتك (${S.profile.full_name || S.auth.email})` : `Welcome back${S.profile.full_name ? ", " + S.profile.full_name : ""}!`);
+    maybeOfferBiometricEnrollment();
   } catch (e) {
     toast(ar ? "حدث خطأ أثناء تسجيل الدخول عبر Google" : "Network error during Google Sign-In");
   }
@@ -3746,6 +3665,246 @@ async function logoutCurrentAccount() {
   toast(L === "ar" ? "تم تسجيل الخروج" : "Logged out successfully");
 }
 
+window._biometricBusy = false;
+
+function isBiometricHardwareAvailable() {
+  try {
+    return Boolean(typeof window !== "undefined" && window.FixItNative && typeof window.FixItNative.canUseBiometric === "function" && window.FixItNative.canUseBiometric());
+  } catch (e) {
+    return false;
+  }
+}
+
+function isBiometricLoginReady() {
+  try {
+    return Boolean(
+      ROLE !== "admin" &&
+      isBiometricHardwareAvailable() &&
+      typeof window.FixItNative.hasBiometricEnrolled === "function" &&
+      window.FixItNative.hasBiometricEnrolled(ROLE)
+    );
+  } catch (e) {
+    return false;
+  }
+}
+
+function getBiometricSavedHint() {
+  try {
+    if (!isBiometricLoginReady() || typeof window.FixItNative.getBiometricLabel !== "function") return "";
+    return String(window.FixItNative.getBiometricLabel(ROLE) || "").trim();
+  } catch (e) {
+    return "";
+  }
+}
+
+function dismissBiometricOptIn() {
+  try { localStorage.setItem("fixit_bio_dismissed_" + ROLE, "1"); } catch (e) {}
+  S.sheet = null;
+  render();
+}
+
+function maybeOfferBiometricEnrollment() {
+  try {
+    if (ROLE === "admin") return;
+    if (!S.auth || !S.auth.loggedIn || !S.auth.sessionCode || S.auth.needsProfileCompletion) return;
+    if (!isBiometricHardwareAvailable() || isBiometricLoginReady()) return;
+    if (localStorage.getItem("fixit_bio_dismissed_" + ROLE) === "1") return;
+    setTimeout(() => {
+      if (!S.sheet && S.auth && S.auth.loggedIn && !S.auth.needsProfileCompletion && isBiometricHardwareAvailable() && !isBiometricLoginReady()) {
+        S.sheet = "biometric_optin";
+        render();
+      }
+    }, 450);
+  } catch (e) {}
+}
+
+async function enableBiometricLogin() {
+  const ar = L === "ar";
+  if (ROLE === "admin" || window._biometricBusy) return;
+  if (!S.auth || !S.auth.loggedIn || !S.auth.sessionCode) {
+    toast(ar ? "يرجى تسجيل الدخول أولاً" : "Please sign in first.");
+    return;
+  }
+  if (!isBiometricHardwareAvailable()) {
+    toast(ar ? "فعّل البصمة أو قفل الشاشة في إعدادات الجهاز أولاً" : "Set up fingerprint, face unlock, or screen lock in Device Settings first.");
+    return;
+  }
+  window._biometricBusy = true;
+  render();
+  try {
+    const res = await fetch(`${FIXIT_BACKEND_URL}/api/auth/biometric/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-FixIt-Session": S.auth.sessionCode,
+        "X-FixIt-Role": ROLE
+      },
+      body: JSON.stringify({ deviceId: getDeviceId() })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data || !data.ok || !data.biometricToken) {
+      window._biometricBusy = false;
+      render();
+      toast(ar ? "تعذر تفعيل الدخول السريع" : (data.error || "Could not enable biometric login"));
+      return;
+    }
+    const label = String((S.profile && S.profile.phone_number) || (S.auth && S.auth.phone) || (S.profile && S.profile.full_name) || (S.auth && S.auth.email) || "").trim();
+    window.FixItNative.enrollBiometricLogin(
+      ROLE,
+      String(data.userId || ""),
+      String(data.biometricToken),
+      String(data.keyId || ""),
+      label,
+      ar ? "تفعيل البصمة والوجه" : "Enable Biometric Login",
+      ar ? "تأكيد الهوية للدخول السريع" : "Confirm your fingerprint or face for quick sign in"
+    );
+  } catch (e) {
+    window._biometricBusy = false;
+    render();
+    toast(ar ? "تعذر الاتصال بالخادم" : "Network error. Please try again.");
+  }
+}
+
+window.onNativeBiometricEnrollResult = async function(ok, errMsg) {
+  const ar = L === "ar";
+  window._biometricBusy = false;
+  if (ok) {
+    S.profile.biometric_enabled = true;
+    save("profile", S.profile);
+    try { localStorage.removeItem("fixit_bio_dismissed_" + ROLE); } catch (e) {}
+    if (S.sheet === "biometric_optin") S.sheet = null;
+    render();
+    toast(ar ? "تم تفعيل الدخول بالبصمة والوجه" : "Fingerprint & Face login enabled");
+    return;
+  }
+  if (S.auth && S.auth.sessionCode) {
+    fetch(`${FIXIT_BACKEND_URL}/api/auth/biometric/revoke`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-FixIt-Session": S.auth.sessionCode,
+        "X-FixIt-Role": ROLE
+      },
+      body: JSON.stringify({ deviceId: getDeviceId() })
+    }).catch(() => {});
+  }
+  render();
+  if (errMsg && !/cancel/i.test(String(errMsg))) toast(String(errMsg));
+};
+
+async function disableBiometricLogin() {
+  const ar = L === "ar";
+  if (window._biometricBusy) return;
+  window._biometricBusy = true;
+  render();
+  try {
+    if (typeof window !== "undefined" && window.FixItNative && typeof window.FixItNative.clearBiometricVault === "function") {
+      window.FixItNative.clearBiometricVault(ROLE);
+    }
+    if (S.auth && S.auth.sessionCode) {
+      await fetch(`${FIXIT_BACKEND_URL}/api/auth/biometric/revoke`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-FixIt-Session": S.auth.sessionCode,
+          "X-FixIt-Role": ROLE
+        },
+        body: JSON.stringify({ deviceId: getDeviceId() })
+      }).catch(() => {});
+    }
+  } finally {
+    S.profile.biometric_enabled = false;
+    save("profile", S.profile);
+    try { localStorage.setItem("fixit_bio_dismissed_" + ROLE, "1"); } catch (e) {}
+    window._biometricBusy = false;
+    render();
+    toast(ar ? "تم إيقاف الدخول بالبصمة والوجه" : "Biometric login turned off");
+  }
+}
+
+function toggleBiometricLogin() {
+  return isBiometricLoginReady() ? disableBiometricLogin() : enableBiometricLogin();
+}
+
+function initiateBiometricSignIn() {
+  const ar = L === "ar";
+  if (window._biometricBusy) return;
+  if (typeof checkRateLimit === "function" && !checkRateLimit("biometric_login", 10, 60000, "Biometric Login", "الدخول بالبصمة")) return;
+  if (!isBiometricLoginReady()) {
+    toast(ar ? "الدخول بالبصمة غير مفعّل على هذا الجهاز" : "Biometric login is not set up on this device.");
+    return;
+  }
+  window._biometricBusy = true;
+  render();
+  window.FixItNative.authenticateBiometricLogin(
+    ROLE,
+    ar ? "تسجيل الدخول السريع" : "Quick Sign In",
+    ar ? "استخدم بصمتك أو وجهك للمتابعة" : "Use fingerprint or face unlock to continue"
+  );
+}
+
+window.onNativeBiometricLoginResult = async function(rawResult) {
+  const ar = L === "ar";
+  let payload = null;
+  try {
+    payload = typeof rawResult === "string" ? JSON.parse(rawResult) : rawResult;
+  } catch (e) {
+    payload = null;
+  }
+  if (!payload || !payload.ok || !payload.userId || !payload.biometricToken) {
+    window._biometricBusy = false;
+    render();
+    if (payload && payload.error && !/cancel/i.test(String(payload.error))) {
+      toast(String(payload.error));
+    }
+    return;
+  }
+  try {
+    const res = await fetch(`${FIXIT_BACKEND_URL}/api/auth/biometric/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: String(payload.userId),
+        biometricToken: String(payload.biometricToken),
+        keyId: String(payload.keyId || ""),
+        role: ROLE,
+        deviceId: getDeviceId()
+      })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.status === 401) {
+      if (window.FixItNative && window.FixItNative.clearBiometricVault) {
+        window.FixItNative.clearBiometricVault(ROLE);
+      }
+      window._biometricBusy = false;
+      render();
+      toast(ar ? "انتهت صلاحية البصمة، سجل الدخول بالهاتف أو Google" : "Biometric key expired. Please sign in with phone or Google.");
+      return;
+    }
+    if (!res.ok || !data || !data.ok) {
+      window._biometricBusy = false;
+      render();
+      toast(ar ? (data.errorAr || data.error || "تعذر تسجيل الدخول") : (data.error || "Could not sign in with biometrics"));
+      return;
+    }
+    applyAuthenticatedSession(data);
+    if (ROLE === "vendor") S.auth.accountType = "shop_owner";
+    S.auth.needsProfileCompletion = false;
+    S.auth.mode = "welcome";
+    S.sheet = null;
+    if (S.stack[S.stack.length - 1] === "auth") S.stack.pop();
+    save("auth_state", S.auth);
+    window._biometricBusy = false;
+    render();
+    sync();
+    toast(ar ? `مرحباً بعودتك${S.profile.full_name ? "، " + S.profile.full_name : ""}` : `Welcome back${S.profile.full_name ? ", " + S.profile.full_name : ""}!`);
+  } catch (e) {
+    window._biometricBusy = false;
+    render();
+    toast(ar ? "تعذر الاتصال بالخادم" : "Network error while signing in.");
+  }
+};
+
 function openAuthScreen(mode) {
   const allowed = ["welcome", "phone", "otp_verify", "google_confirm", "google_phone", "complete_profile", "admin"];
   S.auth.mode = allowed.includes(mode) ? mode : (ROLE === "admin" ? "admin" : "welcome");
@@ -3776,6 +3935,29 @@ function googleAuthSheet() {
           ${gIcon}
           <span style="font-weight:700">${ar ? "متابعة باستخدام Google" : "Continue with Google"}</span>
         </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function biometricOptInSheet() {
+  const ar = L === "ar";
+  return `<div class="sheet" onclick="if(event.target===this){dismissBiometricOptIn()}">
+    <div>
+      <div class="grab"></div>
+      <div class="row" style="justify-content:space-between">
+        <div class="row" style="gap:12px">
+          <div style="width:48px;height:48px;border-radius:16px;background:#FFF3EB;color:var(--o);display:grid;place-items:center">${I("fingerprint")}</div>
+          <div>
+            <div class="t1" style="font-size:18px;font-weight:900">${ar ? "تسجيل أسرع" : "Faster Sign In"}</div>
+            <div class="t2" style="font-size:13px">${ar ? "استخدم بصمتك أو وجهك للدخول في ثوانٍ." : "Use your fingerprint or face unlock next time."}</div>
+          </div>
+        </div>
+        <button class="ib" onclick="dismissBiometricOptIn()" aria-label="Close">${I("x")}</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:20px">
+        <button class="btn" style="min-height:48px" onclick="enableBiometricLogin()" ${window._biometricBusy ? "disabled" : ""}>${window._biometricBusy ? (ar ? "جاري التفعيل..." : "Enabling...") : (ar ? "تفعيل البصمة والوجه" : "Enable Now")}</button>
+        <button class="btn outline" style="min-height:48px" onclick="dismissBiometricOptIn()" ${window._biometricBusy ? "disabled" : ""}>${ar ? "لاحقاً" : "Not Now"}</button>
       </div>
     </div>
   </div>`;
@@ -3935,10 +4117,6 @@ function authScreen() {
           <p class="tlbt-auth-sub fx-auth-stagger-2">
             ${ar ? "فنيو صلالة الموثوقون عند باب منزلك." : "Trusted Salalah pros at your doorstep."}
           </p>
-          ${ROLE === "vendor" ? `<div class="seg3 fx-auth-stagger-2" style="max-width:300px;margin:16px auto 0">
-            <button class="${S.auth.accountType === "shop_owner" ? "on" : ""}" onclick="S.auth.accountType='shop_owner';save('auth_state',S.auth);render()">${ar ? "مالك محل" : "Shop Owner"}</button>
-            <button class="${S.auth.accountType === "shop_worker" ? "on" : ""}" onclick="S.auth.accountType='shop_worker';save('auth_state',S.auth);render()">${ar ? "فني محل" : "Shop Worker"}</button>
-          </div>` : ""}
         </div>
 
         <div class="fx-auth-stagger-3" style="display:flex;flex-direction:column;gap:12px">
@@ -3950,6 +4128,11 @@ function authScreen() {
             ${gIcon}
             <span style="font-weight:700">${ar ? "المتابعة باستخدام Google" : "Continue with Google"}</span>
           </button>
+          ${isBiometricLoginReady() ? `<button class="tlbt-pill-btn" style="background:#111827;color:#FFFFFF;border:1px solid #1F2937;box-shadow:0 6px 18px rgba(17,24,39,.14)" onclick="initiateBiometricSignIn()" ${window._biometricBusy ? "disabled" : ""}>
+            <span style="display:inline-flex;color:#FFFFFF">${I("fingerprint")}</span>
+            <span style="font-weight:800">${window._biometricBusy ? (ar ? "جاري التحقق..." : "Verifying...") : (ar ? "الدخول بالبصمة أو الوجه" : "Sign in with Fingerprint / Face")}</span>
+            ${getBiometricSavedHint() ? `<span dir="ltr" style="font-size:12px;font-weight:600;color:rgba(255,255,255,.72);margin-inline-start:4px">${esc(getBiometricSavedHint())}</span>` : ""}
+          </button>` : ""}
         </div>
       </div>
     </div>`;
@@ -4152,7 +4335,7 @@ function authScreen() {
   </div>`;
 }
 
-/* ================= VENDOR SHOP ONBOARDING GATE, MULTI-SHOP CR, WORKERS & VEHICLES KYC ================= */
+/* ================= VENDOR SHOP ONBOARDING GATE & CR KYC ================= */
 function verifyCrWithOmanBusinessPlatform(shopIdx) {
   const ar = L === "ar";
   const shop = S.shops[shopIdx || 0] || getActiveShop();
@@ -4181,175 +4364,13 @@ function captureShopSignboardPhoto() {
   openInAppCameraModal("SHOP_SIGNBOARD", shop.shop_id, function(stampedDataUrl) {
     shop.board_photo = stampedDataUrl;
     if (shop.kyc_status === "CONFLICT") {
-      toast(L === "ar" ? "✓ تم تحديث صورة اللوحة التجارية — اضغط إعادة الإرسال للمشرف" : "✓ Signboard photo updated! Tap 'Resend to Admin' below.");
+      toast(L === "ar" ? "✓ تم تحديث صورة اللوحة التجارية — اضغط إعادة الإرسال للمشرف" : "✓ Signboard photo updated. Tap Save & Submit below.");
     } else {
-      toast(L === "ar" ? "✓ تم توثيق صورة لوحة المحل وتعيينها كصورة الحساب (PFP)" : "✓ Shop signboard captured & set as Shop Profile Picture (PFP)!");
+      toast(L === "ar" ? "✓ تم حفظ صورة لوحة المحل" : "✓ Shop signboard photo saved.");
     }
     syncShopsToCloud();
     render();
   });
-}
-
-function captureWorkerPhotoInApp(workerIdx, fieldName) {
-  const shop = getActiveShop();
-  const w = shop.workers && shop.workers[workerIdx];
-  if (!w) return;
-  openInAppCameraModal("WORKER_" + fieldName.toUpperCase(), w.worker_id, function(stampedDataUrl) {
-    w[fieldName] = stampedDataUrl;
-    syncShopsToCloud();
-    render();
-    toast(L === "ar" ? "✓ تم حفظ الصورة الموثقة للعامل" : "✓ Worker verification photo saved!");
-  });
-}
-
-function captureVehiclePhotoInApp(vehIdx) {
-  const shop = getActiveShop();
-  const v = shop.vehicles && shop.vehicles[vehIdx];
-  if (!v) return;
-  openInAppCameraModal("VEHICLE_PHOTO", v.vehicle_id, function(stampedDataUrl) {
-    v.photo = stampedDataUrl;
-    syncShopsToCloud();
-    render();
-    toast(L === "ar" ? "✓ تم حفظ صورة المركبة" : "✓ Vehicle photo captured & saved!");
-  });
-}
-
-function addNewShopUnderCr() {
-  const ar = L === "ar";
-  const cur = getActiveShop();
-  const newNum = (S.shops || []).length + 1;
-  const newShopId = "FX-SHP-" + Math.floor(100000 + Math.random() * 899999);
-  const newShop = {
-    shop_id: newShopId,
-    vendor_id: VENDOR_ID,
-    owner_user_id: S.auth.uniqueId || "",
-    cr_number: cur.cr_number || "",
-    shop_name: (cur.shop_name || "FixIt Partner Shop") + " (Branch #" + newNum + ")",
-    shop_name_ar: "فرع جديد #" + newNum,
-    branch_name: "Salalah Branch #" + newNum + (cur.cr_number ? " (" + cur.cr_number + ")" : ""),
-    trade_activities: ["AC_REPAIR", "ELECTRICIAN", "PLUMBER"],
-    obp_status: "PERMITTED",
-    obp_checked_at: new Date().toISOString(),
-    kyc_status: "PENDING",
-    conflict_note: "",
-    is_pro_shop: true,
-    board_photo: makeBadgeSvgDataUri("#1E293B", "#334155", "NEW SHOP BRANCH #" + newNum, (cur.cr_number || newShopId) + " · Capture Board Photo", "SHOP"),
-    workers: [
-      {
-        worker_id: "FX-WRK-" + Math.floor(100000 + Math.random() * 899999),
-        user_id: "wrk-" + Date.now(),
-        name: "New Technician #1",
-        name_ar: "فني جديد #1",
-        title: "Service Technician",
-        title_ar: "فني صيانة",
-        phone: "",
-        email: "",
-        id_number: "",
-        certified: true,
-        cert_authority: "Oman Vocational License",
-        face_photo: PRO_AVATAR_PHOTOS[VENDOR_ID],
-        id_passport_photo: makeBadgeSvgDataUri("#065F46", "#047857", "RESIDENT ID / PASSPORT", "Tap Camera to Capture ID", "ID")
-      }
-    ],
-    vehicles: [
-      {
-        vehicle_id: "FX-VEH-" + Math.floor(10000 + Math.random() * 89999),
-        model: "Service Van / Pickup",
-        model_ar: "مركبة خدمة وصيانة",
-        color: "White",
-        plate: "",
-        driver_phone: "",
-        photo: makeBadgeSvgDataUri("#C2410C", "#EA580C", "SERVICE VEHICLE", "Tap Camera to Capture Car & Plate", "VAN")
-      }
-    ]
-  };
-  S.shops.push(newShop);
-  S.activeShopId = newShopId;
-  save("activeShopId", S.activeShopId);
-  syncShopsToCloud();
-  render();
-  toast(ar ? "تمت إضافة محل جديد بنجاح" : "New shop added successfully.");
-}
-
-function addWorkerToActiveShop() {
-  const shop = getActiveShop();
-  if (!Array.isArray(shop.workers)) shop.workers = [];
-  const idx = shop.workers.length + 1;
-  const wId = "FX-WRK-" + Math.floor(100000 + Math.random() * 899999);
-  const newW = {
-    worker_id: wId,
-    user_id: "u-" + wId.toLowerCase(),
-    name: "Technician #" + idx,
-    name_ar: "فني #" + idx,
-    title: "Field Service Specialist",
-    title_ar: "أخصائي خدمة ميدانية",
-    phone: "+9689" + Math.floor(1000000 + Math.random() * 8999999),
-    email: "tech" + idx + "." + shop.shop_id.slice(-4).toLowerCase() + "@fixit-now.xyz",
-    id_number: "OM-ID-" + Math.floor(10000000 + Math.random() * 89999999),
-    certified: true,
-    cert_authority: "Verified Professional",
-    face_photo: PRO_AVATAR_PHOTOS["pro-salim"],
-    id_passport_photo: makeBadgeSvgDataUri("#1E40AF", "#1D4ED8", "WORKER ID", "Verified Team Member", "🪪")
-  };
-  shop.workers.push(newW);
-  // Also register worker in S.users so Admin can manage their unique account!
-  if (Array.isArray(S.users)) {
-    S.users.unshift({
-      user_id: newW.user_id,
-      fixit_unique_id: wId,
-      full_name: newW.name + " (" + newW.title + ")",
-      phone_number: newW.phone,
-      email: newW.email,
-      role: "WORKER",
-      shop_id: shop.shop_id,
-      cr_number: shop.cr_number,
-      is_active: true,
-      created_at: new Date().toISOString()
-    });
-  }
-  syncShopsToCloud();
-  render();
-  toast(L === "ar" ? `✓ تم إضافة العامل وإنشاء حساب خاص له (${wId})` : `✓ Worker added & login account created (${wId})!`);
-}
-
-function removeWorkerFromActiveShop(idx) {
-  const shop = getActiveShop();
-  if (!shop.workers || shop.workers.length <= 1) {
-    toast(L === "ar" ? "يجب أن يحتوي المحل على عامل واحد على الأقل" : "A shop must have at least 1 registered worker");
-    return;
-  }
-  shop.workers.splice(idx, 1);
-  syncShopsToCloud();
-  render();
-}
-
-function addVehicleToActiveShop() {
-  const shop = getActiveShop();
-  if (!Array.isArray(shop.vehicles)) shop.vehicles = [];
-  const vId = "FX-VEH-" + Math.floor(10000 + Math.random() * 89999);
-  shop.vehicles.push({
-    vehicle_id: vId,
-    model: "Toyota Hilux Service Pickup",
-    model_ar: "تويوتا هايلكس مركبة صيانة",
-    color: "White",
-    plate: Math.floor(10000 + Math.random() * 89999) + " · B (Salalah)",
-    driver_phone: (shop.workers && shop.workers[0] && shop.workers[0].phone) || "+968 9200 4411",
-    photo: makeBadgeSvgDataUri("#C2410C", "#EA580C", "SERVICE VEHICLE", vId + " · Salalah Fleet", "🚐")
-  });
-  syncShopsToCloud();
-  render();
-  toast(L === "ar" ? `✓ تم إضافة مركبة جديدة (${vId})` : `✓ Fleet vehicle added (${vId})!`);
-}
-
-function removeVehicleFromActiveShop(idx) {
-  const shop = getActiveShop();
-  if (!shop.vehicles || shop.vehicles.length <= 1) {
-    toast(L === "ar" ? "يجب تسجيل مركبة واحدة على الأقل" : "At least 1 service vehicle is required");
-    return;
-  }
-  shop.vehicles.splice(idx, 1);
-  syncShopsToCloud();
-  render();
 }
 
 function submitShopKycForAdminApproval() {
@@ -4362,341 +4383,130 @@ function submitShopKycForAdminApproval() {
   const branchInp = document.getElementById("kycBranchInp");
   if (branchInp && branchInp.value.trim()) shop.branch_name = branchInp.value.trim();
 
+  if (!shop.shop_name || !String(shop.shop_name).trim()) {
+    toast(ar ? "يرجى إدخال اسم المحل التجاري" : "Please enter your shop name");
+    return;
+  }
+
   shop.kyc_status = "PENDING";
   shop.conflict_note = "";
   syncShopsToCloud();
   sb("/notifications", "POST", {
     user_id: CONSUMER_ID,
     kind: "ADMIN_ACTION",
-    title: `Shop Profile Submitted: ${shop.shop_name}`,
-    body: `${shop.workers.length} workers & ${shop.vehicles.length} vehicles submitted for approval.`
+    title: `Shop KYC Submitted: ${shop.shop_name}`,
+    body: `${shop.cr_number ? "CR " + shop.cr_number + " · " : ""}${shop.branch_name || "Salalah"} submitted for verification.`
   }).catch(() => {});
   render();
-  toast(ar ? "✓ تم إرسال بيانات المحل للمراجعة والاعتماد" : "✓ Shop details submitted for approval");
+  toast(ar ? "✓ تم إرسال بيانات المحل للمراجعة" : "✓ Shop details submitted for approval");
 }
 
 function vShopKycScreen(isLockedOnboardingGate) {
   const ar = L === "ar";
   const shop = getActiveShop();
-  const sameCrShops = (S.shops || []).filter(s => s.cr_number === shop.cr_number);
   const statusColors = {
-    APPROVED: { bg: "#DCFCE7", tx: "#15803D", lblEn: "APPROVED & VERIFIED ✓", lblAr: "موثق ومعتمد ✓" },
-    PENDING: { bg: "#FEF3C7", tx: "#B45309", lblEn: "PENDING ADMIN & OBP REVIEW ⏳", lblAr: "قيد مراجعة المشرف ومنصة الأعمال ⏳" },
-    CONFLICT: { bg: "#FEE2E2", tx: "#DC2626", lblEn: "DOCUMENT CONFLICT — RESUBMIT REQUIRED ⚠", lblAr: "تعارض في المستندات — يرجى إعادة الإرسال ⚠" },
-    REJECTED: { bg: "#FEE2E2", tx: "#991B1B", lblEn: "REJECTED BY ADMIN ✕", lblAr: "مرفوض من المشرف ✕" }
+    APPROVED: { bg: "#DCFCE7", tx: "#15803D", lblEn: "Verified Partner ✓", lblAr: "شريك موثق ✓" },
+    PENDING: { bg: "#FEF3C7", tx: "#B45309", lblEn: "Under Review", lblAr: "قيد المراجعة" },
+    CONFLICT: { bg: "#FEE2E2", tx: "#DC2626", lblEn: "Update Required", lblAr: "يتطلب التحديث" },
+    REJECTED: { bg: "#FEE2E2", tx: "#991B1B", lblEn: "Rejected", lblAr: "مرفوض" }
   };
   const st = statusColors[shop.kyc_status] || statusColors.PENDING;
 
-  return `${bar(ar ? "بيانات المحل وفريق العمل" : "Business Profile & Team", S.stack.length > 0)}
+  return `${bar(ar ? "توثيق المحل والسجل" : "Shop Verification", S.stack.length > 0)}
   <div class="pad">
     ${(isLockedOnboardingGate || shop.kyc_status !== "APPROVED") ? `<div class="card" style="background:linear-gradient(135deg,#7C2D12,#9A3412);color:#fff;display:flex;flex-direction:column;gap:8px;border:2px solid #FDBA74">
-      <div class="row" style="justify-content:space-between">
-        <span class="pill" style="background:#FEF3C7;color:#9A3412;font-weight:900;font-size:11px">🔒 ${ar ? "تأكيد بيانات المحل" : "Account Verification"}</span>
-      </div>
-      <div style="font-size:16px;font-weight:900">${ar ? "توثيق بيانات المحل" : "Verify Business Details"}</div>
-      <div style="font-size:12px;opacity:.92">${ar ? "أكمل بيانات السجل التجاري والفريق لبدء استقبال الطلبات." : "Complete your business details to start accepting jobs."}</div>
+      <div style="font-size:16px;font-weight:900">${ar ? "توثيق المحل" : "Verify Your Shop"}</div>
+      <div style="font-size:12.5px;opacity:.92">${ar ? "أدخل بيانات السجل التجاري وصورة اللوحة لبدء استقبال الطلبات." : "Submit your Commercial Registration and shop sign to unlock jobs."}</div>
     </div>` : ""}
 
     ${shop.kyc_status === "CONFLICT" ? `<div class="card" style="background:#FEF2F2;border:2px solid #EF4444;display:flex;flex-direction:column;gap:10px">
       <div class="row" style="gap:8px">
-        <span style="font-size:22px">⚠️</span>
         <div class="sp">
-          <div style="font-weight:900;color:#991B1B;font-size:15px">${ar ? "مراجعة المستندات" : "Document Review"}</div>
-          <div style="font-size:13px;color:#B91C1C;margin-top:2px">"${esc(shop.conflict_note || (ar ? "يرجى إعادة التقاط صورة واضحة للوحة المحل والسجل التجاري." : "Please retake a clear photo of your shop sign and commercial registration."))}"</div>
+          <div style="font-weight:900;color:#991B1B;font-size:15px">${ar ? "تحديث المستندات" : "Action Needed"}</div>
+          <div style="font-size:13px;color:#B91C1C;margin-top:2px">"${esc(shop.conflict_note || (ar ? "يرجى تصوير لوحة المحل بوضوح وإعادة الإرسال." : "Please retake a clear photo of your shop sign and CR details."))}"</div>
         </div>
       </div>
       <div class="two">
-        <button class="btn s" style="background:#DC2626" onclick="captureShopSignboardPhoto()">📷 ${ar ? "إعادة تصوير اللوحة" : "Retake Board Photo"}</button>
-        <button class="btn ok s" onclick="submitShopKycForAdminApproval()">✓ ${ar ? "إعادة الإرسال للمشرف" : "Resend to Admin"}</button>
+        <button class="btn s" style="min-height:44px;background:#DC2626" onclick="captureShopSignboardPhoto()">📷 ${ar ? "إعادة التصوير" : "Retake Sign Photo"}</button>
+        <button class="btn ok s" style="min-height:44px" onclick="submitShopKycForAdminApproval()">✓ ${ar ? "إعادة الإرسال" : "Resend"}</button>
       </div>
     </div>` : ""}
 
-    <!-- Multi-Shop Switcher under 1 CR -->
-    <div class="card" style="display:flex;flex-direction:column;gap:10px">
-      <div class="row" style="justify-content:space-between">
-        <div>
-          <div class="t1" style="font-size:16px">${ar ? "المحلات والفروع تحت السجل التجاري" : "Shops Registered Under Your CR"} (${S.shops.length})</div>
-          <div class="t2" style="font-size:12px">${ar ? "يمكن لسجل تجاري واحد (CR) امتلاك عدة محلات وفروع مستقلة" : "1 CR can register multiple shops · Each shop has its own ID, workers & fleet"}</div>
-        </div>
-        <button class="pill" style="background:var(--o);color:#fff;font-size:11.5px;padding:6px 12px" onclick="addNewShopUnderCr()">+ ${ar ? "إضافة محل للسجل" : "Add Shop to CR"}</button>
-      </div>
-      <div class="chips" style="margin:0">
-        ${(S.shops || []).map(s => `<button class="chip ${s.shop_id === shop.shop_id ? "on" : ""}" onclick="S.activeShopId='${s.shop_id}';save('activeShopId',S.activeShopId);render()">
-          🏪 ${esc(s.branch_name.split("(")[0].trim())} · ${esc(s.cr_number)} (${s.kyc_status})
-        </button>`).join("")}
-      </div>
-    </div>
-
-    <!-- 1. Shop Signboard PFP & CR Verification Card -->
     <div class="card" style="display:flex;flex-direction:column;gap:12px">
       <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:6px">
+        <span class="t1" style="font-size:16px">${ar ? "ملف المحل" : "Shop Profile"}</span>
         <span class="pill" style="background:${st.bg};color:${st.tx};font-weight:900">${ar ? st.lblAr : st.lblEn}</span>
-        <span class="pill" style="background:#EFF6FF;color:#1D4ED8;font-family:monospace;font-weight:800">ID: ${esc(shop.shop_id)}</span>
       </div>
 
-      <!-- Signboard Photo (Used as Shop PFP!) -->
       <div style="position:relative;border-radius:16px;overflow:hidden;border:2px solid var(--o);background:#0F172A">
-        <img src="${esc(shop.board_photo)}" alt="Shop Signboard PFP" style="width:100%;height:165px;object-fit:cover;display:block" onclick="S.previewImg=this.src;render()" />
-        <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.85));padding:12px;color:#fff;display:flex;align-items:flex-end;justify-content:space-between">
-          <div>
-            <div style="font-size:11px;color:#FDBA74;font-weight:800">📸 ${ar ? "صورة اللوحة التجارية (تُستخدم كصورة المحل PFP)" : "SHOP SIGNBOARD PHOTO (VERIFIES CR & USED AS PFP)"}</div>
-            <div style="font-size:15px;font-weight:900">${esc(ar ? (shop.shop_name_ar || shop.shop_name) : shop.shop_name)}</div>
+        <img src="${esc(shop.board_photo)}" alt="Shop Signboard" style="width:100%;height:165px;object-fit:cover;display:block" onclick="S.previewImg=this.src;render()" />
+        <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.85));padding:12px;color:#fff;display:flex;align-items:flex-end;justify-content:space-between;gap:8px">
+          <div style="min-width:0">
+            <div style="font-size:11px;color:#FDBA74;font-weight:800">${ar ? "صورة لوحة المحل" : "Shop Signboard Photo"}</div>
+            <div style="font-size:15px;font-weight:900" class="ell">${esc(shop.shop_name || (ar ? "اسم المحل" : "Your Shop"))}</div>
           </div>
-          <button class="pill" style="background:var(--o);color:#fff;font-size:11.5px;padding:6px 12px" onclick="captureShopSignboardPhoto()">📷 ${ar ? "تصوير اللوحة بالكاميرا" : "Take Board Photo"}</button>
-        </div>
-      </div>
-
-      <div class="two">
-        <div class="fld">
-          <label>${ar ? "رقم السجل التجاري (CR No.)" : "Oman CR Number"}</label>
-          <input id="kycCrInp" dir="ltr" class="tlbt-input" value="${esc(shop.cr_number)}" placeholder="${ar ? "أدخل رقم السجل التجاري" : "Enter CR number"}">
-        </div>
-        <div class="fld">
-          <label>${ar ? "عدد المحلات تحت هذا السجل" : "Shops Under This CR"}</label>
-          <input readonly class="tlbt-input" style="background:#F3F4F6;font-weight:800" value="${sameCrShops.length} ${ar ? "محلات مسجلة" : "Registered Shops"}">
+          <button class="pill" style="min-height:44px;background:var(--o);color:#fff;font-size:12px;padding:8px 14px;white-space:nowrap" onclick="captureShopSignboardPhoto()">📷 ${ar ? "تصوير اللوحة" : "Take Photo"}</button>
         </div>
       </div>
 
       <div class="fld">
-        <label>${ar ? "اسم المحل التجاري (كما في السجل واللوحة)" : "Official Shop Name (as on CR & Signboard)"}</label>
-        <input id="kycShopNameInp" class="tlbt-input" value="${esc(shop.shop_name)}">
+        <label>${ar ? "رقم السجل التجاري (CR)" : "Commercial Registration (CR) Number"}</label>
+        <input id="kycCrInp" dir="ltr" class="tlbt-input" style="min-height:46px" value="${esc(shop.cr_number)}" placeholder="${ar ? "أدخل رقم السجل التجاري" : "Enter CR number"}">
       </div>
 
       <div class="fld">
-        <label>${ar ? "اسم الفرع / الموقع" : "Shop Branch & Location"}</label>
-        <input id="kycBranchInp" class="tlbt-input" value="${esc(shop.branch_name)}">
+        <label>${ar ? "اسم المحل التجاري" : "Official Shop Name"}</label>
+        <input id="kycShopNameInp" class="tlbt-input" style="min-height:46px" value="${esc(shop.shop_name)}" placeholder="${ar ? "كما هو مسجل في السجل التجاري" : "As registered on your CR"}">
       </div>
 
-      <!-- Commercial Registration (CR) Verification Box -->
+      <div class="fld">
+        <label>${ar ? "الموقع / المنطقة" : "Shop Location"}</label>
+        <input id="kycBranchInp" class="tlbt-input" style="min-height:46px" value="${esc(shop.branch_name)}" placeholder="${ar ? "مثال: صلالة الوسطى" : "e.g. Central Salalah"}">
+      </div>
+
       <div style="background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px">
         <div class="row" style="justify-content:space-between">
           <div>
             <div style="font-weight:900;font-size:13.5px;color:#14532D">${ar ? "السجل التجاري (CR)" : "Commercial Registration (CR)"}</div>
-            <div style="font-size:11.5px;color:#166534">${ar ? "التحقق من السجل التجاري لمزاولة الأنشطة" : "Verified Commercial Registration to operate services"}</div>
+            <div style="font-size:11.5px;color:#166534">${ar ? "التحقق من رقم السجل التجاري قبل الاعتماد." : "Validate your CR number for partner approval."}</div>
           </div>
-          <span class="pill ok" style="font-size:10.5px">${esc(shop.obp_status || "VERIFIED")} ✓</span>
+          <span class="pill ${shop.obp_status === "PERMITTED" ? "ok" : "am"}" style="font-size:10.5px">${shop.obp_status === "PERMITTED" ? (ar ? "متحقق ✓" : "Valid ✓") : (ar ? "قيد الفحص" : "Check CR")}</span>
         </div>
-        <button class="btn outline s" style="border-color:#16A34A!important;color:#15803D;background:#fff" onclick="verifyCrWithOmanBusinessPlatform()">
-          ${ar ? "التحقق من السجل التجاري" : "Verify Commercial Registration (CR)"}
+        <button class="btn outline s" style="min-height:44px;border-color:#16A34A!important;color:#15803D;background:#fff" onclick="verifyCrWithOmanBusinessPlatform()">
+          ${ar ? "فحص السجل التجاري" : "Check CR Number"}
         </button>
       </div>
     </div>
 
-    <!-- 2. Team Members Roster -->
-    <div class="card" style="display:flex;flex-direction:column;gap:12px">
-      <div class="row" style="justify-content:space-between">
-        <div>
-          <div class="t1" style="font-size:17px">${ar ? "فريق العمل" : "Team Members"} (${(shop.workers || []).length})</div>
-          <div class="t2" style="font-size:12px">${ar ? "إدارة حسابات الفنيين التابعين للمحل" : "Manage technician logins and credentials"}</div>
-        </div>
-        <button class="pill" style="background:var(--o);color:#fff;font-size:12px;padding:7px 12px" onclick="addWorkerToActiveShop()">+ ${ar ? "إضافة فني" : "Add Technician"}</button>
-      </div>
-
-      ${(shop.workers || []).map((w, idx) => `<div style="border:1.5px solid #E5E7EB;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px;background:#FAFAFA">
-        <div class="row" style="gap:10px">
-          <div style="position:relative;cursor:pointer" onclick="captureWorkerPhotoInApp(${idx},'face_photo')">
-            <img src="${esc(w.face_photo)}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--o)" />
-            <span style="position:absolute;bottom:-2px;right:-2px;background:#111827;color:#fff;font-size:10px;padding:2px 5px;border-radius:99px">CAM</span>
-          </div>
-          <div class="sp">
-            <div class="row" style="gap:6px;flex-wrap:wrap">
-              <input class="tlbt-input" style="height:34px;padding:0 8px;font-weight:800;font-size:14px;width:165px" value="${esc(w.name)}" onchange="getActiveShop().workers[${idx}].name=this.value;syncShopsToCloud()" />
-              ${w.certified ? `<span class="pill ok" style="font-size:10px">✓ ${ar ? "معتمد" : "Certified"}</span>` : ""}
-            </div>
-            <div style="margin-top:4px">
-              <input class="tlbt-input" style="height:32px;padding:0 8px;font-size:12.5px;color:#FF5A00;font-weight:700" value="${esc(w.title)}" placeholder="${ar ? "المسمى الوظيفي (يحدده مالك المحل)" : "Worker Title (set by Shop Owner)"}" onchange="getActiveShop().workers[${idx}].title=this.value;syncShopsToCloud()" />
-            </div>
-          </div>
-          <button class="ib" style="width:32px;height:32px;background:#FEE2E2;color:#DC2626" onclick="removeWorkerFromActiveShop(${idx})">${I("x")}</button>
-        </div>
-
-        <div class="two">
-          <div>
-            <div style="font-size:11px;color:#6B7280;font-weight:700">${ar ? "هاتف العامل (لدخول التطبيق)" : "Worker Login Phone"}</div>
-            <input dir="ltr" class="tlbt-input" style="height:36px;font-size:12.5px;margin-top:2px" value="${esc(w.phone)}" onchange="getActiveShop().workers[${idx}].phone=this.value;syncShopsToCloud()" />
-          </div>
-          <div>
-            <div style="font-size:11px;color:#6B7280;font-weight:700">${ar ? "بريد دخول العامل" : "Worker Login Email"}</div>
-            <input dir="ltr" class="tlbt-input" style="height:36px;font-size:12.5px;margin-top:2px" value="${esc(w.email)}" onchange="getActiveShop().workers[${idx}].email=this.value;syncShopsToCloud()" />
-          </div>
-        </div>
-
-        <!-- Worker ID / Passport KYC Photo -->
-        <div class="row" style="background:#fff;padding:8px 10px;border-radius:12px;border:1px solid #E5E7EB;justify-content:space-between">
-          <div class="row" style="gap:10px">
-            <img src="${esc(w.id_passport_photo)}" style="width:64px;height:42px;border-radius:8px;object-fit:cover;border:1px solid #D1D5DB" onclick="S.previewImg=this.src;render()" />
-            <div>
-              <div style="font-size:12px;font-weight:800">${ar ? "إثبات الهوية" : "ID Verification"}</div>
-              <div style="font-size:11px;color:#6B7280">${esc(w.id_number || "OM-ID-Verified")} · ${esc(w.cert_authority || "Certified")}</div>
-            </div>
-          </div>
-          <div class="row" style="gap:6px">
-            <button class="pill" style="background:#F3F4F6;color:#111827;font-size:11px;padding:5px 9px" onclick="captureWorkerPhotoInApp(${idx},'face_photo')">📷 ${ar ? "الوجه" : "Face"}</button>
-            <button class="pill" style="background:var(--o2);color:var(--o);font-size:11px;padding:5px 9px" onclick="captureWorkerPhotoInApp(${idx},'id_passport_photo')">🪪 ${ar ? "الهوية" : "ID/Pass"}</button>
-          </div>
-        </div>
-      </div>`).join("")}
-    </div>
-
-    <!-- 3. Fleet Vehicles Management -->
-    <div class="card" style="display:flex;flex-direction:column;gap:12px">
-      <div class="row" style="justify-content:space-between">
-        <div>
-          <div class="t1" style="font-size:17px">🚐 ${ar ? "أسطول مركبات المحل" : "Shop Fleet Vehicles"} (${(shop.vehicles || []).length})</div>
-          <div class="t2" style="font-size:12px">${ar ? "تظهر صورة المركبة ورقم اللوحة ونوع السيارة للعميل عند توجه الفني" : "Customer sees exact vehicle photo, plate number & car details on dispatch"}</div>
-        </div>
-        <button class="pill" style="background:var(--o);color:#fff;font-size:12px;padding:7px 12px" onclick="addVehicleToActiveShop()">+ ${ar ? "إضافة مركبة" : "Add Vehicle"}</button>
-      </div>
-
-      ${(shop.vehicles || []).map((v, idx) => `<div style="border:1.5px solid #E5E7EB;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px;background:#FAFAFA">
-        <div class="row" style="gap:10px">
-          <img src="${esc(v.photo)}" style="width:78px;height:54px;border-radius:10px;object-fit:cover;border:2px solid #0284C7;cursor:pointer" onclick="S.previewImg=this.src;render()" />
-          <div class="sp">
-            <div class="row" style="gap:6px">
-              <input class="tlbt-input" style="height:34px;padding:0 8px;font-weight:800;font-size:13.5px;flex:1" value="${esc(v.model)}" onchange="getActiveShop().vehicles[${idx}].model=this.value;syncShopsToCloud()" />
-              <span class="pill" style="background:#FEF3C7;color:#92400E;font-family:monospace;font-weight:900;font-size:11px;border:1px solid #F59E0B">${esc(v.plate)}</span>
-            </div>
-            <div class="two" style="margin-top:6px">
-              <input class="tlbt-input" style="height:32px;padding:0 8px;font-size:12px" value="${esc(v.plate)}" placeholder="Plate No." onchange="getActiveShop().vehicles[${idx}].plate=this.value;syncShopsToCloud()" />
-              <input dir="ltr" class="tlbt-input" style="height:32px;padding:0 8px;font-size:12px" value="${esc(v.driver_phone)}" placeholder="Driver Phone" onchange="getActiveShop().vehicles[${idx}].driver_phone=this.value;syncShopsToCloud()" />
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:4px">
-            <button class="ib" style="width:32px;height:32px;background:var(--o2);color:var(--o)" onclick="captureVehiclePhotoInApp(${idx})">📷</button>
-            <button class="ib" style="width:32px;height:32px;background:#FEE2E2;color:#DC2626" onclick="removeVehicleFromActiveShop(${idx})">${I("x")}</button>
-          </div>
-        </div>
-      </div>`).join("")}
-    </div>
-
-    <button class="btn" onclick="submitShopKycForAdminApproval()">
-      ✓ ${ar ? "حفظ وإرسال بيانات المحل" : "Save & Submit Details"}
+    <button class="btn" style="min-height:48px" onclick="submitShopKycForAdminApproval()">
+      ✓ ${ar ? "حفظ وإرسال للمراجعة" : "Save & Submit Details"}
     </button>
   </div>`;
 }
 
-// Render "Who's Coming to You" Card for Customer (shows Worker Face + Name + Title + Vehicle Plate + Car Photo + Shop CR)
 function renderWhosComingCard(b, job) {
   const ar = L === "ar";
   const meta = getBidDispatchMeta(b);
-  return `<div style="background:linear-gradient(135deg,#F8FAFC,#EFF6FF);border:1.5px solid #BFDBFE;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px">
-    <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:6px">
-      <div class="row" style="gap:6px">
-        <img src="${esc(meta.shop_pfp)}" style="width:26px;height:26px;border-radius:7px;object-fit:cover;border:1px solid #2563EB" />
-        <span style="font-size:12px;font-weight:900;color:#1E3A8A">${esc(meta.shop_name)}</span>
-      </div>
-      <span class="pill ok" style="font-size:10px">🏛️ ${esc(meta.cr_number)} · OBP Verified ✓</span>
-    </div>
-
-    <div class="two" style="gap:8px">
-      <!-- Dispatched Worker Face & Title -->
-      <div style="background:#fff;border-radius:12px;padding:9px;border:1px solid #DBEAFE;display:flex;align-items:center;gap:8px">
-        <img src="${esc(meta.worker_face)}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid #FF5A00;flex-shrink:0" onclick="S.previewImg=this.src;render()" />
-        <div class="sp">
-          <div style="font-size:10px;font-weight:800;color:#FF5A00">${ar ? "الفني القادم إليك:" : "WHO'S COMING:"}</div>
-          <div style="font-size:13px;font-weight:900;color:#111827" class="ell">${esc(meta.worker_name)}</div>
-          <div style="font-size:11px;color:#4B5563" class="ell">${esc(meta.worker_title)}</div>
-          <div style="font-size:10px;font-family:monospace;color:#2563EB">${esc(meta.worker_id)} ✓</div>
-        </div>
-      </div>
-
-      <!-- Dispatched Vehicle Photo, Model & Plate -->
-      <div style="background:#fff;border-radius:12px;padding:9px;border:1px solid #DBEAFE;display:flex;align-items:center;gap:8px">
-        <img src="${esc(meta.vehicle_photo)}" style="width:48px;height:42px;border-radius:8px;object-fit:cover;border:1.5px solid #0284C7;flex-shrink:0" onclick="S.previewImg=this.src;render()" />
-        <div class="sp">
-          <div style="font-size:10px;font-weight:800;color:#0284C7">${ar ? "المركبة واللوحة:" : "VEHICLE & PLATE:"}</div>
-          <div style="font-size:12px;font-weight:900;color:#111827" class="ell">${esc(meta.vehicle_model)}</div>
-          <div style="display:inline-block;background:#FEF3C7;color:#92400E;font-family:monospace;font-weight:900;font-size:11px;padding:1px 6px;border-radius:6px;border:1px solid #F59E0B;margin-top:2px">🚗 ${esc(meta.vehicle_plate)}</div>
-        </div>
+  return `<div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:14px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:10px">
+    <div class="row" style="gap:10px;min-width:0">
+      <img src="${esc(meta.shop_pfp || meta.owner_avatar || "")}" style="width:42px;height:42px;border-radius:10px;object-fit:cover;border:1px solid #CBD5E1;flex-shrink:0" onclick="S.previewImg=this.src;render()" />
+      <div class="sp" style="min-width:0">
+        <div style="font-size:13px;font-weight:800;color:#0F172A" class="ell">${esc(meta.shop_name)}</div>
+        <div style="font-size:11.5px;color:#475569" class="ell">${esc(meta.owner_name || "")}</div>
       </div>
     </div>
+    <span class="pill ok" style="font-size:10.5px;white-space:nowrap">${meta.cr_number ? (ar ? "سجل موثق ✓" : "CR Verified ✓") : (ar ? "شريك موثق ✓" : "Verified Pro ✓")}</span>
   </div>`;
 }
 
-/* ================= VENDOR & ADMIN ANALYTICS DASHBOARDS ================= */
-function vAnalyticsScreen() {
-  const ar = L === "ar";
-  const shop = getActiveShop();
-  const myBids = (S.bids || []).filter(b => b.vendor_id === VENDOR_ID);
-  const wonBids = myBids.filter(b => b.status === "SELECTED" || b.status === "ACCEPTED");
-  const doneJobs = (S.jobs || []).filter(j => j.status === "COMPLETED");
-  const winRate = myBids.length ? Math.round((wonBids.length / myBids.length) * 100) : 0;
-  const totalEarned = doneJobs.reduce((acc, j) => {
-    const jb = (S.bids || []).find(b => b.job_id === j.job_id && (b.status === "SELECTED" || b.status === "ACCEPTED"));
-    return acc + (jb ? Number(jb.bid_amount || 0) : 0);
-  }, 0);
-  const days = [
-    ["Sat", 0, "10%"],
-    ["Sun", 0, "10%"],
-    ["Mon", 0, "10%"],
-    ["Tue", 0, "10%"],
-    ["Wed", 0, "10%"],
-    ["Thu", 0, "10%"],
-    ["Fri", 0, "10%"]
-  ];
-
-  return `${bar(ar ? "تحليلات وأرباح المحل والعمال" : "Vendor & Fleet Analytics")}
-  <div class="pad">
-    <!-- Hero Revenue Card -->
-    <div class="card" style="background:linear-gradient(135deg,#0F172A,#1E293B);color:#fff;display:flex;flex-direction:column;gap:12px">
-      <div class="row" style="justify-content:space-between">
-        <div>
-          <div style="font-size:12px;color:#94A3B8;font-weight:700">${ar ? "صافي أرباح المحل المعتمدة" : "Total Verified Shop Earnings"}${shop.cr_number ? " · " + esc(shop.cr_number) : ""}</div>
-          <div class="big" style="font-size:32px;color:#4ADE80;margin-top:4px">${totalEarned.toFixed(3)} <span style="font-size:15px;color:#fff">${t("omr")}</span></div>
-        </div>
-        <button class="pill" style="background:var(--o);color:#fff;padding:8px 14px;font-weight:800" onclick="S.sheet='deposit';render()">${ar ? "سحب الأرباح" : "Request Payout"}</button>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding-top:10px;border-top:1px solid rgba(255,255,255,.12);text-align:center">
-        <div><div style="font-size:17px;font-weight:900;color:#fff">${doneJobs.length}</div><div style="font-size:10.5px;color:#CBD5E1">${ar ? "طلبات منجزة" : "Jobs Done"}</div></div>
-        <div><div style="font-size:17px;font-weight:900;color:#FBBF24">${winRate}%</div><div style="font-size:10.5px;color:#CBD5E1">${ar ? "نسبة قبول العروض" : "Bid Win Rate"}</div></div>
-        <div><div style="font-size:17px;font-weight:900;color:#38BDF8">4.9</div><div style="font-size:10.5px;color:#CBD5E1">${ar ? "التقييم العام" : "Pro Rating"}</div></div>
-        <div><div style="font-size:17px;font-weight:900;color:#A78BFA">${doneJobs.length ? "4.2m" : "-"}</div><div style="font-size:10.5px;color:#CBD5E1">${ar ? "سرعة الاستجابة" : "Avg Response"}</div></div>
-      </div>
-    </div>
-
-    <!-- 7-Day Revenue Bar Chart -->
-    <div class="card" style="display:flex;flex-direction:column;gap:12px">
-      <div class="row" style="justify-content:space-between">
-        <div class="t1" style="font-size:16px">${ar ? "الأرباح اليومية (آخر 7 أيام)" : "7-Day Revenue Trend (OMR)"}</div>
-        <span class="pill ok" style="font-size:11px">${ar ? "مباشر" : "Live"}</span>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:end;height:140px;padding:12px 4px 0;border-bottom:1px solid #E5E7EB">
-        ${days.map(([dLbl, val, hPct]) => `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end">
-          <div style="font-size:10px;font-weight:800;color:#4B5563">${val}</div>
-          <div style="width:100%;max-width:28px;height:${hPct};background:linear-gradient(180deg,#FF5A00,#FB923C);border-radius:8px 8px 0 0"></div>
-          <div style="font-size:11px;font-weight:700;color:#6B7280;padding-bottom:6px">${dLbl}</div>
-        </div>`).join("")}
-      </div>
-    </div>
-
-    <!-- Worker & Fleet Utilization Breakdown -->
-    <div class="card" style="display:flex;flex-direction:column;gap:10px">
-      <div class="t1" style="font-size:16px">👷 ${ar ? "أداء العمال والمركبات تحت السجل" : "Shop Workers & Vehicle Performance"}</div>
-      ${(shop.workers || []).map((w, i) => {
-        const veh = (shop.vehicles && shop.vehicles[i % shop.vehicles.length]) || shop.vehicles[0];
-        return `<div class="row" style="padding:10px;border-radius:12px;background:#F9FAFB;border:1px solid #E5E7EB;gap:10px">
-          <img src="${esc(w.face_photo)}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--o)" />
-          <div class="sp">
-            <div class="t1" style="font-size:14px">${esc(w.name)} · <span style="font-size:11px;color:var(--o)">${esc(w.worker_id)}</span></div>
-            <div class="t2" style="font-size:11.5px">${esc(w.title)} · 🚗 ${esc(veh ? veh.plate : "N/A")}</div>
-          </div>
-          <div style="text-align:end">
-            <div style="font-weight:900;font-size:14px;color:#15803D">${24 - i * 6} ${ar ? "طلب" : "Jobs"}</div>
-            <div style="font-size:11px;color:#F59E0B;font-weight:800">★ 4.${9 - i}</div>
-          </div>
-        </div>`;
-      }).join("")}
-    </div>
-  </div>`;
-}
+/* ================= ADMIN ANALYTICS & SHOP KYC ================= */
 
 function aAnalyticsScreen() {
   const ar = L === "ar";
   const totalJobs = (S.jobs || []).length;
   const completedJobs = (S.jobs || []).filter(j => j.status === "COMPLETED").length;
   const openJobs = (S.jobs || []).filter(j => j.status === "OPEN").length;
-  const totalWorkers = (S.shops || []).reduce((acc, s) => acc + (s.workers ? s.workers.length : 0), 0);
-  const totalVehicles = (S.shops || []).reduce((acc, s) => acc + (s.vehicles ? s.vehicles.length : 0), 0);
+  const approvedShops = (S.shops || []).filter(s => s.kyc_status === "APPROVED").length;
   const gmv = (totalJobs * 18.5 + 1420).toFixed(3);
   const netRev = (Number(gmv) * 0.12).toFixed(3);
 
@@ -4713,7 +4523,7 @@ function aAnalyticsScreen() {
     <div class="card" style="background:linear-gradient(135deg,#111827,#1E3A8A);color:#fff;display:flex;flex-direction:column;gap:12px">
       <div class="row" style="justify-content:space-between">
         <div>
-          <div style="font-size:12px;color:#93C5FD;font-weight:800">${ar ? "إجمالي حجم المعاملات (Platform GMV)" : "Total Platform GMV (Salalah)"}</div>
+          <div style="font-size:12px;color:#93C5FD;font-weight:800">${ar ? "إجمالي حجم المعاملات" : "Total Platform GMV"}</div>
           <div class="big" style="font-size:32px;color:#4ADE80;margin-top:4px">${gmv} <span style="font-size:15px;color:#fff">OMR</span></div>
         </div>
         <div style="text-align:end">
@@ -4723,15 +4533,14 @@ function aAnalyticsScreen() {
       </div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding-top:10px;border-top:1px solid rgba(255,255,255,.15);text-align:center">
         <div><div style="font-size:17px;font-weight:900">${totalJobs}</div><div style="font-size:10px;color:#CBD5E1">Total Orders</div></div>
-        <div><div style="font-size:17px;font-weight:900;color:#4ADE80">${(S.shops || []).length}</div><div style="font-size:10px;color:#CBD5E1">CR Shops</div></div>
-        <div><div style="font-size:17px;font-weight:900;color:#38BDF8">${totalWorkers}</div><div style="font-size:10px;color:#CBD5E1">Verified Workers</div></div>
-        <div><div style="font-size:17px;font-weight:900;color:#FBBF24">${totalVehicles}</div><div style="font-size:10px;color:#CBD5E1">Fleet Vehicles</div></div>
+        <div><div style="font-size:17px;font-weight:900;color:#4ADE80">${completedJobs}</div><div style="font-size:10px;color:#CBD5E1">Completed</div></div>
+        <div><div style="font-size:17px;font-weight:900;color:#38BDF8">${openJobs}</div><div style="font-size:10px;color:#CBD5E1">Open</div></div>
+        <div><div style="font-size:17px;font-weight:900;color:#FBBF24">${approvedShops}</div><div style="font-size:10px;color:#CBD5E1">Approved CRs</div></div>
       </div>
     </div>
 
-    <!-- Category Share Breakdown -->
     <div class="card" style="display:flex;flex-direction:column;gap:10px">
-      <div class="t1" style="font-size:16px">📈 ${ar ? "توزيع الطلبات حسب القطاع" : "Order Volume by Service Vertical"}</div>
+      <div class="t1" style="font-size:16px">${ar ? "توزيع الطلبات حسب الخدمة" : "Orders by Category"}</div>
       ${catBreakdown.map(([lbl, pct, col]) => `<div style="display:flex;flex-direction:column;gap:4px">
         <div class="row" style="justify-content:space-between;font-size:12.5px;font-weight:700">
           <span>${lbl}</span>
@@ -4743,29 +4552,28 @@ function aAnalyticsScreen() {
       </div>`).join("")}
     </div>
 
-    <!-- Oman Business Platform KYC & Rate Limiter Telemetry -->
     <div class="two">
       <div class="card" style="display:flex;flex-direction:column;gap:6px">
-        <div style="font-size:12px;color:#6B7280;font-weight:700">🏛️ Oman Business Platform CRs</div>
-        <div class="big" style="font-size:24px;color:#15803D">${(S.shops || []).filter(s => s.kyc_status === "APPROVED").length} / ${(S.shops || []).length}</div>
+        <div style="font-size:12px;color:#6B7280;font-weight:700">Commercial Registration (CR)</div>
+        <div class="big" style="font-size:24px;color:#15803D">${approvedShops} / ${(S.shops || []).length}</div>
         <div style="font-size:11.5px;color:#4B5563">Approved Shops · ${(S.shops || []).filter(s => s.kyc_status === "CONFLICT").length} Conflicts</div>
       </div>
       <div class="card" style="display:flex;flex-direction:column;gap:6px">
-        <div style="font-size:12px;color:#6B7280;font-weight:700">⚡ Auto-Reposts & Rate Limits</div>
+        <div style="font-size:12px;color:#6B7280;font-weight:700">Auto-Reposts</div>
         <div class="big" style="font-size:24px;color:#FF5A00">${(S.autoRepostCount || 0) + 4}</div>
-        <div style="font-size:11.5px;color:#4B5563">Boosted Leads · ${S.rateLimitHits || 0} Throttled</div>
+        <div style="font-size:11.5px;color:#4B5563">Boosted Requests · ${S.rateLimitHits || 0} Limited</div>
       </div>
     </div>
   </div>`;
 }
 
-/* ================= ADMIN CR & SHOP KYC VERIFICATION CENTER + GOD-MODE CONTROLLER ================= */
+/* ================= ADMIN CR & SHOP KYC VERIFICATION CENTER ================= */
 function adminSetShopKycStatus(shopId, status) {
   const shop = (S.shops || []).find(s => s.shop_id === shopId);
   if (!shop) return;
   if (status === "CONFLICT") {
     const noteEl = document.getElementById("conflictNote_" + shopId);
-    const note = (noteEl && noteEl.value.trim()) || "CR activity mismatch or Worker ID photo unclear — please retake in-app and resend.";
+    const note = (noteEl && noteEl.value.trim()) || "Commercial Registration or shop signboard photo unclear — please retake and resubmit.";
     shop.conflict_note = note;
   } else {
     shop.conflict_note = "";
@@ -4776,22 +4584,22 @@ function adminSetShopKycStatus(shopId, status) {
     user_id: VENDOR_ID,
     kind: "ADMIN_ACTION",
     title: `Shop KYC ${status}: ${shop.shop_name}`,
-    body: status === "CONFLICT" ? `Action Needed: ${shop.conflict_note}` : `Your shop (${shop.cr_number}) status is now ${status}.`
+    body: status === "CONFLICT" ? `Action Needed: ${shop.conflict_note}` : `Your shop (${shop.cr_number || shop.shop_name}) status is now ${status}.`
   }).catch(() => {});
   render();
-  toast(`✓ Shop ${shopId} marked as ${status}`);
+  toast(`✓ Shop marked as ${status}`);
 }
 
 function aShopKycScreen() {
   const ar = L === "ar";
-  return `${bar(ar ? "اعتماد المحلات والشركاء" : "Shop & Partner Approvals", S.stack.length > 0)}
+  return `${bar(ar ? "اعتماد المحلات والشركاء" : "Shop & CR Approvals", S.stack.length > 0)}
   <div class="pad">
     <div class="card" style="background:linear-gradient(135deg,#0F172A,#1E293B);color:#fff;display:flex;flex-direction:column;gap:6px">
       <div class="row" style="justify-content:space-between">
-        <span style="font-size:16px;font-weight:900">🏛️ ${ar ? "اعتماد المحلات المسجلة" : "Shop Verification"}</span>
-        <span class="pill ok">${(S.shops || []).length} Shops</span>
+        <span style="font-size:16px;font-weight:900">${ar ? "اعتماد المحلات المسجلة" : "Shop Verification"}</span>
+        <span class="pill ok">${(S.shops || []).length} ${(S.shops || []).length === 1 ? "Shop" : "Shops"}</span>
       </div>
-      <div style="font-size:12px;color:#CBD5E1">${ar ? "مراجعة بيانات السجل التجاري ولوحة المحل وفريق العمل للموافقة أو طلب التعديل." : "Review business commercial registration, shop sign, and team members."}</div>
+      <div style="font-size:12px;color:#CBD5E1">${ar ? "مراجعة السجل التجاري واسم المحل وصورة اللوحة قبل التفعيل." : "Review Commercial Registration (CR), shop details, and signboard photo."}</div>
     </div>
 
     ${(S.shops || []).map(shop => `<div class="card" style="display:flex;flex-direction:column;gap:12px;border:2px solid ${shop.kyc_status === "APPROVED" ? "#86EFAC" : shop.kyc_status === "CONFLICT" ? "#FCA5A5" : "#FDE68A"}">
@@ -4799,52 +4607,23 @@ function aShopKycScreen() {
         <img src="${esc(shop.board_photo)}" style="width:74px;height:74px;border-radius:14px;object-fit:cover;border:2px solid var(--o);cursor:pointer" onclick="S.previewImg=this.src;render()" />
         <div class="sp">
           <div class="row" style="gap:6px;flex-wrap:wrap">
-            <span class="t1" style="font-size:16px">${esc(shop.shop_name)}</span>
+            <span class="t1" style="font-size:16px">${esc(shop.shop_name || "FixIt Partner Shop")}</span>
           </div>
-          <div style="font-size:12.5px;font-weight:800;color:var(--o);margin-top:2px">🏛️ ${esc(shop.cr_number)} · ${esc(shop.branch_name)}</div>
-          <div style="font-size:11.5px;color:#15803D;font-weight:700;margin-top:2px">✓ Oman Business Platform: ${esc(shop.obp_status || "PERMITTED")} (${(shop.trade_activities || []).length} Permitted Activities)</div>
+          <div style="font-size:12.5px;font-weight:800;color:var(--o);margin-top:2px">${shop.cr_number ? "CR: " + esc(shop.cr_number) + " · " : ""}${esc(shop.branch_name || "Salalah")}</div>
+          <div style="font-size:11.5px;color:#15803D;font-weight:700;margin-top:2px">✓ ${ar ? "التحقق التجاري:" : "CR Status:"} ${esc(shop.obp_status || "PENDING")}</div>
         </div>
         <span class="pill ${shop.kyc_status === "APPROVED" ? "ok" : shop.kyc_status === "CONFLICT" ? "rd" : "am"}">${esc(shop.kyc_status)}</span>
       </div>
 
-      <!-- Workers under this shop -->
-      <div style="background:#F9FAFB;border-radius:12px;padding:10px;border:1px solid #E5E7EB;display:flex;flex-direction:column;gap:8px">
-        <div style="font-size:12px;font-weight:900;color:#374151">👷 Workers Roster (${(shop.workers || []).length}) — Unique Worker Accounts & KYC</div>
-        ${(shop.workers || []).map(w => `<div class="row" style="gap:8px;background:#fff;padding:8px;border-radius:10px;border:1px solid #E5E7EB">
-          <img src="${esc(w.face_photo)}" style="width:40px;height:40px;border-radius:50%;object-fit:cover" onclick="S.previewImg=this.src;render()" />
-          <img src="${esc(w.id_passport_photo)}" style="width:52px;height:36px;border-radius:6px;object-fit:cover;border:1px solid #9CA3AF" onclick="S.previewImg=this.src;render()" />
-          <div class="sp">
-            <div style="font-size:13px;font-weight:800">${esc(w.name)} <span style="font-family:monospace;font-size:10.5px;color:#2563EB">(${esc(w.worker_id)})</span></div>
-            <div style="font-size:11px;color:#4B5563">${esc(w.title)} · ${esc(w.phone)} · ${esc(w.id_number)}</div>
-          </div>
-          <button class="pill ${w.certified ? "ok" : "am"}" style="font-size:10px" onclick="w.certified=!w.certified;syncShopsToCloud();render()">${w.certified ? "Certified ✓" : "Uncertified"}</button>
-        </div>`).join("")}
-      </div>
-
-      <!-- Vehicles under this shop -->
-      <div style="background:#F9FAFB;border-radius:12px;padding:10px;border:1px solid #E5E7EB;display:flex;flex-direction:column;gap:8px">
-        <div style="font-size:12px;font-weight:900;color:#374151">🚐 Registered Fleet Vehicles (${(shop.vehicles || []).length})</div>
-        <div class="two">
-          ${(shop.vehicles || []).map(v => `<div class="row" style="gap:8px;background:#fff;padding:8px;border-radius:10px;border:1px solid #E5E7EB">
-            <img src="${esc(v.photo)}" style="width:48px;height:38px;border-radius:6px;object-fit:cover" onclick="S.previewImg=this.src;render()" />
-            <div class="sp">
-              <div style="font-size:12px;font-weight:800" class="ell">${esc(v.model)}</div>
-              <div style="font-size:10.5px;font-family:monospace;font-weight:900;color:#B45309">Plate: ${esc(v.plate)}</div>
-            </div>
-          </div>`).join("")}
-        </div>
-      </div>
-
-      <!-- Admin Conflict Note Input & Action Buttons -->
       <div class="fld">
-        <label style="font-size:11.5px">${ar ? "ملاحظة التعارض / سبب طلب إعادة إرسال المستندات (تظهر للفني فوراً)" : "Conflict / Document Resubmission Note (sent to Vendor if flagged):"}</label>
-        <input id="conflictNote_${shop.shop_id}" class="tlbt-input" style="height:38px;font-size:12.5px" value="${esc(shop.conflict_note || "")}" placeholder="e.g. Worker #2 ID card blurry or Signboard CR not visible — please retake photo in-app">
+        <label style="font-size:11.5px">${ar ? "ملاحظة طلب التعديل (تظهر لصاحب المحل)" : "Correction Note (shown to Vendor if flagged):"}</label>
+        <input id="conflictNote_${shop.shop_id}" class="tlbt-input" style="height:44px;font-size:13px" value="${esc(shop.conflict_note || "")}" placeholder="${ar ? "مثال: رقم السجل التجاري غير واضح في صورة اللوحة" : "e.g. Signboard CR number not clear — please retake photo"}">
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
-        <button class="btn ok s" onclick="adminSetShopKycStatus('${shop.shop_id}','APPROVED')">✅ ${ar ? "اعتماد وتوثيق" : "Approve"}</button>
-        <button class="btn s" style="background:#F59E0B;color:#fff" onclick="adminSetShopKycStatus('${shop.shop_id}','CONFLICT')">⚠️ ${ar ? "طلب مستندات" : "Flag Conflict"}</button>
-        <button class="btn danger s" onclick="adminSetShopKycStatus('${shop.shop_id}','REJECTED')">✕ ${ar ? "رفض" : "Reject"}</button>
+        <button class="btn ok s" style="min-height:44px" onclick="adminSetShopKycStatus('${shop.shop_id}','APPROVED')">✅ ${ar ? "اعتماد" : "Approve"}</button>
+        <button class="btn s" style="min-height:44px;background:#F59E0B;color:#fff" onclick="adminSetShopKycStatus('${shop.shop_id}','CONFLICT')">⚠️ ${ar ? "طلب تعديل" : "Flag"}</button>
+        <button class="btn danger s" style="min-height:44px" onclick="adminSetShopKycStatus('${shop.shop_id}','REJECTED')">✕ ${ar ? "رفض" : "Reject"}</button>
       </div>
     </div>`).join("")}
   </div>`;
@@ -5323,31 +5102,20 @@ async function sendBid(jobId, amt) {
     render();
     return;
   }
-  const wSel = document.getElementById("bidWorkerSel");
-  const vSel = document.getElementById("bidVehicleSel");
-  const chosenWorker = (shop.workers || []).find(w => w.worker_id === (wSel && wSel.value)) || (shop.workers && shop.workers[0]) || DEFAULT_SHOPS_DATA[0].workers[0];
-  const chosenVehicle = (shop.vehicles || []).find(v => v.vehicle_id === (vSel && vSel.value)) || (shop.vehicles && shop.vehicles[0]) || DEFAULT_SHOPS_DATA[0].vehicles[0];
   const noteEl = document.getElementById("customBidNote");
   const bidNote = noteEl ? noteEl.value.trim() : "";
+  const ownerName = (S.profile && S.profile.full_name) || shop.shop_name || "FixIt Partner";
+  const ownerAvatar = (S.profile && S.profile.avatar) || PRO_AVATAR_PHOTOS[VENDOR_ID] || "";
   const dispatchMeta = {
     pct: 100,
     label: bidNote || "Full Service & 14-Day Warranty",
     shop_id: shop.shop_id,
     shop_name: shop.shop_name,
-    cr_number: shop.cr_number,
-    shop_pfp: shop.board_photo,
+    cr_number: shop.cr_number || "",
+    shop_pfp: shop.board_photo || ownerAvatar,
     is_pro_shop: shop.is_pro_shop !== false,
-    worker_id: chosenWorker.worker_id,
-    worker_name: chosenWorker.name,
-    worker_title: chosenWorker.title,
-    worker_phone: chosenWorker.phone,
-    worker_face: chosenWorker.face_photo,
-    worker_certified: chosenWorker.certified !== false,
-    vehicle_id: chosenVehicle.vehicle_id,
-    vehicle_model: chosenVehicle.model,
-    vehicle_color: chosenVehicle.color,
-    vehicle_plate: chosenVehicle.plate,
-    vehicle_photo: chosenVehicle.photo
+    owner_name: ownerName,
+    owner_avatar: ownerAvatar
   };
   S.sheet = null;
   const localBid = {
@@ -7923,13 +7691,13 @@ function accountScreen() {
 
     ${ROLE === "vendor" ? `<div class="mh">${ar ? "بيانات المحل" : "Business Profile"}</div>
     <div class="card" style="padding:0 16px">
-      ${row("box", ar ? "بيانات المحل وفريق العمل" : "Business Profile & Team", "", "go('shop_kyc')")}
-      ${row("star", ar ? "الأرباح والإحصائيات" : "Earnings & Analytics", t("omr"), "go('analytics')")}
+      ${row("box", ar ? "بيانات المحل والسجل التجاري" : "Shop & CR Verification", "", "go('shop_kyc')")}
     </div>` : ""}
 
     <div class="mh">${ar ? "الإعدادات والأمان" : "Settings & Security"}</div>
     <div class="card" style="padding:0 16px">
       ${ROLE !== "admin" ? row("user", ar ? "تبديل الحساب / التحقق" : "Phone Verification & Sign In", esc(getMyPhone()), "openAuthScreen('welcome')") : ""}
+      ${(ROLE !== "admin" && typeof window !== "undefined" && window.FixItNative && typeof window.FixItNative.canUseBiometric === "function") ? row("fingerprint", ar ? "البصمة والوجه" : "Fingerprint & Face", isBiometricLoginReady() ? (ar ? "مفعّل" : "Enabled") : (ar ? "تفعيل" : "Enable"), "toggleBiometricLogin()") : ""}
       ${row("settings", ar ? "إعدادات التطبيق" : "Settings", "", "go('settings')")}
       ${row("help", ar ? "مركز المساعدة" : "Get Help", "", "go('tickets')")}
       ${row("globe", t("language"), ar ? "العربية" : "English", "setLang(L==='ar'?'en':'ar')")}
@@ -8108,6 +7876,7 @@ function settingsScreen() {
     <div class="mh">${ar ? "الحساب، المحفظة والدفع" : "Account, Wallet & Payments"}</div>
     <div class="card" style="padding:0 16px">
       <button class="li" onclick="go('account_info')"><div class="ico">${I("user")}</div><div class="sp"><div class="t1">${ar ? "معلومات الحساب" : "Account info"}</div><div class="t2">${esc(S.profile.full_name || "Profile")}</div></div>${I("next","flip")}</button>
+      ${(ROLE !== "admin" && typeof window !== "undefined" && window.FixItNative && typeof window.FixItNative.canUseBiometric === "function") ? `<div class="li"><div class="ico">${I("fingerprint")}</div><div class="sp"><div class="t1">${ar ? "الدخول بالبصمة والوجه" : "Fingerprint & Face Login"}</div><div class="t2">${isBiometricLoginReady() ? (ar ? "مفعّل على هذا الجهاز" : "Active on this device") : (isBiometricHardwareAvailable() ? (ar ? "دخول سريع وآمن لحسابك" : "Fast sign-in on this device") : (ar ? "يتطلب تفعيل قفل الشاشة أولاً" : "Requires device lock screen"))}</div></div><button class="tog ${isBiometricLoginReady() ? "on" : ""}" onclick="toggleBiometricLogin()" ${window._biometricBusy ? "disabled" : ""} aria-label="${ar ? "الدخول بالبصمة والوجه" : "Fingerprint & Face Login"}"></button></div>` : ""}
       <button class="li" onclick="go('addresses')"><div class="ico">${I("pin")}</div><div class="sp"><div class="t1">${ar ? "العناوين المحفوظة" : "Saved addresses"}</div><div class="t2">${esc((defAddr() || {}).label || "Location")}</div></div>${I("next","flip")}</button>
       <button class="li" onclick="go('wallet')"><div class="ico" style="background:var(--o2);color:var(--o)">${I("wallet")}</div><div class="sp"><div class="t1">${ar ? "المحفظة وسجل الفواتير" : "Wallet & Billing History"}</div><div class="t2">${fmtOmr((S.wallet && S.wallet.balance) || 0)} ${t("omr")}</div></div>${I("next","flip")}</button>
       <button class="li" onclick="S.paypalPurpose='CONNECT';S.sheet='paypal';render()"><div class="ico" style="background:#E0F2FE;color:#003087;font-weight:900;font-style:italic">P</div><div class="sp"><div class="t1">PayPal & FixIt Pro</div><div class="t2">${S.profile.isProMember ? (ar ? "نشط" : "Active") : esc(S.profile.paypal_email || S.profile.email || "PayPal")}</div></div>${I("next","flip")}</button>
@@ -9360,7 +9129,7 @@ function receiptScreen() {
 /* ================= TALABAT VENDOR PRO SCREENS (DISTANCE RADAR, AUTO-TRANSLATED LEADS, LIVE CAMERA VERIFICATION) ================= */
 function vJobs() {
   const curShop = getActiveShop();
-  if (S.onboardingPreviewGate || (curShop && curShop.kyc_status !== "APPROVED")) {
+  if (curShop && curShop.kyc_status !== "APPROVED") {
     return vShopKycScreen(true);
   }
   const ar = L === "ar";
@@ -9455,27 +9224,12 @@ function vBidSheet() {
   return `<div class="sheet" onclick="if(event.target===this){S.sheet=null;render()}"><div><div class="grab"></div>
     <div class="row"><div class="ico" style="background:${ccol(c.id)};color:#fff">${I(c.icon)}</div><div class="sp"><div class="t1" style="font-size:19px">${c.name} · ${sid(j)}</div><div class="t2" style="font-size:12px">${esc(displayTranslated(cleanDesc(j.description)))}</div></div><button class="ib" onclick="S.sheet=null;render()">${I("x")}</button></div>
 
-    <!-- Select Dispatched Worker & Fleet Vehicle for Customer Visibility -->
-    <div style="background:#F8FAFC;border:1px solid #CBD5E1;border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:8px">
-      <div style="font-size:11.5px;font-weight:800;color:#1E3A8A">🏪 ${esc(shop.shop_name)} (${esc(shop.cr_number)}) — ${ar ? "حدد الفني والمركبة المتجهة للعميل:" : "Select Dispatched Worker & Vehicle:"}</div>
-      <div class="two">
-        <div>
-          <label style="font-size:11px;color:#4B5563;font-weight:700">👷 ${ar ? "الفني المكلف" : "Assigned Worker"}</label>
-          <select id="bidWorkerSel" class="tlbt-input" style="height:38px;font-size:12px;margin-top:2px;padding:0 8px">
-            ${(shop.workers || []).map(w => `<option value="${esc(w.worker_id)}">${esc(w.name)} (${esc(w.title)})</option>`).join("")}
-          </select>
-        </div>
-        <div>
-          <label style="font-size:11px;color:#4B5563;font-weight:700">🚐 ${ar ? "المركبة واللوحة" : "Assigned Vehicle & Plate"}</label>
-          <select id="bidVehicleSel" class="tlbt-input" style="height:38px;font-size:12px;margin-top:2px;padding:0 8px">
-            ${(shop.vehicles || []).map(v => `<option value="${esc(v.vehicle_id)}">${esc(v.plate)} · ${esc(v.model)}</option>`).join("")}
-          </select>
-        </div>
-      </div>
-    </div>
+    ${shop && shop.shop_name ? `<div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:10px 12px;font-size:12.5px;font-weight:700;color:#0F172A">
+      ${esc(shop.shop_name)}${shop.cr_number ? ` · CR ${esc(shop.cr_number)}` : ""}
+    </div>` : ""}
 
     <div class="t2" style="font-weight:700">${ar ? "اختر قيمة العرض السريع (ر.ع):" : "Quick Bid Amount (OMR):"}</div>
-    <div class="grid">${[5,8,10,12,15,18,20,25].map(a => `<button class="chip" style="height:50px;font-size:17px;font-weight:800" onclick="sendBid('${j.job_id}',${a})">${a} OMR</button>`).join("")}</div>
+    <div class="grid">${[5,8,10,12,15,18,20,25].map(a => `<button class="chip" style="min-height:48px;font-size:17px;font-weight:800" onclick="sendBid('${j.job_id}',${a})">${a} OMR</button>`).join("")}</div>
     <div class="row" style="gap:8px;margin-top:4px">
       <input id="customBidInp" type="number" step="0.5" placeholder="${ar ? "أو أدخل مبلغاً مخصصاً بالريال..." : "Or enter custom OMR amount..."}" class="tlbt-input" style="flex:1;height:48px">
       <button class="btn s" style="width:auto;padding:0 20px;height:48px" onclick="const v=Number((document.getElementById('customBidInp')||{}).value||0);if(v>0)sendBid('${j.job_id}',v);else toast('Enter valid OMR amount')">${ar ? "إرسال" : "Send Bid"}</button>
@@ -10093,10 +9847,10 @@ function aEscrow() {
 /* ---------- router ---------- */
 const NAV = {
   consumer: [["home","home","home"],["orders","list","orders"],["__post__","plus","post"],["chats","chat","chats"],["account","user","account"]],
-  vendor: [["jobs","radar","jobs"],["shop","box","Shop KYC"],["analytics","star","Analytics"],["chats","chat","chats"],["wallet","wallet","wallet"],["account","user","account"]],
+  vendor: [["jobs","radar","jobs"],["shop","box","Shop KYC"],["chats","chat","chats"],["wallet","wallet","wallet"],["account","user","account"]],
   admin: [["overview","grid","overview"],["shops","box","Shop KYC"],["analytics","star","Analytics"],["orders","list","orders"],["users","users","users"],["escrow","wallet","escrow"]]
 };
-const APP_VERSION_CODE = 166;
+const APP_VERSION_CODE = 167;
 let _appControlTimer = null;
 function checkAppControlStatus() {
   fetch(`https://fixit-now.xyz/api/app/status?role=${encodeURIComponent(ROLE || "consumer")}`)
@@ -10163,7 +9917,7 @@ function updateGateScreen() {
 
 function aadsSlotHtml(extraStyle) {
   if (typeof navigator !== "undefined" && navigator.onLine === false) return "";
-  return `<div class="fx-ad-slot" style="margin:12px 16px;border-radius:12px;overflow:hidden;background:transparent;${extraStyle || ""}"><iframe data-aa="2461953" src="https://fixit-now.xyz/ad.html" loading="lazy" scrolling="no" frameborder="0" style="width:100%;height:56px;border:0;overflow:hidden;display:block;background:transparent;"></iframe></div>`;
+  return `<div class="fx-ad-slot" style="margin:12px 16px;border-radius:12px;overflow:hidden;border:1px solid #E5E7EB;background:#FFFFFF;min-height:80px;${extraStyle || ""}"><iframe data-aa="2461953" src="https://acceptable.a-ads.com/2461953/?size=Adaptive" referrerpolicy="no-referrer-when-downgrade" loading="lazy" scrolling="no" frameborder="0" style="width:100%;height:80px;border:0;overflow:hidden;display:block;background:#FFFFFF;"></iframe></div>`;
 }
 
 function screen() {
@@ -10181,7 +9935,7 @@ function screen() {
   let html = "";
   if (s === "wallet") html = walletScreen();
   else if (s === "shop_kyc") html = ROLE === "admin" ? aShopKycScreen() : vShopKycScreen(false);
-  else if (s === "analytics") html = ROLE === "admin" ? aAnalyticsScreen() : vAnalyticsScreen();
+  else if (s === "analytics") html = ROLE === "admin" ? aAnalyticsScreen() : vJobs();
   else if (s === "job") html = ROLE === "consumer" ? cJob() : ROLE === "vendor" ? vJob() : aJob();
   else if (s === "book") html = bookScreen();
   else if (s === "checkout") html = checkoutScreen();
@@ -10208,13 +9962,13 @@ function screen() {
   else {
     const m = {
       consumer: { home: cHome, orders: cOrders, wallet: walletScreen, chats: chatsList, account: accountScreen },
-      vendor: { jobs: vJobs, shop: () => vShopKycScreen(false), analytics: vAnalyticsScreen, chats: chatsList, wallet: walletScreen, account: accountScreen },
+      vendor: { jobs: vJobs, shop: () => vShopKycScreen(false), chats: chatsList, wallet: walletScreen, account: accountScreen },
       admin: { overview: aOverview, shops: aShopKycScreen, analytics: aAnalyticsScreen, orders: aOrders, users: aUsers, escrow: aEscrow, support: ticketsScreen }
     }[ROLE];
     html = (m[S.tab] || Object.values(m)[0])();
   }
   const adScreens = new Set(["wallet", "job", "job_chat", "addresses", "coupons", "tickets", "notifs", "settings", "about", "legal"]);
-  const adTabs = new Set(["home", "orders", "jobs", "chats", "wallet", "account", "analytics"]);
+  const adTabs = new Set(["home", "orders", "jobs", "chats", "wallet", "account"]);
   if (ROLE !== "admin" && ((s && adScreens.has(s)) || (!s && adTabs.has(S.tab)))) {
     html += aadsSlotHtml();
   }
@@ -10243,7 +9997,7 @@ function render() {
   const nav = (S.stack.length > 0 || isAuthScreen) ? "" : `<nav class="nav">${NAV[ROLE].map(n => n[0] === "__post__"
     ? `<button class="nav-plus" onclick="openBookPage()" aria-label="Order Service"><span class="nav-plus-ic">+</span><span>${L === "ar" ? "طلب" : "Order"}</span></button>`
     : `<button class="${S.tab === n[0] ? "on" : ""}" onclick="tab('${n[0]}')">${I(n[1])}${t(n[2])}${n[0] === "chats" && u ? `<span class="badge">${u}</span>` : ""}${ROLE === "admin" && n[0] === "orders" && S.jobs.filter(j => j.status === "OPEN").length ? `<span class="badge">${S.jobs.filter(j => j.status === "OPEN").length}</span>` : ""}</button>`).join("")}</nav>`;
-  const sheet = S.sheet === "country_picker" ? countryPickerSheet() : S.sheet === "book" ? cBookSheet() : S.sheet === "bid" ? vBidSheet() : S.sheet === "pro_profile" ? proProfileSheet() : (S.sheet === "address" || S.sheet === "loc_picker") ? locPickerSheet() : S.sheet === "ticket" ? ticketSheet() : S.sheet === "deposit" ? depositSheet() : S.sheet === "profile" ? profileSheet() : (S.sheet === "card" || S.sheet === "paypal") ? paypalSheet() : (S.sheet === "tx_detail" || S.sheet === "txDetail") ? txDetailSheet() : S.sheet === "order_help" ? orderHelpSheet() : S.sheet === "help_topic" ? helpTopicSheet() : S.sheet === "cancel_sub" ? cancelSubSheet() : S.sheet === "google_auth" ? googleAuthSheet() : S.sheet === "admin_user_edit" ? adminUserEditSheet() : "";
+  const sheet = S.sheet === "country_picker" ? countryPickerSheet() : S.sheet === "book" ? cBookSheet() : S.sheet === "bid" ? vBidSheet() : S.sheet === "pro_profile" ? proProfileSheet() : (S.sheet === "address" || S.sheet === "loc_picker") ? locPickerSheet() : S.sheet === "ticket" ? ticketSheet() : S.sheet === "deposit" ? depositSheet() : S.sheet === "profile" ? profileSheet() : (S.sheet === "card" || S.sheet === "paypal") ? paypalSheet() : (S.sheet === "tx_detail" || S.sheet === "txDetail") ? txDetailSheet() : S.sheet === "order_help" ? orderHelpSheet() : S.sheet === "help_topic" ? helpTopicSheet() : S.sheet === "cancel_sub" ? cancelSubSheet() : S.sheet === "google_auth" ? googleAuthSheet() : S.sheet === "biometric_optin" ? biometricOptInSheet() : S.sheet === "admin_user_edit" ? adminUserEditSheet() : "";
   const banner = S.pushBanner ? `<div class="push-banner" onclick="openNotifLink(S.pushBanner)"><div class="ic">${I("bell")}</div><div class="sp"><div style="font-weight:800;font-size:14px">${esc(S.pushBanner.title)}</div><div style="font-size:12px;opacity:.85" class="ell">${esc(S.pushBanner.body)}</div></div><span class="pill" style="background:var(--o);color:#fff">${L === "ar" ? "عرض" : "Open"}</span></div>` : "";
   const pendingQueueCount = Array.isArray(S.bgQueue) ? S.bgQueue.length : 0;
   const offlineBanner = (!isAuthScreen && (S.offline || pendingQueueCount > 0)) ? `<div class="fx-offline-bar" role="status"><div class="row" style="gap:8px;flex:1;min-width:0"><span class="fx-offline-dot ${S.offline ? "off" : "sync"}"></span><div class="sp" style="min-width:0"><div style="font-size:12.5px;font-weight:800;color:#1F2937" class="ell">${S.offline ? (L === "ar" ? "وضع عدم الاتصال · تصفح بياناتك المحفوظة" : "Offline · Viewing saved data") : (L === "ar" ? `جاري مزامنة ${pendingQueueCount} تحديثات...` : `Syncing ${pendingQueueCount} saved update(s)...`)}</div></div></div><button class="fx-offline-btn" onclick="retryOnlineSync()">${L === "ar" ? "تحديث" : "Retry"}</button></div>` : "";
@@ -10372,11 +10126,34 @@ hydrateFromIndexedDB().then(() => {
   if (ROLE === "admin" && (!S.auth || !S.auth.loggedIn || !S.auth.sessionCode)) {
     tryAutoTrustedAdminLogin();
   }
+  const nativeOAuthUri = (window.FixItNative && typeof window.FixItNative.consumePendingOAuthUri === "function")
+    ? window.FixItNative.consumePendingOAuthUri()
+    : "";
+  const urlHref = typeof window !== "undefined" && window.location ? window.location.href : "";
+  const hasWebOAuth = !window.FixItNative && (
+    urlHref.includes("pending_token=") ||
+    urlHref.includes("access_token=") ||
+    urlHref.includes("id_token=") ||
+    (urlHref.includes("error=") && (urlHref.includes("role=") || urlHref.includes("error_description=") || urlHref.includes("oauth")))
+  );
+  if (nativeOAuthUri && typeof window.onInAppGoogleOAuthCallback === "function") {
+    window.onInAppGoogleOAuthCallback(nativeOAuthUri);
+  } else if (hasWebOAuth && typeof window.onInAppGoogleOAuthCallback === "function") {
+    window.onInAppGoogleOAuthCallback(urlHref);
+  }
   sync();
   sendSessionHeartbeat();
 });
-setInterval(sync, 2500);
-setInterval(sendSessionHeartbeat, 30000);
+setInterval(() => {
+  if ((typeof document === "undefined" || !document.hidden) && S.auth && S.auth.loggedIn && S.auth.sessionCode) {
+    sync();
+  }
+}, 10000);
+setInterval(() => {
+  if ((typeof document === "undefined" || !document.hidden) && S.auth && S.auth.loggedIn && S.auth.sessionCode) {
+    sendSessionHeartbeat();
+  }
+}, 60000);
 
 /* ================= WEB ROLE SWITCHER & GESTURE LOCKS ================= */
 function switchRole(newRole) {

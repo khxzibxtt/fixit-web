@@ -19,6 +19,24 @@ function sha256Hex(val) {
   return crypto.createHash("sha256").update(String(val || "")).digest("hex");
 }
 
+function isQuietPollingAudit(item) {
+  if (!item) return false;
+  if (item.event === "SESSION_HEARTBEAT") return true;
+  if (item.event === "DB_PROXY_REQUEST" && String(item.method || "").toUpperCase() === "GET" && Number(item.status || 200) < 400) {
+    const p = String(item.path || "");
+    if (
+      p.startsWith("/api/app/notifications") ||
+      p.startsWith("/api/app/bootstrap") ||
+      p.startsWith("/api/app/rest/") ||
+      p.startsWith("/api/app/audit-logs") ||
+      p.startsWith("/api/app/status")
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function recordAuditEvent(entry) {
   const item = {
     at: new Date().toISOString(),
@@ -32,6 +50,7 @@ function recordAuditEvent(entry) {
     status: entry.status || 200,
     note: entry.note || ""
   };
+  if (isQuietPollingAudit(item)) return item;
   auditBuffer.unshift(item);
   if (auditBuffer.length > MAX_AUDIT_LOGS) auditBuffer.length = MAX_AUDIT_LOGS;
   if (process.env.NODE_ENV !== "test") {
@@ -247,5 +266,6 @@ module.exports = {
   recordAuditEvent,
   getRecentAuditLogs,
   isTrustedAdminIp,
-  isValidAdminAccessCode
+  isValidAdminAccessCode,
+  isQuietPollingAudit
 };

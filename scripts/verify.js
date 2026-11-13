@@ -5,6 +5,7 @@
  */
 
 const assert = require("assert");
+const express = require("express");
 const net = require("net");
 const path = require("path");
 const { spawn } = require("child_process");
@@ -35,6 +36,9 @@ const {
   getRotatingMicroReward,
   evaluateMonthlyStreak
 } = require("../src/services/rewardEngine");
+const { formatWhatsAppOtpMessage } = require("../src/services/otp");
+const { createSession, isQuietPollingAudit } = require("../src/services/authSession");
+const { createAppApiRouter } = require("../src/routes/appApi");
 
 const EMOJI_RE = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
 const PRICE_RE = /\b\d+(?:\.\d+)?\s*(?:OMR|ر\.ع\.|Baisa|﷼)\b/i;
@@ -135,7 +139,7 @@ async function run() {
   try {
     // Phase A: Full functional & content checks
     serverA = await startServer({
-      TEST_RATE_MAX: "80",
+      TEST_RATE_MAX: "120",
       TEST_IP_RATE_MAX: "30",
       TEST_SUPPORT_RATE_MAX: "10",
       TEST_OTP_RATE_MAX: "10"
@@ -613,6 +617,186 @@ async function run() {
       assert(adminBad.status === 403 || adminBad.status === 503, `Expected 403/503 on invalid admin login, got ${adminBad.status}`);
 
       ok("App BFF strict phone validation, cooldowns & session security guards verified");
+    }
+
+    // 11. Ad Frame Headers, App Link Role Routing, Audit Filtering, WA OTP & Biometrics
+    {
+      // Render /ad.html must allow WebView framing without X-Frame-Options blocking
+      const adRes = await fetch(`${base}/ad.html`);
+      assert.strictEqual(adRes.status, 200, `Expected /ad.html 200, got ${adRes.status}`);
+      assert.strictEqual(adRes.headers.get("x-frame-options"), null, "/ad.html must NOT set X-Frame-Options header");
+      const adCsp = adRes.headers.get("content-security-policy") || "";
+      assert(adCsp.includes("frame-ancestors *"), `/ad.html CSP must allow frame-ancestors *, got: ${adCsp}`);
+      assert.strictEqual(adRes.headers.get("cross-origin-resource-policy"), "cross-origin");
+
+      // /auth/callback must route vendor and consumer to their respective app schemes
+      const vendorCb = await fetch(`${base}/auth/callback?role=vendor&pending_token=tok_v123`);
+      assert.strictEqual(vendorCb.status, 200);
+      const vendorCbHtml = await vendorCb.text();
+      assert(vendorCbHtml.includes("fixitvendor://auth/callback"), "Vendor callback must target fixitvendor://");
+      assert(vendorCbHtml.includes("com.khxzi.fixitvendor"), "Vendor callback must reference com.khxzi.fixitvendor");
+      assert(vendorCbHtml.includes("tok_v123"), "Vendor callback must preserve pending_token");
+
+      const consumerCb = await fetch(`${base}/auth/callback?role=consumer&pending_token=tok_c123`);
+      assert.strictEqual(consumerCb.status, 200);
+      const consumerCbHtml = await consumerCb.text();
+      assert(consumerCbHtml.includes("fixit://auth/callback"), "Consumer callback must target fixit://");
+      assert(consumerCbHtml.includes("com.khxzi.fixit"), "Consumer callback must reference com.khxzi.fixit");
+      assert(consumerCbHtml.includes("tok_c123"), "Consumer callback must preserve pending_token");
+
+      // /api/app/status version code check
+      const appStatusRes = await fetch(`${base}/api/app/status`);
+      assert.strictEqual(appStatusRes.status, 200);
+      const appStatusJson = await appStatusRes.json();
+      assert.strictEqual(appStatusJson.latestVersionCode, 167, "latestVersionCode must match v3.3.7 (167)");
+
+      // Quiet polling audit log filter check
+      assert.strictEqual(isQuietPollingAudit({ event: "SESSION_HEARTBEAT", method: "POST", path: "/api/auth/session/heartbeat", status: 200 }), true);
+      assert.strictEqual(isQuietPollingAudit({ event: "DB_PROXY_REQUEST", method: "GET", path: "/api/app/notifications", status: 200 }), true);
+      assert.strictEqual(isQuietPollingAudit({ event: "DB_PROXY_REQUEST", method: "GET", path: "/api/app/bootstrap", status: 200 }), true);
+      assert.strictEqual(isQuietPollingAudit({ event: "SESSION_CREATED", method: "POST", path: "/api/auth/session", status: 201 }), false);
+      assert.strictEqual(isQuietPollingAudit({ event: "DB_PROXY_REQUEST", method: "GET", path: "/api/app/notifications", status: 401 }), false);
+      assert.strictEqual(isQuietPollingAudit({ event: "DB_PROXY_REQUEST", method: "POST", path: "/api/app/rest/jobs", status: 201 }), false);
+
+      // Bilingual WhatsApp OTP formatting check (Arabic first, dashed divider, English second, bold)
+      const waBody = formatWhatsAppOtpMessage("482910");
+      const divIdx = waBody.indexOf("────────────────────");
+      const arIdx = waBody.indexOf("رمز التحقق");
+      const enIdx = waBody.indexOf("Verification Code");
+      assert(divIdx > 0 && arIdx >= 0 && arIdx < divIdx && enIdx > divIdx, "WA OTP must be Arabic first, divider, English second");
+      assert(waBody.includes("*482910*"), "WA OTP must highlight code with WhatsApp bold asterisks");
+
+      // Live serverA biometric unauthenticated & validation guards
+      const bioNoAuth = await fetch(`${base}/api/auth/biometric/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ deviceId: "dev-unauth" })
+      });
+      assert.strictEqual(bioNoAuth.status, 401, "Unauthenticated biometric register must return 401");
+
+      const bioBadLogin = await fetch(`${base}/api/auth/biometric/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: "u" })
+      });
+      assert.strictEqual(bioBadLogin.status, 400, "Invalid biometric login payload must return 400");
+
+      const bioMissingLogin = await fetch(`${base}/api/auth/biometric/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: "usr-missing-1", biometricToken: "b".repeat(64), role: "consumer" })
+      });
+      assert.strictEqual(bioMissingLogin.status, 401, "Unknown biometric token must return 401");
+
+      // Authenticated end-to-end biometric register -> login -> bad token/role -> revoke -> re-login
+      const bioApp = express();
+      bioApp.use(express.json());
+      bioApp.use(createAppApiRouter());
+      const bioServer = await new Promise((resolve, reject) => {
+        const srv = bioApp.listen(0, "127.0.0.1", () => resolve(srv));
+        srv.on("error", reject);
+      });
+      try {
+        const bioPort = bioServer.address().port;
+        const bioBase = `http://127.0.0.1:${bioPort}`;
+        const regSession = await createSession({
+          userId: "usr-bio-verify-1",
+          role: "consumer",
+          userAgent: "verify-suite",
+          ip: "127.0.0.1",
+          deviceId: "dev-bio-1"
+        });
+
+        const regRes = await fetch(`${bioBase}/api/auth/biometric/register`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-FixIt-Session": regSession.sessionCode,
+            "X-FixIt-Role": "consumer"
+          },
+          body: JSON.stringify({ deviceId: "dev-bio-1" })
+        });
+        assert.strictEqual(regRes.status, 200, "Biometric register must succeed");
+        const regJson = await regRes.json();
+        assert.strictEqual(regJson.ok, true);
+        assert.strictEqual(regJson.userId, "usr-bio-verify-1");
+        assert.strictEqual(typeof regJson.biometricToken, "string");
+        assert.strictEqual(regJson.biometricToken.length, 64);
+
+        const wrongRoleRes = await fetch(`${bioBase}/api/auth/biometric/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: "usr-bio-verify-1",
+            biometricToken: regJson.biometricToken,
+            keyId: regJson.keyId,
+            role: "vendor",
+            deviceId: "dev-bio-1"
+          })
+        });
+        assert.strictEqual(wrongRoleRes.status, 401, "Consumer biometric token must not log into vendor role");
+
+        const badTokenRes = await fetch(`${bioBase}/api/auth/biometric/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: "usr-bio-verify-1",
+            biometricToken: "f".repeat(64),
+            keyId: regJson.keyId,
+            role: "consumer",
+            deviceId: "dev-bio-1"
+          })
+        });
+        assert.strictEqual(badTokenRes.status, 401, "Wrong biometric token must be rejected");
+
+        const loginRes = await fetch(`${bioBase}/api/auth/biometric/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: "usr-bio-verify-1",
+            biometricToken: regJson.biometricToken,
+            keyId: regJson.keyId,
+            role: "consumer",
+            deviceId: "dev-bio-1"
+          })
+        });
+        assert.strictEqual(loginRes.status, 200, "Valid biometric login must succeed");
+        const loginJson = await loginRes.json();
+        assert.strictEqual(loginJson.ok, true);
+        assert.strictEqual(loginJson.biometricVerified, true);
+        assert.strictEqual(loginJson.needsProfileCompletion, false);
+        assert(loginJson.sessionCode && loginJson.sessionCode !== regSession.sessionCode, "Biometric login must issue a fresh sessionCode");
+
+        const revokeRes = await fetch(`${bioBase}/api/auth/biometric/revoke`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-FixIt-Session": loginJson.sessionCode,
+            "X-FixIt-Role": "consumer"
+          },
+          body: JSON.stringify({ deviceId: "dev-bio-1" })
+        });
+        assert.strictEqual(revokeRes.status, 200);
+        const revokeJson = await revokeRes.json();
+        assert.strictEqual(revokeJson.remaining, 0);
+
+        const afterRevokeRes = await fetch(`${bioBase}/api/auth/biometric/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: "usr-bio-verify-1",
+            biometricToken: regJson.biometricToken,
+            keyId: regJson.keyId,
+            role: "consumer",
+            deviceId: "dev-bio-1"
+          })
+        });
+        assert.strictEqual(afterRevokeRes.status, 401, "Revoked biometric token must fail login");
+      } finally {
+        await new Promise(resolve => bioServer.close(() => resolve()));
+      }
+
+      ok("Ad framing headers, OAuth role routing, audit noise filter, bilingual WA OTP & biometric lifecycle verified");
     }
 
     await serverA.stop();

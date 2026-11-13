@@ -29,7 +29,9 @@ function createApp() {
   // Baseline HTTP security headers
   app.use((req, res, next) => {
     res.setHeader("X-Content-Type-Options", "nosniff");
-    res.setHeader("X-Frame-Options", "SAMEORIGIN");
+    if (req.path !== "/ad.html") {
+      res.setHeader("X-Frame-Options", "SAMEORIGIN");
+    }
     res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
     next();
   });

@@ -168,6 +168,30 @@ function getRequestOrigin(req) {
   return `${proto}://${host}`;
 }
 
+function getGoogleOAuthOrigin(req) {
+  if (process.env.PUBLIC_ORIGIN) {
+    return String(process.env.PUBLIC_ORIGIN).replace(/\/+$/, "");
+  }
+  const rawHost = String(req.get("x-forwarded-host") || req.get("host") || "").split(",")[0].trim().toLowerCase();
+  if (!rawHost || rawHost.includes("fixit-now.xyz") || rawHost.includes("onrender.com")) {
+    return "https://fixit-now.xyz";
+  }
+  return getRequestOrigin(req);
+}
+
+function parseOAuthState(rawState) {
+  try {
+    const parsed = JSON.parse(base64UrlDecode(String(rawState || "").trim()));
+    if (parsed && typeof parsed === "object") {
+      return {
+        role: String(parsed.role || "consumer").trim().toLowerCase() || "consumer",
+        web: Number(parsed.web) === 1
+      };
+    }
+  } catch (_) {}
+  return { role: "consumer", web: false };
+}
+
 function phoneRateKey(req) {
   const ip = getClientIp(req);
   const b = req.body && typeof req.body === "object" ? req.body : {};
@@ -450,10 +474,16 @@ function createAppApiRouter() {
       };
     }
 
-    const existingSettings = await upsertUserSettings(userRow.user_id, {
-      auth_provider: (await getUserSettings(userRow.user_id)).auth_provider || "phone",
+    const curSettings = await getUserSettings(userRow.user_id);
+    const hasRealName = Boolean(userRow && !isPlaceholderName(userRow.full_name));
+    const settingsPatch = {
+      auth_provider: curSettings.auth_provider || "phone",
       phone_verified_at: nowIso
-    });
+    };
+    if (!isNewUser && hasRealName && !curSettings.onboarding_completed_at) {
+      settingsPatch.onboarding_completed_at = nowIso;
+    }
+    const existingSettings = await upsertUserSettings(userRow.user_id, settingsPatch);
     const wallet = await ensureWalletForUser(userRow.user_id);
     const sess = await createSession({
       userId: userRow.user_id,
@@ -463,7 +493,7 @@ function createAppApiRouter() {
       deviceId: b.deviceId || ""
     });
 
-    const needsProfileCompletion = isNewUser || isPlaceholderName(userRow.full_name) || !existingSettings.onboarding_completed_at;
+    const needsProfileCompletion = isNewUser || !hasRealName;
     return res.json({
       ok: true,
       isNewUser,
@@ -480,9 +510,10 @@ function createAppApiRouter() {
   // 2. GOOGLE OAUTH START / CALLBACK / EXCHANGE
   // =========================================================================
   router.get("/api/auth/google/start", authVerifyLimiter, (req, res) => {
-    const role = String(req.query.role || "consumer").toLowerCase();
-    const origin = getRequestOrigin(req);
-    const state = base64UrlEncode(JSON.stringify({ role, ts: Date.now() }));
+    const role = String(req.query.role || "consumer").trim().toLowerCase() || "consumer";
+    const isWebClient = String(req.query.web || "").trim() === "1";
+    const origin = getGoogleOAuthOrigin(req);
+    const state = base64UrlEncode(JSON.stringify({ role, web: isWebClient ? 1 : 0, ts: Date.now() }));
 
     if (GOOGLE_CLIENT_SECRET && process.env.ENABLE_DIRECT_GOOGLE_OAUTH === "1") {
       const cb = `${origin}/api/auth/google/callback`;
@@ -499,17 +530,27 @@ function createAppApiRouter() {
     }
 
     const sbUrl = getSupabaseUrl();
-    const redirectTo = `${origin}/auth/callback`;
+    const redirectTo = isWebClient
+      ? `${origin}/app?role=${encodeURIComponent(role)}`
+      : `${origin}/auth/callback?role=${encodeURIComponent(role)}`;
     return res.redirect(302, `${sbUrl}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirectTo)}`);
   });
 
   router.get("/api/auth/google/callback", authVerifyLimiter, async (req, res) => {
     const code = String(req.query.code || "").trim();
-    const err = String(req.query.error || "").trim();
-    const origin = getRequestOrigin(req);
+    const err = String(req.query.error_description || req.query.error || "").trim();
+    const stateMeta = parseOAuthState(req.query.state);
+    const role = stateMeta.role || "consumer";
+    const origin = getGoogleOAuthOrigin(req);
+    const buildReturnUrl = paramsObj => {
+      const qs = new URLSearchParams(paramsObj);
+      if (role) qs.set("role", role);
+      const targetPath = stateMeta.web ? "/app" : "/auth/callback";
+      return `${origin}${targetPath}?${qs.toString()}`;
+    };
+
     if (err || !code || !GOOGLE_CLIENT_SECRET) {
-      const reason = encodeURIComponent(err || "Missing authorization code");
-      return res.redirect(302, `${origin}/auth/callback?error=${reason}`);
+      return res.redirect(302, buildReturnUrl({ error: err || "Missing authorization code" }));
     }
 
     try {
@@ -527,7 +568,10 @@ function createAppApiRouter() {
       });
       const tokenJson = await tokenRes.json().catch(() => ({}));
       if (!tokenRes.ok || !tokenJson.access_token) {
-        return res.redirect(302, `${origin}/auth/callback?error=${encodeURIComponent("Google token exchange failed")}`);
+        console.warn("[GOOGLE-OAUTH-CB-ERR]", tokenRes.status, tokenJson.error || "", tokenJson.error_description || "");
+        return res.redirect(302, buildReturnUrl({
+          error: tokenJson.error_description || tokenJson.error || "Google token exchange failed"
+        }));
       }
 
       const infoRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
@@ -535,7 +579,7 @@ function createAppApiRouter() {
       });
       const info = await infoRes.json().catch(() => ({}));
       if (!infoRes.ok || !info.email) {
-        return res.redirect(302, `${origin}/auth/callback?error=${encodeURIComponent("Could not read Google profile")}`);
+        return res.redirect(302, buildReturnUrl({ error: "Could not read Google profile" }));
       }
 
       const pendingToken = signPendingPayload({
@@ -543,9 +587,9 @@ function createAppApiRouter() {
         fullName: info.name || `${info.given_name || ""} ${info.family_name || ""}`.trim() || info.email.split("@")[0],
         avatarUrl: info.picture || ""
       });
-      return res.redirect(302, `${origin}/auth/callback?pending_token=${encodeURIComponent(pendingToken)}`);
+      return res.redirect(302, buildReturnUrl({ pending_token: pendingToken }));
     } catch (_) {
-      return res.redirect(302, `${origin}/auth/callback?error=${encodeURIComponent("Google callback network error")}`);
+      return res.redirect(302, buildReturnUrl({ error: "Google callback network error" }));
     }
   });
 
@@ -615,7 +659,7 @@ function createAppApiRouter() {
         return res.status(500).json({ ok: false, error: "GOOGLE_CLIENT_SECRET not configured on server" });
       }
       try {
-        const origin = getRequestOrigin(req);
+        const origin = getGoogleOAuthOrigin(req);
         const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -629,7 +673,8 @@ function createAppApiRouter() {
         });
         const tokenJson = await tokenRes.json().catch(() => ({}));
         if (!tokenRes.ok || !tokenJson.access_token) {
-          return res.status(401).json({ ok: false, error: tokenJson.error_description || "Google authorization code exchange failed" });
+          console.warn("[GOOGLE-OAUTH-EXCHANGE-ERR]", tokenRes.status, tokenJson.error || "", tokenJson.error_description || "");
+          return res.status(401).json({ ok: false, error: tokenJson.error_description || tokenJson.error || "Google authorization code exchange failed" });
         }
         const giRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
           headers: { Authorization: `Bearer ${tokenJson.access_token}` }
@@ -784,11 +829,14 @@ function createAppApiRouter() {
       settingsPatch.custom_avatar = Boolean(b.customAvatar);
     }
     const settings = await upsertUserSettings(userId, settingsPatch);
+    const cleanSettings = { ...(settings || {}) };
+    delete cleanSettings.wa_auth_bundle;
+    delete cleanSettings.biometric_credentials;
 
     return res.json({
       ok: true,
       user: updatedUser,
-      settings
+      settings: cleanSettings
     });
   });
 
@@ -806,6 +854,213 @@ function createAppApiRouter() {
     const code = req.get("x-fixit-session") || (req.body && req.body.sessionCode) || "";
     await revokeSession(code);
     return res.json({ ok: true });
+  });
+
+  // Biometric (Fingerprint / Face) per-device cryptographic login
+  const biometricCredentialCache = new Map();
+
+  function sanitizeBiometricSettings(raw) {
+    const clean = raw && typeof raw === "object" ? { ...raw } : {};
+    delete clean.wa_auth_bundle;
+    delete clean.biometric_credentials;
+    return clean;
+  }
+
+  function hashBiometricToken(tok) {
+    return crypto.createHash("sha256").update(String(tok || "")).digest("hex");
+  }
+
+  function constantTimeHexEqual(aHex, bHex) {
+    const a = String(aHex || "");
+    const b = String(bHex || "");
+    if (!a || a.length !== b.length) return false;
+    try {
+      return crypto.timingSafeEqual(Buffer.from(a, "utf8"), Buffer.from(b, "utf8"));
+    } catch (e) {
+      return false;
+    }
+  }
+
+  router.post("/api/auth/biometric/register", requireAppSession, async (req, res) => {
+    const b = req.body && typeof req.body === "object" ? req.body : {};
+    const userId = String(req.fixitSession.userId || "").trim();
+    const roleRaw = String(req.fixitSession.role || "consumer").trim().toLowerCase();
+    const deviceId = String(b.deviceId || "device").trim().slice(0, 80) || "device";
+    if (!userId || roleRaw === "admin") {
+      return res.status(403).json({ ok: false, error: "Biometric enrollment is only supported for consumer and vendor accounts." });
+    }
+
+    const biometricToken = crypto.randomBytes(32).toString("hex");
+    const keyId = "bio_" + crypto.randomBytes(8).toString("hex");
+    const newCred = {
+      keyId,
+      tokenHash: hashBiometricToken(biometricToken),
+      role: roleRaw,
+      deviceId,
+      createdAt: new Date().toISOString()
+    };
+
+    const dbSettings = isSupabaseConfigured() ? await getUserSettings(userId) : {};
+    const existingList = Array.isArray(dbSettings.biometric_credentials)
+      ? dbSettings.biometric_credentials
+      : (biometricCredentialCache.get(userId) || []);
+    const filtered = existingList.filter(c => !(c && c.deviceId === deviceId && c.role === roleRaw)).slice(0, 4);
+    const nextList = [newCred, ...filtered];
+    biometricCredentialCache.set(userId, nextList);
+
+    if (isSupabaseConfigured()) {
+      await upsertUserSettings(userId, {
+        biometric_credentials: nextList,
+        biometric_enabled: true
+      });
+    }
+
+    recordAuditEvent({
+      event: "BIOMETRIC_ENROLLED",
+      userId,
+      role: roleRaw,
+      method: "POST",
+      path: "/api/auth/biometric/register",
+      ip: getClientIp(req),
+      status: 200
+    });
+
+    return res.json({
+      ok: true,
+      keyId,
+      userId,
+      role: roleRaw,
+      biometricToken
+    });
+  });
+
+  router.post("/api/auth/biometric/login", authVerifyLimiter, async (req, res) => {
+    const b = req.body && typeof req.body === "object" ? req.body : {};
+    const userId = String(b.userId || "").trim();
+    const biometricToken = String(b.biometricToken || "").trim();
+    const keyId = String(b.keyId || "").trim();
+    const roleRaw = String(b.role || "consumer").trim().toLowerCase() === "vendor" ? "vendor" : "consumer";
+    const deviceId = String(b.deviceId || "device").trim().slice(0, 80) || "device";
+
+    if (userId.length < 3 || biometricToken.length < 32) {
+      return res.status(400).json({ ok: false, error: "Invalid biometric login payload." });
+    }
+
+    const dbSettings = isSupabaseConfigured() ? await getUserSettings(userId) : {};
+    const storedCreds = (Array.isArray(dbSettings.biometric_credentials) && dbSettings.biometric_credentials.length)
+      ? dbSettings.biometric_credentials
+      : (biometricCredentialCache.get(userId) || []);
+    if (storedCreds.length) biometricCredentialCache.set(userId, storedCreds);
+
+    const incomingHash = hashBiometricToken(biometricToken);
+    const matched = storedCreds.find(c =>
+      c &&
+      (!keyId || c.keyId === keyId) &&
+      (!c.role || c.role === roleRaw) &&
+      constantTimeHexEqual(c.tokenHash, incomingHash)
+    );
+
+    if (!matched) {
+      recordAuditEvent({
+        event: "BIOMETRIC_LOGIN_DENIED",
+        userId,
+        role: roleRaw,
+        method: "POST",
+        path: "/api/auth/biometric/login",
+        ip: getClientIp(req),
+        status: 401
+      });
+      return res.status(401).json({
+        ok: false,
+        error: "Biometric sign-in expired or not registered on this device. Please sign in with Phone or Google once.",
+        errorAr: "انتهت صلاحية الدخول بالبصمة على هذا الجهاز. يرجى تسجيل الدخول برقم الهاتف أو Google مرة واحدة."
+      });
+    }
+
+    let userRow = null;
+    let wallet = null;
+    if (isSupabaseConfigured()) {
+      const uRes = await supabaseRequest(`/users?user_id=eq.${encodeURIComponent(userId)}&limit=1`);
+      userRow = uRes.ok && Array.isArray(uRes.data) ? uRes.data[0] : null;
+      if (!userRow) {
+        return res.status(401).json({ ok: false, error: "Account not found. Please sign in again." });
+      }
+      if (userRow.is_active === false) {
+        return res.status(403).json({ ok: false, error: "This account is currently suspended." });
+      }
+      await supabaseRequest(`/users?user_id=eq.${encodeURIComponent(userId)}`, "PATCH", {
+        last_login_at: new Date().toISOString()
+      }).catch(() => {});
+      wallet = await ensureWalletForUser(userId);
+    } else {
+      userRow = { user_id: userId, role: roleRaw === "vendor" ? "VENDOR" : "CUSTOMER", is_active: true };
+    }
+
+    const sess = await createSession({
+      userId,
+      role: roleRaw,
+      userAgent: req.get("user-agent") || "",
+      ip: getClientIp(req),
+      deviceId
+    });
+
+    recordAuditEvent({
+      event: "SESSION_CREATED",
+      userId,
+      sessionId: sess.sessionId,
+      role: roleRaw,
+      method: "POST",
+      path: "/api/auth/biometric/login",
+      ip: getClientIp(req),
+      status: 201,
+      note: "biometric"
+    });
+
+    return res.status(200).json({
+      ok: true,
+      status: "AUTHENTICATED",
+      biometricVerified: true,
+      needsProfileCompletion: false,
+      sessionCode: sess.sessionCode,
+      sessionExpiresAt: sess.expiresAt,
+      user: userRow,
+      settings: sanitizeBiometricSettings(dbSettings),
+      wallet
+    });
+  });
+
+  router.post("/api/auth/biometric/revoke", requireAppSession, async (req, res) => {
+    const b = req.body && typeof req.body === "object" ? req.body : {};
+    const userId = String(req.fixitSession.userId || "").trim();
+    const roleRaw = String(req.fixitSession.role || "consumer").trim().toLowerCase();
+    const keyId = String(b.keyId || "").trim();
+    const deviceId = String(b.deviceId || "").trim();
+    const revokeAll = Boolean(b.all);
+
+    const dbSettings = isSupabaseConfigured() ? await getUserSettings(userId) : {};
+    const existingList = Array.isArray(dbSettings.biometric_credentials)
+      ? dbSettings.biometric_credentials
+      : (biometricCredentialCache.get(userId) || []);
+
+    const nextList = revokeAll
+      ? []
+      : existingList.filter(c => {
+          if (!c) return false;
+          if (keyId && c.keyId === keyId) return false;
+          if (!keyId && deviceId && c.deviceId === deviceId && (!c.role || c.role === roleRaw)) return false;
+          if (!keyId && !deviceId && c.role === roleRaw) return false;
+          return true;
+        });
+
+    biometricCredentialCache.set(userId, nextList);
+    if (isSupabaseConfigured()) {
+      await upsertUserSettings(userId, {
+        biometric_credentials: nextList,
+        biometric_enabled: nextList.length > 0
+      });
+    }
+
+    return res.json({ ok: true, remaining: nextList.length });
   });
 
   // Admin operator login via server-side ADMIN_ACCESS_CODE (never shipped in APKs) or trusted location IP
@@ -915,6 +1170,7 @@ function createAppApiRouter() {
       ? { ...setRes.data[0].settings }
       : {};
     delete rawSettings.wa_auth_bundle;
+    delete rawSettings.biometric_credentials;
 
     return res.json({
       ok: true,
@@ -1003,7 +1259,7 @@ function createAppApiRouter() {
     maintenanceMessage: "We are upgrading FixIt to serve you better.",
     maintenanceUntil: null,
     minVersionCode: 165,
-    latestVersionCode: 166,
+    latestVersionCode: 167,
     forceUpdate: false,
     updatedAt: new Date().toISOString()
   };

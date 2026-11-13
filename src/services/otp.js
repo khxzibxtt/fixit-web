@@ -101,7 +101,7 @@ async function sendOtp(rawPhone, rawChannel = "whatsapp", opts = {}) {
     try {
       const waWeb = require("./whatsappWeb");
       if (waWeb.isWhatsAppConnected()) {
-        const bodyText = `رمز التحقق الخاص بك في FixIt هو: ${code}\nYour FixIt verification code is: ${code}\nصالح لمدة 5 دقائق. لا تشاركه مع أحد.`;
+        const bodyText = formatWhatsAppOtpMessage(code);
         const waRes = await waWeb.sendWhatsAppMessage(phone, bodyText);
         if (waRes.ok) {
           console.log(`[WA-WEB] OTP delivered directly via WhatsApp Web to ${phone}`);
@@ -274,9 +274,23 @@ async function verifyOtp(rawPhone, rawCode, opts = {}) {
   return { ok: false, status: 400, error: "Verification code expired or not requested" };
 }
 
+function formatWhatsAppOtpMessage(code) {
+  const safeCode = String(code || "").trim();
+  return (
+    `*FixIt* · رمز التحقق الخاص بك\n` +
+    `رمز الدخول: *${safeCode}*\n` +
+    `*صالح لمدة 5 دقائق* — لا تشاركه مع أحد.\n` +
+    `────────────────────\n` +
+    `*FixIt* Verification Code\n` +
+    `Your code: *${safeCode}*\n` +
+    `*Valid for 5 minutes* — Do not share it.`
+  );
+}
+
 module.exports = {
   isTwilioConfigured,
   normalizePhoneE164,
+  formatWhatsAppOtpMessage,
   sendOtp,
   verifyOtp
 };
