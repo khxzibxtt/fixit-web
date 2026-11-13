@@ -184,18 +184,18 @@ function createAppApiRouter() {
 
   const authSendLimiter = createRateLimiter({
     name: "auth-otp-send",
-    windowMs: 10 * 60 * 1000,
-    max: positiveIntEnv("TEST_AUTH_SEND_MAX", 8),
+    windowMs: 5 * 60 * 1000,
+    max: positiveIntEnv("TEST_AUTH_SEND_MAX", 25),
     keyGenerator: phoneRateKey,
-    message: "Too many verification code requests. Please wait a few minutes before retrying."
+    message: "Too many verification code requests. Please wait a minute before retrying."
   });
 
   const authVerifyLimiter = createRateLimiter({
     name: "auth-login-verify",
-    windowMs: 10 * 60 * 1000,
-    max: positiveIntEnv("TEST_AUTH_VERIFY_MAX", 10),
+    windowMs: 5 * 60 * 1000,
+    max: positiveIntEnv("TEST_AUTH_VERIFY_MAX", 40),
     keyGenerator: phoneRateKey,
-    message: "Too many login or verification attempts. Please wait a few minutes."
+    message: "Too many login attempts. Please wait a moment."
   });
 
   const proxyLimiter = createRateLimiter({
