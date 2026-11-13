@@ -64,6 +64,47 @@ function createWebRouter({ publicDir }) {
     return res.type("html").send(homePage({ reqHost: getRequestHost(req) }));
   });
 
+  router.get("/ad.html", (_req, res) => {
+    return res.type("html").send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<style>
+  html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: transparent;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #frame {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    z-index: 99998;
+  }
+</style>
+</head>
+<body>
+<!-- BEGIN AADS AD UNIT 2461953 -->
+<div id="frame">
+  <iframe data-aa='2461953' src='https://acceptable.a-ads.com/2461953/?size=Adaptive'
+    style='border:0; padding:0; width:100%; height:100%; overflow:hidden; display:block; margin:auto'></iframe>
+</div>
+<!-- END AADS AD UNIT 2461953 -->
+</body>
+</html>`);
+  });
+
   router.get("/services", (req, res) => {
     return res.type("html").send(servicesPage());
   });
