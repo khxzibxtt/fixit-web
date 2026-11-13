@@ -607,6 +607,40 @@ function createAppApiRouter() {
         gName = meta.full_name || meta.name || "";
         gPicture = meta.avatar_url || meta.picture || "";
       }
+    } else if (b.code) {
+      if (!GOOGLE_CLIENT_SECRET) {
+        return res.status(500).json({ ok: false, error: "GOOGLE_CLIENT_SECRET not configured on server" });
+      }
+      try {
+        const origin = getRequestOrigin(req);
+        const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            code: String(b.code),
+            client_id: GOOGLE_CLIENT_ID,
+            client_secret: GOOGLE_CLIENT_SECRET,
+            redirect_uri: `${origin}/api/auth/google/callback`,
+            grant_type: "authorization_code"
+          }).toString()
+        });
+        const tokenJson = await tokenRes.json().catch(() => ({}));
+        if (!tokenRes.ok || !tokenJson.access_token) {
+          return res.status(401).json({ ok: false, error: tokenJson.error_description || "Google authorization code exchange failed" });
+        }
+        const giRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+          headers: { Authorization: `Bearer ${tokenJson.access_token}` }
+        });
+        const gi = await giRes.json().catch(() => ({}));
+        if (!giRes.ok || !gi.email) {
+          return res.status(401).json({ ok: false, error: "Could not read Google profile" });
+        }
+        gEmail = normalizeEmail(gi.email);
+        gName = gi.name || "";
+        gPicture = gi.picture || "";
+      } catch (_) {
+        return res.status(502).json({ ok: false, error: "Network error exchanging Google code" });
+      }
     } else {
       return res.status(400).json({ ok: false, error: "Missing Google authentication credential" });
     }
