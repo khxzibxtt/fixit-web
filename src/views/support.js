@@ -14,26 +14,14 @@ function supportPage({ visitor, mode = "support" }) {
     <section class="fx-section" style="padding-top:34px">
       <div class="fx-wrap fx-grid-2" style="align-items:start">
         <div>
-          <span class="fx-pill">${ICONS.shield}<span>Connected to Admin App Support Queue</span></span>
-          <h1 class="fx-h1" style="font-size:34px">${isMail ? "Direct Mail &amp; Partnership Desk" : "Online Support &amp; Help Center"}</h1>
+          <span class="fx-pill">${ICONS.shield}<span>Our Support Team</span></span>
+          <h1 class="fx-h1" style="font-size:32px">${isMail ? "Direct Inquiries" : "Help &amp; Support"}</h1>
           <p class="fx-lead" style="font-size:15.5px">
-            Submit any support question, order warranty request, or mail inquiry directly from the web. Every request is tagged with <b>[WEBSITE]</b> and routed live to the FixIt Admin console.
+            Have a question or need assistance with a booking? Contact our team anytime.
           </p>
 
-          <div class="fx-card" style="background:var(--surface);margin-bottom:18px">
-            <div style="font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;color:var(--mu);margin-bottom:10px">
-              Detected Connection &amp; Device Telemetry
-            </div>
-            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;font-size:13.5px">
-              <div><span style="color:var(--mu2)">IP Address</span><br /><strong>${escapeHtml(visitor.ip)}</strong></div>
-              <div><span style="color:var(--mu2)">Location</span><br /><strong>${escapeHtml(locText)}</strong></div>
-              <div><span style="color:var(--mu2)">ISP / Network</span><br /><strong>${escapeHtml(visitor.isp)}</strong></div>
-              <div><span style="color:var(--mu2)">Device / Browser</span><br /><strong>${escapeHtml(`${visitor.os} · ${visitor.browser}`)}</strong></div>
-            </div>
-          </div>
-
           <div class="fx-card">
-            <h3 style="margin:0 0 10px;font-size:16px">Fastest Direct Channels</h3>
+            <h3 style="margin:0 0 10px;font-size:16px">WhatsApp Support</h3>
             <div style="display:flex;flex-wrap:wrap;gap:10px">
               <a href="https://wa.me/96895956361" target="_blank" rel="noopener noreferrer" class="fx-btn" style="background:#15803D;color:#fff">
                 ${ICONS.whatsapp}
@@ -41,15 +29,15 @@ function supportPage({ visitor, mode = "support" }) {
               </a>
             </div>
             <p style="margin:12px 0 0;font-size:13px;color:var(--mu2)">
-              Direct WhatsApp support and ticket queue respond across Salalah and Oman daily. Voice calls are intentionally disabled in favor of documented WhatsApp &amp; ticket support.
+              Our support team responds across Salalah and Dhofar daily.
             </p>
           </div>
         </div>
 
         <div class="fx-card" style="padding:26px">
-          <h2 style="margin:0 0 6px;font-size:21px;font-weight:900">Send a Request to FixIt Admin</h2>
+          <h2 style="margin:0 0 6px;font-size:21px;font-weight:900">Send a Message</h2>
           <p style="margin:0 0 18px;font-size:14px;color:var(--mu)">
-            Your message is saved straight into the database for Admin follow-up.
+            Fill in the details below and we will follow up with you shortly.
           </p>
 
           <form id="fxSupportForm">
@@ -93,7 +81,7 @@ function supportPage({ visitor, mode = "support" }) {
 
             <button id="supSubmitBtn" type="submit" class="fx-btn fx-btn-primary fx-btn-lg" style="width:100%">
               ${ICONS.mail}
-              <span>Submit to Admin Support Queue</span>
+              <span>Send Message</span>
             </button>
             <div id="supStatusBox" style="margin-top:14px;display:none;padding:12px 14px;border-radius:12px;font-size:14px;font-weight:600"></div>
           </form>

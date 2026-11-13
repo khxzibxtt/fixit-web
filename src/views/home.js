@@ -381,8 +381,8 @@ function homePage({ reqHost }) {
         <div class="trust-item">
           <div class="trust-icon-box">${ICONS.wrench}</div>
           <div>
-            <div class="trust-title">Protected Escrow &amp; Direct Bids</div>
-            <div class="trust-desc">Pay only after accepting bids. Funds are held safely in escrow and only released after you inspect and approve the job.</div>
+            <div class="trust-title">Protected Payment</div>
+            <div class="trust-desc">Funds are protected and released only after you inspect and approve the completed repair.</div>
           </div>
         </div>
       </div>

@@ -172,7 +172,7 @@ function warrantyPage() {
     badge: "Quality Assurance",
     sections: [
       ["1. Coverage Scope", "Completed repairs booked and confirmed inside the FixIt App carry 14 days of workmanship support against repeat defects in the same repaired component."],
-      ["2. Photo Evidence Requirement", "Before-and-after job photos captured in the app verify the initial state and completed repair, allowing the FixIt Admin team to mediate warranty claims fairly."],
+      ["2. Photo Evidence Requirement", "Before-and-after job photos captured in the app verify the initial state and completed repair, allowing our support team to mediate warranty claims fairly."],
       ["3. Filing a Claim", "Open your completed order in the app or submit your order number through the Online Support portal within 14 days of job completion."]
     ]
   });

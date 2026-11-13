@@ -178,7 +178,8 @@ async function run() {
         assert(html.includes("com.khxzi.fixit"), `${p} missing Android package ID`);
       }
       if (p === "/support") {
-        assert(html.includes("Detected Connection"), "/support missing telemetry panel");
+        assert(!html.includes("Detected Connection") && !html.includes("Telemetry"), "/support should not contain telemetry");
+        assert(html.includes("Help & Support") || html.includes("Direct Inquiries"), "/support missing clean help header");
       }
     }
     ok(`All ${htmlRoutes.length} Pure-JS HTML routes returned 200 cleanly (no prices/emojis/fake strings)`);
