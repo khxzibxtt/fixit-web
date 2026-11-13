@@ -19,29 +19,97 @@ let isConnecting = false;
 let currentPairingCode = null;
 let connectionError = null;
 let boundPhoneNumber = null;
+let reconnectTimer = null;
 
 const logger = pino({ level: "silent" });
 
-async function initWhatsAppSession(phoneNumber = null) {
-  if (sock && (isConnected || isConnecting)) {
-    if (phoneNumber && !isConnected && sock.requestPairingCode) {
+function normalizeWaPhone(rawPhone) {
+  let clean = String(rawPhone || "").replace(/\D/g, "");
+  if (/^[79]\d{7}$/.test(clean)) {
+    clean = "968" + clean;
+  }
+  return clean;
+}
+
+function resetAuthDir() {
+  try {
+    fs.rmSync(AUTH_DIR, { recursive: true, force: true });
+    fs.mkdirSync(AUTH_DIR, { recursive: true });
+  } catch (_) {}
+}
+
+async function requestCodeFromSocket(cleanNumber, timeoutMs = 10000) {
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    if (isConnected) {
+      return { ok: true, status: "CONNECTED", pairingCode: null, phone: boundPhoneNumber };
+    }
+    if (sock && typeof sock.requestPairingCode === "function") {
       try {
-        const cleanNumber = String(phoneNumber).replace(/\D/g, "");
-        currentPairingCode = await sock.requestPairingCode(cleanNumber);
-        boundPhoneNumber = cleanNumber;
-        return { ok: true, pairingCode: currentPairingCode, status: "WAITING_CODE" };
+        const code = await sock.requestPairingCode(cleanNumber);
+        if (code) {
+          currentPairingCode = String(code).trim();
+          boundPhoneNumber = cleanNumber;
+          connectionError = null;
+          console.log(`[WA-WEB] Pairing code generated for ${cleanNumber}: ${currentPairingCode}`);
+          return {
+            ok: true,
+            pairingCode: currentPairingCode,
+            status: "WAITING_CODE",
+            phone: cleanNumber
+          };
+        }
       } catch (err) {
-        return { ok: false, error: err.message };
+        const msg = String((err && err.message) || err || "");
+        if (!/not open|connecting|wait|stream|connection/i.test(msg)) {
+          connectionError = msg;
+        }
       }
     }
-    return { ok: true, status: isConnected ? "CONNECTED" : "CONNECTING", pairingCode: currentPairingCode };
+    await new Promise(r => setTimeout(r, 800));
+  }
+  return {
+    ok: Boolean(currentPairingCode),
+    status: currentPairingCode ? "WAITING_CODE" : (isConnecting ? "CONNECTING" : "ERROR"),
+    pairingCode: currentPairingCode,
+    phone: boundPhoneNumber,
+    error: currentPairingCode ? null : (connectionError || "Timed out waiting for WhatsApp pairing code. Tap Get Code again.")
+  };
+}
+
+async function initWhatsAppSession(phoneNumber = null, forceReset = false) {
+  if (reconnectTimer) {
+    clearTimeout(reconnectTimer);
+    reconnectTimer = null;
+  }
+
+  if (forceReset || (phoneNumber && !isConnected && sock)) {
+    try {
+      if (sock && sock.ws && typeof sock.ws.close === "function") sock.ws.close();
+    } catch (_) {}
+    sock = null;
+    isConnected = false;
+    isConnecting = false;
+    currentPairingCode = null;
+  }
+
+  if (sock && isConnected) {
+    return { ok: true, status: "CONNECTED", pairingCode: null, phone: boundPhoneNumber };
   }
 
   isConnecting = true;
   connectionError = null;
 
   try {
-    const { state, saveCreds } = await useMultiFileAuthState(AUTH_DIR);
+    if (forceReset) {
+      resetAuthDir();
+    }
+    let { state, saveCreds } = await useMultiFileAuthState(AUTH_DIR);
+    if (phoneNumber && state.creds && state.creds.registered) {
+      resetAuthDir();
+      ({ state, saveCreds } = await useMultiFileAuthState(AUTH_DIR));
+    }
+
     const { version } = await fetchLatestBaileysVersion().catch(() => ({ version: [2, 3000, 1015901307] }));
 
     sock = makeWASocket({
@@ -49,14 +117,14 @@ async function initWhatsAppSession(phoneNumber = null) {
       logger,
       auth: state,
       printQRInTerminal: false,
-      browser: ["FixIt Oman", "Chrome", "1.0.0"],
+      browser: ["Ubuntu", "Chrome", "20.0.04"],
       syncFullHistory: false
     });
 
     sock.ev.on("creds.update", saveCreds);
 
     sock.ev.on("connection.update", async (update) => {
-      const { connection, lastDisconnect, qr } = update;
+      const { connection, lastDisconnect } = update;
 
       if (connection === "open") {
         isConnected = true;
@@ -69,34 +137,23 @@ async function initWhatsAppSession(phoneNumber = null) {
       if (connection === "close") {
         isConnected = false;
         isConnecting = false;
-        const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
-        console.log(`[WA-WEB] Connection closed (shouldReconnect=${shouldReconnect})`, lastDisconnect?.error);
-        if (shouldReconnect) {
-          setTimeout(() => initWhatsAppSession(), 5000);
-        } else {
-          try {
-            fs.rmSync(AUTH_DIR, { recursive: true, force: true });
-            fs.mkdirSync(AUTH_DIR, { recursive: true });
-          } catch (_) {}
+        const code = lastDisconnect?.error?.output?.statusCode;
+        const shouldReconnect = code !== DisconnectReason.loggedOut;
+        connectionError = lastDisconnect?.error?.message || null;
+        console.log(`[WA-WEB] Connection closed (code=${code}, shouldReconnect=${shouldReconnect})`);
+        if (shouldReconnect && state.creds && state.creds.registered) {
+          reconnectTimer = setTimeout(() => initWhatsAppSession(), 5000);
+        } else if (!shouldReconnect) {
+          resetAuthDir();
           sock = null;
         }
       }
     });
 
-    if (phoneNumber && !state.creds.registered) {
-      const cleanNumber = String(phoneNumber).replace(/\D/g, "");
+    if (phoneNumber) {
+      const cleanNumber = normalizeWaPhone(phoneNumber);
       boundPhoneNumber = cleanNumber;
-      setTimeout(async () => {
-        try {
-          if (sock && sock.requestPairingCode) {
-            currentPairingCode = await sock.requestPairingCode(cleanNumber);
-            console.log(`[WA-WEB] Pairing code generated for ${cleanNumber}: ${currentPairingCode}`);
-          }
-        } catch (err) {
-          console.error("[WA-WEB] Error requesting pairing code:", err);
-          connectionError = err.message;
-        }
-      }, 3000);
+      return await requestCodeFromSocket(cleanNumber, 10000);
     }
 
     return { ok: true, status: isConnected ? "CONNECTED" : "CONNECTING", pairingCode: currentPairingCode };
@@ -108,11 +165,14 @@ async function initWhatsAppSession(phoneNumber = null) {
   }
 }
 
-// Auto-boot existing session if auth credentials exist
+// Auto-boot existing session ONLY if already registered
 try {
-  const files = fs.readdirSync(AUTH_DIR);
-  if (files && files.length > 0) {
-    initWhatsAppSession();
+  const credsPath = path.join(AUTH_DIR, "creds.json");
+  if (fs.existsSync(credsPath)) {
+    const raw = JSON.parse(fs.readFileSync(credsPath, "utf8"));
+    if (raw && raw.registered) {
+      initWhatsAppSession();
+    }
   }
 } catch (_) {}
 
@@ -127,12 +187,12 @@ async function getWhatsAppStatus() {
   };
 }
 
-async function requestPairing(phone) {
-  const cleanNumber = String(phone).replace(/\D/g, "");
-  if (!cleanNumber || cleanNumber.length < 8) {
-    return { ok: false, error: "Invalid phone number format" };
+async function requestPairing(phone, opts = {}) {
+  const cleanNumber = normalizeWaPhone(phone);
+  if (!cleanNumber || cleanNumber.length < 10) {
+    return { ok: false, error: "Enter full phone number with country code (e.g. +96877956361)" };
   }
-  return await initWhatsAppSession(cleanNumber);
+  return await initWhatsAppSession(cleanNumber, Boolean(opts.reset));
 }
 
 async function sendWhatsAppMessage(toPhone, message) {
@@ -141,7 +201,7 @@ async function sendWhatsAppMessage(toPhone, message) {
   }
 
   try {
-    let clean = String(toPhone).replace(/\D/g, "");
+    let clean = normalizeWaPhone(toPhone);
     if (!clean.endsWith("@s.whatsapp.net")) {
       clean = `${clean}@s.whatsapp.net`;
     }

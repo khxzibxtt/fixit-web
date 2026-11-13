@@ -128,12 +128,14 @@ function isValidAdminAccessCode(providedCode) {
   return aBuf.length === bBuf.length && crypto.timingSafeEqual(aBuf, bBuf);
 }
 
+const DEFAULT_ADMIN_USER_ID = process.env.ADMIN_USER_ID || "b3264964-ab0e-4638-8514-62de24ba511f";
+
 async function validateAndTouchSession({ sessionCode, role = "consumer", userAgent = "", ip = "", path = "", method = "GET", forceTouch = false, adminCode = "" }) {
   const cleanCode = String(sessionCode || "").trim();
   if (role === "admin" && (cleanCode === "fixit_admin_master_session" || isTrustedAdminIp(ip) || isValidAdminAccessCode(adminCode))) {
     return {
       ok: true,
-      userId: "admin-master-user",
+      userId: DEFAULT_ADMIN_USER_ID,
       role: "admin",
       sessionId: "admin-master-session",
       expiresAt: "2099-01-01T00:00:00.000Z"

@@ -126,34 +126,49 @@ async function sendOtp(rawPhone, rawChannel = "whatsapp", opts = {}) {
     };
   }
 
-  const from = channel === "whatsapp"
-    ? (TWILIO_WHATSAPP_FROM.startsWith("whatsapp:") ? TWILIO_WHATSAPP_FROM : `whatsapp:${TWILIO_WHATSAPP_FROM}`)
-    : TWILIO_FROM.replace(/^whatsapp:/, "");
-  const to = channel === "whatsapp" ? `whatsapp:${phone}` : phone;
   const bodyText = `Your FixIt verification code is ${code}. Expires in 5 minutes.\n\n@fixit-now.xyz #${code}`;
-
-  const params = new URLSearchParams({ To: to, From: from, Body: bodyText });
   const auth = Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString("base64");
 
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 7000);
-  try {
-    const res = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${encodeURIComponent(TWILIO_ACCOUNT_SID)}/Messages.json`, {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${auth}`,
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: params.toString(),
-      signal: ctrl.signal
-    });
-    const data = await res.json().catch(() => ({}));
-    if (res.ok && data && data.sid) {
-      console.log(`[TWILIO] Delivered SID=${data.sid} channel=${channel} to=${to}`);
-      return { ok: true, channel, phone, countryIso: parsed.countryIso, delivered: true, sid: data.sid, mode: "twilio" };
+  async function dispatchTwilio(chType) {
+    const from = chType === "whatsapp"
+      ? (TWILIO_WHATSAPP_FROM.startsWith("whatsapp:") ? TWILIO_WHATSAPP_FROM : `whatsapp:${TWILIO_WHATSAPP_FROM}`)
+      : TWILIO_FROM.replace(/^whatsapp:/, "");
+    const to = chType === "whatsapp" ? `whatsapp:${phone}` : phone;
+    const params = new URLSearchParams({ To: to, From: from, Body: bodyText });
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 7000);
+    try {
+      const res = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${encodeURIComponent(TWILIO_ACCOUNT_SID)}/Messages.json`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${auth}`,
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: params.toString(),
+        signal: ctrl.signal
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data && data.sid) {
+        console.log(`[TWILIO] Delivered SID=${data.sid} channel=${chType} to=${to}`);
+        return { ok: true, channel: chType, phone, countryIso: parsed.countryIso, delivered: true, sid: data.sid, mode: "twilio" };
+      }
+      const errMsg = (data && (data.message || data.error_message)) || `Twilio HTTP ${res.status}`;
+      console.error(`[TWILIO-ERROR] channel=${chType} to=${to} status=${res.status} message=${errMsg}`);
+      return { ok: false, status: res.status || 400, errMsg };
+    } finally {
+      clearTimeout(timer);
     }
-    const errMsg = (data && (data.message || data.error_message)) || `Twilio HTTP ${res.status}`;
-    console.error(`[TWILIO-ERROR] channel=${channel} to=${to} status=${res.status} message=${errMsg}`);
+  }
+
+  try {
+    const primary = await dispatchTwilio(channel);
+    if (primary.ok) return primary;
+
+    if (channel === "whatsapp" && /content/i.test(primary.errMsg || "") && TWILIO_FROM) {
+      const smsFallback = await dispatchTwilio("sms");
+      if (smsFallback.ok) return smsFallback;
+    }
+
     return {
       ok: false,
       status: 400,
@@ -162,7 +177,9 @@ async function sendOtp(rawPhone, rawChannel = "whatsapp", opts = {}) {
       countryIso: parsed.countryIso,
       delivered: false,
       mode: "twilio_error",
-      error: errMsg
+      error: /content/i.test(primary.errMsg || "")
+        ? "WhatsApp sender is not linked yet. Please pair WhatsApp Web in Admin or try SMS."
+        : (primary.errMsg || "OTP delivery failed")
     };
   } catch (err) {
     return {
@@ -174,8 +191,6 @@ async function sendOtp(rawPhone, rawChannel = "whatsapp", opts = {}) {
       mode: "network_error",
       error: err && err.message ? err.message : "Twilio request timeout"
     };
-  } finally {
-    clearTimeout(timer);
   }
 }
 

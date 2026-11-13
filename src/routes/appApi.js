@@ -839,7 +839,7 @@ function createAppApiRouter() {
         ok: true,
         sessionCode: "fixit_admin_master_session",
         sessionExpiresAt: "2099-01-01T00:00:00.000Z",
-        user: { user_id: "admin-master-user", role: "ADMIN", first_name: "FixIt", last_name: "Admin" }
+        user: { user_id: "b3264964-ab0e-4638-8514-62de24ba511f", role: "ADMIN", full_name: "Ops Admin" }
       });
     }
     const adminRes = await supabaseRequest("/users?role=eq.ADMIN&order=created_at.asc&limit=1");
@@ -849,7 +849,7 @@ function createAppApiRouter() {
         ok: true,
         sessionCode: "fixit_admin_master_session",
         sessionExpiresAt: "2099-01-01T00:00:00.000Z",
-        user: { user_id: "admin-master-user", role: "ADMIN", first_name: "FixIt", last_name: "Admin" }
+        user: { user_id: "b3264964-ab0e-4638-8514-62de24ba511f", role: "ADMIN", full_name: "Ops Admin" }
       });
     }
     const sess = await createSession({
@@ -998,7 +998,7 @@ function createAppApiRouter() {
     maintenanceMessage: "We are upgrading FixIt to serve you better.",
     maintenanceUntil: null,
     minVersionCode: 165,
-    latestVersionCode: 165,
+    latestVersionCode: 166,
     forceUpdate: false,
     updatedAt: new Date().toISOString()
   };
@@ -1072,7 +1072,7 @@ function createAppApiRouter() {
     if (role !== "admin") return res.status(403).json({ ok: false, error: "Admin access required" });
     const b = req.body || {};
     const phone = b.phone || "";
-    const pairRes = await waWeb.requestPairing(phone);
+    const pairRes = await waWeb.requestPairing(phone, { reset: Boolean(b.reset) });
     return res.json(pairRes);
   });
 

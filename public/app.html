@@ -741,22 +741,24 @@ body {
 <script>
 "use strict";
 const Leaf = typeof window !== "undefined" ? window.L : undefined;
+const DEFAULT_APP_ROLE = "consumer"; // __FIXIT_ROLE_MARKER__
 let ROLE = (() => {
   try {
     const params = new URLSearchParams(window.location.search);
     const r = (params.get("role") || "").toLowerCase();
     if (r === "admin" || r === "vendor" || r === "consumer") return r;
   } catch (e) {}
-  return "consumer";
+  return DEFAULT_APP_ROLE;
 })(); // consumer | vendor | admin
 const CONSUMER_ID = "bd5b7118-e852-4d66-8082-c0d768195007";
 const VENDOR_ID = "8a16bdd6-0a42-4dd8-99d7-a14302183e37";
+const ADMIN_ID = "b3264964-ab0e-4638-8514-62de24ba511f";
 let ME = (() => {
   try {
     const v = localStorage.getItem("fixit_auth_user_id_" + ROLE) || (ROLE === "consumer" ? localStorage.getItem("fixit_auth_user_id") : "");
     const p = v ? (v.startsWith('"') ? JSON.parse(v) : v) : "";
-    return /^[0-9a-f-]{36}$/.test(p) ? p : (ROLE === "vendor" ? VENDOR_ID : "");
-  } catch (e) { return ROLE === "vendor" ? VENDOR_ID : ""; }
+    return /^[0-9a-f-]{36}$/.test(p) ? p : (ROLE === "vendor" ? VENDOR_ID : ROLE === "admin" ? ADMIN_ID : "");
+  } catch (e) { return ROLE === "vendor" ? VENDOR_ID : ROLE === "admin" ? ADMIN_ID : ""; }
 })();
 const PHONE = "";
 const SUPPORT_WA = "96895956361";
@@ -3580,7 +3582,7 @@ async function submitAdminAccessCode() {
       return;
     }
     applyAuthenticatedSession(data);
-    S.auth.mode = "welcome";
+    S.auth.mode = "admin";
     if (S.stack[S.stack.length - 1] === "auth") S.stack.pop();
     save("auth_state", S.auth);
     render();
@@ -3855,30 +3857,24 @@ function authScreen() {
   const waIcon = `<svg class="brand-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18.304 5.61562C16.6205 3.92812 14.3786 3 11.996 3C7.07812 3 3.07634 7.00179 3.07634 11.9196C3.07634 13.4906 3.48616 15.0254 4.26562 16.3795L3 21L7.72902 19.7585C9.0308 20.4696 10.4973 20.8433 11.992 20.8433H11.996C16.9098 20.8433 21 16.8415 21 11.9237C21 9.54107 19.9875 7.30312 18.304 5.61562ZM11.996 19.3406C10.6621 19.3406 9.35625 18.983 8.2192 18.308L7.95 18.1473L5.14554 18.8826L5.89286 16.1464L5.71607 15.8652C4.97277 14.6839 4.58304 13.3219 4.58304 11.9196C4.58304 7.83348 7.90982 4.5067 12 4.5067C13.9808 4.5067 15.8411 5.27812 17.2393 6.68036C18.6375 8.08259 19.4973 9.94286 19.4933 11.9237C19.4933 16.0138 16.0821 19.3406 11.996 19.3406ZM16.0621 13.7879C15.8411 13.6754 14.7442 13.1371 14.5393 13.0647C14.3344 12.9884 14.1857 12.9522 14.0371 13.1772C13.8884 13.4022 13.4625 13.9004 13.3299 14.0531C13.2013 14.2018 13.0688 14.2219 12.8478 14.1094C11.5379 13.4545 10.6781 12.9402 9.81429 11.4576C9.58527 11.0638 10.0433 11.092 10.4692 10.2402C10.5415 10.0915 10.5054 9.96295 10.4491 9.85045C10.3929 9.73795 9.94688 8.64107 9.76205 8.19509C9.58125 7.76116 9.39643 7.82143 9.25982 7.81339C9.13125 7.80536 8.98259 7.80536 8.83393 7.80536C8.68527 7.80536 8.4442 7.86161 8.23929 8.08259C8.03437 8.30759 7.45982 8.84598 7.45982 9.94286C7.45982 11.0397 8.25938 12.1004 8.36786 12.2491C8.48036 12.3978 9.93884 14.6478 12.1768 15.6161C13.5911 16.2268 14.1455 16.279 14.8527 16.1746C15.2826 16.1103 16.1705 15.6362 16.3554 15.1138C16.5402 14.5915 16.5402 14.1455 16.4839 14.0531C16.4317 13.9527 16.283 13.8964 16.0621 13.7879Z" fill="#16A34A"/></svg>`;
 
   if (step === "admin") {
-    const adminTab = S.auth.adminAuthTab === "otp" ? "otp" : "code";
-    return `<div class="tlbt-auth-page" style="padding:max(24px,env(safe-area-inset-top)) 20px max(28px,env(safe-area-inset-bottom));justify-content:space-between">
+    return `<div class="tlbt-auth-page" style="padding:max(24px,env(safe-area-inset-top)) 20px max(28px,env(safe-area-inset-bottom));justify-content:space-between;background:#FFFFFF">
       <div>
         <div class="row" style="justify-content:space-between;margin-bottom:24px">
           <div style="display:flex;align-items:center;gap:10px">
             <img src="logo.png" alt="FixIt Admin" style="width:40px;height:40px;border-radius:12px" />
             <div>
               <div style="font-size:18px;font-weight:900;color:#111827">FixIt Operations</div>
-              <div style="font-size:12px;color:#6B7280">${ar ? "دخول المشرفين عبر الجلسة الآمنة" : "Secure Gateway Session"}</div>
+              <div style="font-size:12px;color:#6B7280">${ar ? "بوابة الإدارة الآمنة" : "Secure Admin Gateway"}</div>
             </div>
           </div>
           <button class="tlbt-lang-pill" onclick="setLang(L==='en'?'ar':'en')">${I("globe")}<span>${L === "en" ? "عربي" : "EN"}</span></button>
         </div>
 
-        <h1 class="tlbt-auth-heading">${ar ? "تسجيل دخول الإدارة" : "Admin Sign In"}</h1>
-        <p style="font-size:14px;color:#4B5563;margin:8px 0 20px">${ar ? "سجّل الدخول برمز المشرف أو رقم الهاتف المصرّح به." : "Sign in with your operator code or authorized admin number."}</p>
-
-        <div class="seg3" style="grid-template-columns:1fr 1fr;margin-bottom:18px">
-          <button class="${adminTab === "code" ? "on" : ""}" onclick="S.auth.adminAuthTab='code';render()">${ar ? "رمز المشرف" : "Access Code"}</button>
-          <button class="${adminTab === "otp" ? "on" : ""}" onclick="S.auth.adminAuthTab='otp';S.auth.mode='phone';render()">${ar ? "OTP الهاتف" : "Admin Phone"}</button>
-        </div>
+        <h1 class="tlbt-auth-heading">${ar ? "رمز دخول الإدارة" : "Admin Access Code"}</h1>
+        <p style="font-size:14px;color:#4B5563;margin:8px 0 20px">${ar ? "أدخل رمز المشرف المعتمد للمتابعة." : "Enter your operator access code to continue."}</p>
 
         <div class="tlbt-field-box">
-          <div class="tlbt-field-label">${ar ? "رمز الوصول الآمن" : "Operator Access Code"}</div>
+          <div class="tlbt-field-label">${ar ? "رمز الوصول" : "Operator Access Code"}</div>
           <input id="adminAccessInp" type="password" autocomplete="current-password" placeholder="${ar ? "أدخل رمز الدخول..." : "Enter operator code..."}" />
         </div>
       </div>
@@ -9656,49 +9652,105 @@ function aOverview() {
   </div>`;
 }
 
+let _waPollTimer = null;
+let _lastWaCheckAt = 0;
+
+function updateWaUiFromStatus(res) {
+  const pill = document.getElementById("waStatusPill");
+  const box = document.getElementById("waCodeResult");
+  const txt = document.getElementById("waPairCodeText");
+  if (!pill) return;
+  if (res && res.isConnected) {
+    pill.textContent = "● Connected";
+    pill.style.background = "#DCFCE7";
+    pill.style.color = "#16A34A";
+    if (box) box.style.display = "none";
+    if (_waPollTimer) { clearInterval(_waPollTimer); _waPollTimer = null; }
+  } else if (res && res.pairingCode) {
+    pill.textContent = "Code Ready";
+    pill.style.background = "#FEF3C7";
+    pill.style.color = "#B45309";
+    if (box && txt) {
+      txt.textContent = res.pairingCode;
+      box.style.display = "block";
+    }
+  } else if (res && res.isConnecting) {
+    pill.textContent = "Connecting...";
+    pill.style.background = "#DBEAFE";
+    pill.style.color = "#1D4ED8";
+  } else {
+    pill.textContent = "Not Linked";
+    pill.style.background = "#FEE2E2";
+    pill.style.color = "#DC2626";
+  }
+}
+
 async function checkWhatsAppStatus() {
   const pill = document.getElementById("waStatusPill");
   if (!pill) return;
+  const now = Date.now();
+  if (now - _lastWaCheckAt < 1200) return;
+  _lastWaCheckAt = now;
   try {
-    const res = await apiCall("/api/app/admin/whatsapp-status");
-    if (res && res.isConnected) {
-      pill.textContent = "● Connected";
-      pill.style.background = "#DCFCE7";
-      pill.style.color = "#16A34A";
-    } else {
-      pill.textContent = "Not Linked";
-      pill.style.background = "#FEE2E2";
-      pill.style.color = "#DC2626";
-    }
-  } catch (_) {}
+    const res = await apiCall("/api/app/admin/whatsapp-status", { method: "GET", timeoutMs: 12000 });
+    updateWaUiFromStatus(res);
+  } catch (e) {
+    pill.textContent = "Offline";
+    pill.style.background = "#FEE2E2";
+    pill.style.color = "#DC2626";
+  }
 }
 
-async function requestWhatsAppPairCode() {
+function startWaPoll() {
+  if (_waPollTimer) clearInterval(_waPollTimer);
+  let tries = 0;
+  _waPollTimer = setInterval(() => {
+    tries++;
+    if (tries > 45 || !document.getElementById("waStatusPill")) {
+      clearInterval(_waPollTimer);
+      _waPollTimer = null;
+      return;
+    }
+    checkWhatsAppStatus();
+  }, 2000);
+}
+
+async function requestWhatsAppPairCode(forceReset = false) {
   const inp = document.getElementById("waPhoneInput");
   const phone = (inp ? inp.value : "").trim();
   if (!phone) {
     toast(L === "ar" ? "أدخل رقم الهاتف أولاً" : "Enter phone number first");
     return;
   }
+  const pill = document.getElementById("waStatusPill");
+  if (pill) {
+    pill.textContent = "Connecting...";
+    pill.style.background = "#DBEAFE";
+    pill.style.color = "#1D4ED8";
+  }
   toast(L === "ar" ? "جاري طلب رمز الربط..." : "Requesting pairing code...");
   try {
-    const res = await apiCall("/api/app/admin/whatsapp-pair", "POST", { phone });
-    if (res && res.ok && res.pairingCode) {
-      const box = document.getElementById("waCodeResult");
-      const txt = document.getElementById("waPairCodeText");
-      if (box && txt) {
-        txt.textContent = res.pairingCode;
-        box.style.display = "block";
-      }
+    const res = await apiCall("/api/app/admin/whatsapp-pair", {
+      method: "POST",
+      body: { phone, reset: Boolean(forceReset) },
+      timeoutMs: 25000
+    });
+    updateWaUiFromStatus(res);
+    if (res && res.ok && res.isConnected) {
+      toast(L === "ar" ? "واتساب متصل بالفعل ✓" : "WhatsApp already connected ✓");
+    } else if (res && res.ok && res.pairingCode) {
       toast(L === "ar" ? `تم استلام الرمز: ${res.pairingCode}` : `Pairing code: ${res.pairingCode}`);
+      startWaPoll();
+    } else if (res && res.ok && res.status === "CONNECTING") {
+      toast(L === "ar" ? "جاري توليد رمز الربط..." : "Generating pairing code...");
+      startWaPoll();
     } else {
-      toast(res && res.error ? res.error : "Failed to generate pairing code");
+      toast((res && res.error) || "Failed to generate pairing code");
     }
   } catch (err) {
-    toast(err && err.message ? err.message : "Network error");
+    toast((err && err.message) || "Failed to request pairing code");
   }
 }
-setTimeout(checkWhatsAppStatus, 1500);
 
 function aOrders() {
   const list = filtered(S.jobs);
@@ -9825,7 +9877,7 @@ const NAV = {
   vendor: [["jobs","radar","jobs"],["shop","box","Shop KYC"],["analytics","star","Analytics"],["chats","chat","chats"],["wallet","wallet","wallet"],["account","user","account"]],
   admin: [["overview","grid","overview"],["shops","box","Shop KYC"],["analytics","star","Analytics"],["orders","list","orders"],["users","users","users"],["escrow","wallet","escrow"]]
 };
-const APP_VERSION_CODE = 165;
+const APP_VERSION_CODE = 166;
 let _appControlTimer = null;
 function checkAppControlStatus() {
   fetch(`https://fixit-now.xyz/api/app/status?role=${encodeURIComponent(ROLE || "consumer")}`)
@@ -10011,6 +10063,29 @@ function render() {
   }
 
   if (atBottom) scrollChat();
+  if (ROLE === "admin" && typeof checkWhatsAppStatus === "function" && document.getElementById("waStatusPill")) {
+    checkWhatsAppStatus();
+  }
+}
+
+async function tryAutoTrustedAdminLogin() {
+  if (ROLE !== "admin" || (S.auth && S.auth.loggedIn && S.auth.sessionCode)) return;
+  try {
+    const res = await fetch(`${FIXIT_BACKEND_URL}/api/auth/admin-login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ deviceId: getDeviceId() })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok && data && data.ok && data.sessionCode) {
+      applyAuthenticatedSession(data);
+      S.auth.mode = "admin";
+      if (S.stack[S.stack.length - 1] === "auth") S.stack.pop();
+      save("auth_state", S.auth);
+      render();
+      sync();
+    }
+  } catch (e) {}
 }
 
 // Native Pull-to-Refresh Small Circle Rotator (refreshes exact page on scroll release with no toast!)
@@ -10075,6 +10150,9 @@ if (typeof window !== "undefined") {
 render();
 hydrateFromIndexedDB().then(() => {
   if (!busyTyping()) render();
+  if (ROLE === "admin" && (!S.auth || !S.auth.loggedIn || !S.auth.sessionCode)) {
+    tryAutoTrustedAdminLogin();
+  }
   sync();
   sendSessionHeartbeat();
 });
