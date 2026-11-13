@@ -944,6 +944,71 @@ function createAppApiRouter() {
     return res.status(result.status || 200).json(result.data);
   });
 
+  const appControlState = {
+    maintenance: false,
+    maintenanceMessage: "We are upgrading FixIt to serve you better.",
+    maintenanceUntil: null,
+    minVersionCode: 165,
+    latestVersionCode: 165,
+    forceUpdate: false,
+    updatedAt: new Date().toISOString()
+  };
+
+  router.get("/api/app/status", (req, res) => {
+    if (appControlState.maintenance && appControlState.maintenanceUntil) {
+      const untilMs = Date.parse(appControlState.maintenanceUntil);
+      if (Number.isFinite(untilMs) && Date.now() >= untilMs) {
+        appControlState.maintenance = false;
+        appControlState.maintenanceUntil = null;
+      }
+    }
+    const role = String(req.query.role || "consumer").toLowerCase();
+    const updateUrl = role === "vendor"
+      ? "https://fixit-now.xyz/downloads/FixIt-Vendor.apk"
+      : "https://fixit-now.xyz/downloads/FixIt-Consumer.apk";
+    return res.json({
+      ok: true,
+      ...appControlState,
+      updateUrl
+    });
+  });
+
+  router.post("/api/app/admin/control", requireAppSession, (req, res) => {
+    const role = String(req.fixitSession.role || "").toLowerCase();
+    if (role !== "admin") {
+      return res.status(403).json({ ok: false, error: "Admin access required" });
+    }
+    const b = req.body || {};
+    if (typeof b.maintenance === "boolean") {
+      appControlState.maintenance = b.maintenance;
+    }
+    if (typeof b.maintenanceMessage === "string" && b.maintenanceMessage.trim()) {
+      appControlState.maintenanceMessage = b.maintenanceMessage.trim().slice(0, 180);
+    }
+    if (b.durationMinutes !== undefined && b.durationMinutes !== null) {
+      const mins = Number(b.durationMinutes);
+      appControlState.maintenanceUntil = (Number.isFinite(mins) && mins > 0)
+        ? new Date(Date.now() + mins * 60000).toISOString()
+        : null;
+    } else if (b.maintenanceUntil !== undefined) {
+      appControlState.maintenanceUntil = b.maintenanceUntil ? String(b.maintenanceUntil) : null;
+    }
+    if (!appControlState.maintenance) {
+      appControlState.maintenanceUntil = null;
+    }
+    if (Number.isFinite(Number(b.minVersionCode))) {
+      appControlState.minVersionCode = Math.max(1, parseInt(b.minVersionCode, 10));
+    }
+    if (Number.isFinite(Number(b.latestVersionCode))) {
+      appControlState.latestVersionCode = Math.max(1, parseInt(b.latestVersionCode, 10));
+    }
+    if (typeof b.forceUpdate === "boolean") {
+      appControlState.forceUpdate = b.forceUpdate;
+    }
+    appControlState.updatedAt = new Date().toISOString();
+    return res.json({ ok: true, ...appControlState });
+  });
+
   return router;
 }
 
