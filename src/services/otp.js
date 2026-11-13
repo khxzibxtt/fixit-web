@@ -133,16 +133,20 @@ async function sendOtp(rawPhone, rawChannel = "whatsapp", opts = {}) {
     });
     const data = await res.json().catch(() => ({}));
     if (res.ok && data && data.sid) {
+      console.log(`[TWILIO] Delivered SID=${data.sid} channel=${channel} to=${to}`);
       return { ok: true, channel, phone, countryIso: parsed.countryIso, delivered: true, sid: data.sid, mode: "twilio" };
     }
+    const errMsg = (data && (data.message || data.error_message)) || `Twilio HTTP ${res.status}`;
+    console.error(`[TWILIO-ERROR] channel=${channel} to=${to} status=${res.status} message=${errMsg}`);
     return {
-      ok: true,
+      ok: false,
+      status: 400,
       channel,
       phone,
       countryIso: parsed.countryIso,
       delivered: false,
       mode: "twilio_error",
-      error: (data && data.message) || `Twilio HTTP ${res.status}`
+      error: errMsg
     };
   } catch (err) {
     return {
