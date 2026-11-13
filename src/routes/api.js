@@ -1,14 +1,14 @@
 /**
  * JSON API & Android Digital Asset Links routes.
  * Handles health telemetry, visitor IP/ISP detection, rate-limited website support/mail
- * forwarding to Supabase Admin Inbox, Twilio WhatsApp/SMS OTP, and App Links verification.
+ * forwarding to Supabase Admin Inbox, WhatsApp-only OTP, and App Links verification.
  */
 
 const express = require("express");
 const { createRateLimiter } = require("../middleware/rateLimit");
 const { detectVisitorDetails } = require("../services/ipDetector");
 const { isConfigured: isSupabaseConfigured, saveWebsiteSupportTicket } = require("../services/supabase");
-const { isTwilioConfigured, sendOtp, verifyOtp } = require("../services/otp");
+const { sendOtp, verifyOtp } = require("../services/otp");
 
 const DEFAULT_CONSUMER_SHA256 =
   "A3:82:E0:E8:59:28:15:7D:A2:0C:95:23:32:43:AD:96:32:28:90:8B:2D:5D:23:51:84:85:4B:B1:FE:41:DA:B5";
@@ -110,7 +110,6 @@ function createApiRouter() {
       service: "fixit-web",
       version: "3.3.5",
       supabaseConfigured: isSupabaseConfigured(),
-      twilioConfigured: isTwilioConfigured(),
       uptimeSec: Math.round(process.uptime()),
       timestamp: new Date().toISOString()
     });
@@ -174,22 +173,16 @@ function createApiRouter() {
   router.post("/api/otp/send", otpLimiter, async (req, res) => {
     const body = req.body && typeof req.body === "object" ? req.body : {};
     const phone = body.phone || body.to || "";
-    const rawChannel = String(body.channel || "whatsapp").trim().toLowerCase();
+    const rawChannel = String(body.channel || "whatsapp").trim().toLowerCase() || "whatsapp";
 
-    if (rawChannel === "call" || rawChannel === "voice") {
+    if (rawChannel !== "whatsapp") {
       return res.status(400).json({
         ok: false,
-        error: "Voice call verification is not supported. Choose WhatsApp or SMS."
-      });
-    }
-    if (rawChannel !== "whatsapp" && rawChannel !== "sms") {
-      return res.status(400).json({
-        ok: false,
-        error: "Unsupported OTP channel. Choose whatsapp or sms."
+        error: "Only WhatsApp verification is supported. SMS and voice channels are disabled."
       });
     }
 
-    const result = await sendOtp(phone, rawChannel);
+    const result = await sendOtp(phone, "whatsapp");
     const status = result.status || (result.ok ? 200 : 400);
     return res.status(status).json(result);
   });

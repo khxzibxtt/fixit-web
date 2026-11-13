@@ -256,15 +256,16 @@ function createAppApiRouter() {
   // =========================================================================
   router.post("/api/auth/otp/send", authSendLimiter, async (req, res) => {
     const b = req.body && typeof req.body === "object" ? req.body : {};
-    const rawChannel = String(b.channel || "whatsapp").trim().toLowerCase();
-    if (rawChannel === "call" || rawChannel === "voice") {
-      return res.status(400).json({ ok: false, error: "Voice call OTP is disabled. Choose WhatsApp or SMS." });
-    }
-    if (rawChannel !== "whatsapp" && rawChannel !== "sms") {
-      return res.status(400).json({ ok: false, error: "Unsupported channel. Choose whatsapp or sms." });
+    const rawChannel = String(b.channel || "whatsapp").trim().toLowerCase() || "whatsapp";
+    if (rawChannel !== "whatsapp") {
+      return res.status(400).json({
+        ok: false,
+        error: "Only WhatsApp verification is supported. SMS OTP has been disabled.",
+        errorAr: "التحقق متاح عبر واتساب فقط. تم إيقاف رسائل SMS."
+      });
     }
 
-    const result = await sendOtp(b.phone || b.to || "", rawChannel, {
+    const result = await sendOtp(b.phone || b.to || "", "whatsapp", {
       countryIso: b.countryIso || "",
       dialCode: b.dialCode || "",
       nationalNumber: b.nationalNumber || "",

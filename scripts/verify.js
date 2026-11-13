@@ -277,7 +277,7 @@ async function run() {
       ok("/api/support and /api/mail validation + telemetry verified");
     }
 
-    // OTP WhatsApp/SMS only (Voice/Call blocked)
+    // OTP WhatsApp only (SMS & Voice/Call blocked)
     {
       const callRes = await fetch(`${base}/api/otp/send`, {
         method: "POST",
@@ -285,6 +285,13 @@ async function run() {
         body: JSON.stringify({ phone: "+96895956361", channel: "call" })
       });
       assert.strictEqual(callRes.status, 400, "Voice call OTP must be rejected with 400");
+
+      const smsRes = await fetch(`${base}/api/otp/send`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: "+96895956361", channel: "sms" })
+      });
+      assert.strictEqual(smsRes.status, 400, "SMS OTP must be rejected with 400");
 
       const waRes = await fetch(`${base}/api/otp/send`, {
         method: "POST",
@@ -303,7 +310,7 @@ async function run() {
         body: JSON.stringify({ phone: "95956361", code: "000000" })
       });
       assert.strictEqual(wrongVerify.status, 400);
-      ok("/api/otp/send (WhatsApp/SMS only) & /api/otp/verify verified");
+      ok("/api/otp/send (WhatsApp only, SMS blocked) & /api/otp/verify verified");
     }
 
     // 404 boundaries
@@ -554,11 +561,19 @@ async function run() {
       });
       assert.strictEqual(badOmanStart.status, 400, "Oman number starting with 8 must be denied");
 
+      // SMS channel must be rejected (WhatsApp-only OTP) -> 400
+      const smsRejected = await fetch(`${base}/api/auth/otp/send`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ countryIso: "OM", dialCode: "+968", nationalNumber: "91234567", channel: "sms" })
+      });
+      assert.strictEqual(smsRejected.status, 400, "SMS OTP channel must be rejected with 400");
+
       // Invalid Oman short number (7 digits) -> must be denied (400)
       const badOmanLen = await fetch(`${base}/api/auth/otp/send`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ countryIso: "OM", dialCode: "+968", nationalNumber: "9123456", channel: "sms" })
+        body: JSON.stringify({ countryIso: "OM", dialCode: "+968", nationalNumber: "9123456", channel: "whatsapp" })
       });
       assert.strictEqual(badOmanLen.status, 400, "7-digit Oman number must be denied");
 
@@ -574,7 +589,7 @@ async function run() {
       const goodIntl = await fetch(`${base}/api/auth/otp/send`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ countryIso: "US", dialCode: "+1", nationalNumber: "4155551234", channel: "sms" })
+        body: JSON.stringify({ countryIso: "US", dialCode: "+1", nationalNumber: "4155551234", channel: "whatsapp" })
       });
       assert.strictEqual(goodIntl.status, 200, "Valid US tourist number must be accepted");
 
@@ -582,7 +597,7 @@ async function run() {
       const cooldownRes = await fetch(`${base}/api/auth/otp/send`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ countryIso: "US", dialCode: "+1", nationalNumber: "4155551234", channel: "sms" })
+        body: JSON.stringify({ countryIso: "US", dialCode: "+1", nationalNumber: "4155551234", channel: "whatsapp" })
       });
       assert.strictEqual(cooldownRes.status, 429, "Immediate OTP resend for same number must trigger 429 cooldown");
 
@@ -809,14 +824,14 @@ async function run() {
       const aRes = await fetch(`${baseB}/api/auth/otp/send`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ countryIso: "GB", dialCode: "+44", nationalNumber: "7700900123", channel: "sms" })
+        body: JSON.stringify({ countryIso: "GB", dialCode: "+44", nationalNumber: "7700900123", channel: "whatsapp" })
       });
       assert(aRes.status === 200 || aRes.status === 429, `Auth warmup ${i + 1} unexpected status ${aRes.status}`);
     }
     const authLimited = await fetch(`${baseB}/api/auth/otp/send`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ countryIso: "GB", dialCode: "+44", nationalNumber: "7700900123", channel: "sms" })
+      body: JSON.stringify({ countryIso: "GB", dialCode: "+44", nationalNumber: "7700900123", channel: "whatsapp" })
     });
     assert.strictEqual(authLimited.status, 429, "Expected 429 from authSendLimiter on 3rd request");
 

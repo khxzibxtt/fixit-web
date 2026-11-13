@@ -3104,9 +3104,14 @@ function startOtpResendTimer(seconds) {
   }, 1000);
 }
 
-async function sendTwilioSmsOtp(rawPhone, purpose, channel) {
+window._otpSending = false;
+
+async function sendWhatsAppOtp(rawPhone, purpose) {
   const ar = L === "ar";
+  if (window._otpSending) return false;
   if (!checkRateLimit("send_otp", 3, 60000, "OTP Request", "طلب رمز التحقق")) return false;
+  const inp = !rawPhone ? document.getElementById("authPhoneInp") : null;
+  if (inp) S.auth.nationalDraft = inp.value;
   const c = getSelectedCountry();
   const inputVal = (S.auth.nationalDraft && !rawPhone) ? S.auth.nationalDraft : (rawPhone || S.auth.nationalDraft || S.auth.phone);
   const parsed = parsePhoneSelection(inputVal, c);
@@ -3121,20 +3126,22 @@ async function sendTwilioSmsOtp(rawPhone, purpose, channel) {
   }
 
   const toPhone = parsed.e164;
-  const ch = channel === "sms" ? "sms" : "whatsapp";
   S.auth.phone = toPhone;
   S.auth.otpTargetPhone = toPhone;
-  S.auth.otpChannel = ch;
+  S.auth.otpChannel = "whatsapp";
   S.auth.otpPurpose = purpose || "login";
   S.auth.otpTyped = "";
   S.auth.lastOtpCode = "";
   S.auth.phoneError = "";
   S.auth.channelSheetOpen = false;
+  if (inp) S.auth.nationalDraft = parsed.nationalDigits;
   save("auth_state", S.auth);
 
+  window._otpSending = true;
+  render();
   toast(ar
-    ? `جاري إرسال رمز التحقق عبر ${ch === "whatsapp" ? "واتساب" : "SMS"} إلى ${toPhone}...`
-    : `Sending verification code via ${ch === "whatsapp" ? "WhatsApp" : "SMS"} to ${toPhone}...`);
+    ? `جاري إرسال رمز التحقق عبر واتساب إلى ${toPhone}...`
+    : `Sending verification code via WhatsApp to ${toPhone}...`);
 
   try {
     const ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
@@ -3147,7 +3154,7 @@ async function sendTwilioSmsOtp(rawPhone, purpose, channel) {
         countryIso: parsed.countryIso,
         dialCode: parsed.dialCode,
         nationalNumber: parsed.nationalDigits,
-        channel: ch,
+        channel: "whatsapp",
         purpose: S.auth.otpPurpose,
         mode: S.auth.linkGoogleMode ? "link_google" : "login",
         role: ROLE
@@ -3161,7 +3168,6 @@ async function sendTwilioSmsOtp(rawPhone, purpose, channel) {
       if (res.status === 400) S.auth.phoneError = errMsg;
       if (data.retryAfterSec) startOtpResendTimer(Number(data.retryAfterSec));
       save("auth_state", S.auth);
-      render();
       toast(errMsg);
       return false;
     }
@@ -3171,13 +3177,12 @@ async function sendTwilioSmsOtp(rawPhone, purpose, channel) {
       toast(ar ? `رمز التحقق: ${data.code}` : `Verification code: ${data.code}`);
     } else {
       toast(ar
-        ? `تم إرسال الرمز المكون من 6 أرقام عبر ${ch === "whatsapp" ? "واتساب" : "SMS"}`
-        : `6-digit code sent via ${ch === "whatsapp" ? "WhatsApp" : "SMS"}`);
+        ? "تم إرسال الرمز المكون من 6 أرقام عبر واتساب"
+        : "6-digit code sent via WhatsApp");
     }
 
     S.auth.mode = "otp_verify";
     save("auth_state", S.auth);
-    render();
     startOtpResendTimer(data.cooldownSec || 45);
     setTimeout(() => {
       const el = document.getElementById("authOtpInp");
@@ -3189,6 +3194,9 @@ async function sendTwilioSmsOtp(rawPhone, purpose, channel) {
       ? "لا يوجد اتصال بالخادم حالياً. تحقق من الإنترنت وحاول مجدداً."
       : "Cannot reach FixIt servers right now. Check your connection and try again.");
     return false;
+  } finally {
+    window._otpSending = false;
+    render();
   }
 }
 
@@ -3196,28 +3204,6 @@ function onPhoneDigitsInput(val) {
   let clean = String(val || "").replace(/[^0-9+\s-]/g, "");
   S.auth.nationalDraft = clean;
   validatePhoneField(false);
-}
-
-function openPhoneChannelSheet() {
-  const ar = L === "ar";
-  const inp = document.getElementById("authPhoneInp");
-  if (inp) S.auth.nationalDraft = inp.value;
-  const parsed = parsePhoneSelection(S.auth.nationalDraft || "", getSelectedCountry());
-  if (!parsed.ok) {
-    const msg = ar ? parsed.errorAr : parsed.errorEn;
-    S.auth.phoneError = msg;
-    save("auth_state", S.auth);
-    render();
-    toast(msg);
-    return;
-  }
-  S.auth.phone = parsed.e164;
-  S.auth.nationalDraft = parsed.nationalDigits;
-  S.auth.phoneError = "";
-  if (S.auth.otpChannel !== "sms") S.auth.otpChannel = "whatsapp";
-  S.auth.channelSheetOpen = true;
-  save("auth_state", S.auth);
-  render();
 }
 
 function onOtpTyped(rawVal) {
@@ -4031,7 +4017,6 @@ function authScreen() {
   const natVal = (S.auth && S.auth.nationalDraft) || "";
   const phoneErr = (S.auth && S.auth.phoneError) || "";
   const targetE164 = (S.auth && (S.auth.otpTargetPhone || S.auth.phone)) || "";
-  const selectedChannel = S.auth && S.auth.otpChannel === "sms" ? "sms" : "whatsapp";
   const otpTyped = String((S.auth && S.auth.otpTyped) || "");
   const resendLeft = Number((S.auth && S.auth.resendLeft) || 0);
   const gIcon = `<svg class="brand-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3.04783 16.4312L6.48934 13.8593C6.29249 13.2751 6.18605 12.6501 6.18605 12C6.18605 11.35 6.29244 10.7252 6.4892 10.1411L3.04764 7.56913C2.37644 8.90276 2 10.4063 2 12C2 13.5938 2.37652 15.0975 3.04783 16.4312Z" fill="#FBBC05"/><path d="M6.4892 10.1411C7.28324 7.78414 9.54882 6.09088 12.2326 6.09088C13.6744 6.09088 14.9767 6.59088 16 7.40906L18.9767 4.49997C17.1628 2.95451 14.8372 1.99997 12.2326 1.99997C8.18889 1.99997 4.71205 4.26216 3.04764 7.56913L6.4892 10.1411Z" fill="#EA4335"/><path d="M3.0464 16.4283C4.71029 19.7367 8.18785 22 12.2326 22C17.3488 22 22 18.3636 22 12C22 11.4091 21.907 10.7727 21.7674 10.1818H12.2326V14.0454H17.7209C17.2093 16.5 15.0698 17.9091 12.2326 17.9091C9.54575 17.9091 7.2781 16.212 6.48652 13.8509L3.0464 16.4283Z" fill="#34A853"/><path d="M12.2326 10.1818H21.7674C21.907 10.7727 22 11.4091 22 12C22 15.2594 20.7798 17.8033 18.9019 19.5096L15.6346 17.0376C16.703 16.3787 17.4464 15.3626 17.7209 14.0454H12.2326V10.1818Z" fill="#4285F4"/></svg>`;
@@ -4229,7 +4214,6 @@ function authScreen() {
   }
 
   const isGooglePhone = step === "google_phone";
-  const showChannelSheet = (step === "phone" || isGooglePhone) && S.auth.channelSheetOpen;
   const showOtpSheet = step === "otp";
   const phonePlaceholder = selCountry.iso === "OM" ? "9XXX XXXX" : (selCountry.iso === "US" || selCountry.iso === "CA" ? "415 555 1234" : "Phone number");
   const backAction = isGooglePhone
@@ -4240,8 +4224,8 @@ function authScreen() {
     <div>
       <button class="tlbt-circ-btn" style="background:#F3F4F6" aria-label="${ar ? "رجوع" : "Back"}" onclick="${backAction}">${I("back", "flip")}</button>
 
-      <h1 style="font-size:23px;font-weight:900;color:#111827;margin:22px 0 8px;text-wrap:balance">${isGooglePhone ? (ar ? "توثيق رقم الهاتف" : "Verify your number") : (ar ? "ما هو رقم هاتفك؟" : "What's your phone number?")}</h1>
-      <p style="font-size:14.5px;color:#4B5563;margin:0 0 20px;line-height:1.45">${isGooglePhone ? (ar ? "اربط رقماً فريداً بحساب Google للمتابعة." : "Link a unique number to finish Google sign-up.") : (ar ? "سنرسل لك رمزاً للتحقق من رقمك." : "We'll send you a code to verify your number.")}</p>
+      <h1 style="font-size:23px;font-weight:900;color:#111827;margin:22px 0 8px;text-wrap:balance">${isGooglePhone ? (ar ? "توثيق رقم الواتساب" : "Verify WhatsApp number") : (ar ? "ما هو رقم الواتساب؟" : "Your WhatsApp number")}</h1>
+      <p style="font-size:14.5px;color:#4B5563;margin:0 0 20px;line-height:1.45;display:flex;align-items:center;gap:8px">${waIcon}<span>${isGooglePhone ? (ar ? "اربط رقماً فريداً عبر واتساب لإتمام التسجيل." : "We'll verify your number via WhatsApp.") : (ar ? "سنرسل رمز التحقق إليك عبر واتساب فقط." : "We'll send a verification code via WhatsApp.")}</span></p>
 
       <div class="tlbt-phone-box ${phoneErr ? "err" : ""}" id="authPhoneWrap">
         <button type="button" class="tlbt-country-btn" onclick="openCountryPickerSheet()" aria-label="${ar ? "اختيار رمز الدولة" : "Choose country code"}">
@@ -4268,38 +4252,7 @@ function authScreen() {
       </div>` : ""}
     </div>
 
-    <button class="tlbt-cta-pill" onclick="openPhoneChannelSheet()">${ar ? "متابعة" : "Continue"}</button>
-
-    ${showChannelSheet ? `<div class="tlbt-dim" onclick="if(event.target===this){S.auth.channelSheetOpen=false;render()}">
-      <div class="tlbt-sheet-card">
-        <div class="grab" style="margin:0 auto 12px"></div>
-        <button class="tlbt-circ-btn" style="border:1.2px solid #D1D5DB;margin-bottom:16px" aria-label="${ar ? "إغلاق" : "Close"}" onclick="S.auth.channelSheetOpen=false;render()">${I("x")}</button>
-        <div style="font-size:21px;font-weight:900;color:#111827">${ar ? "اختر طريقة استلام الرمز" : "Choose how to get your code"}</div>
-        <div style="font-size:13.5px;color:#6B7280;margin-top:8px">${ar ? "سنرسل رمزاً مكوناً من 6 أرقام إلى:" : "We'll send a 6-digit code to:"}</div>
-        <div dir="ltr" style="font-size:15px;font-weight:800;color:#4B5563;margin:8px 0 16px">${esc(S.auth.phone || "")}</div>
-
-        <div class="tlbt-ch-list">
-          <button class="tlbt-ch-row" onclick="S.auth.otpChannel='whatsapp';render()">
-            <div class="row" style="gap:12px">
-              ${waIcon}
-              <span>${ar ? "إرسال عبر واتساب" : "Send WhatsApp"}</span>
-            </div>
-            <span class="tlbt-radio ${selectedChannel === "whatsapp" ? "on" : ""}"></span>
-          </button>
-          <button class="tlbt-ch-row" onclick="S.auth.otpChannel='sms';render()">
-            <div class="row" style="gap:12px">
-              <svg class="lucide" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg>
-              <span>${ar ? "إرسال رسالة نصية SMS" : "Send SMS"}</span>
-            </div>
-            <span class="tlbt-radio ${selectedChannel === "sms" ? "on" : ""}"></span>
-          </button>
-        </div>
-
-        <button class="tlbt-cta-pill" style="margin-top:20px" onclick="sendTwilioSmsOtp(S.auth.phone, S.auth.otpPurpose || 'login', S.auth.otpChannel || 'whatsapp')">
-          ${ar ? "احصل على الرمز" : "Get code"}
-        </button>
-      </div>
-    </div>` : ""}
+    <button class="tlbt-cta-pill" onclick="sendWhatsAppOtp(undefined, S.auth.otpPurpose || 'login')" ${window._otpSending ? "disabled" : ""}>${window._otpSending ? (ar ? "جاري الإرسال..." : "Sending...") : (ar ? "إرسال رمز واتساب" : "Send WhatsApp Code")}</button>
 
     ${showOtpSheet ? `<div class="tlbt-dim">
       <div class="tlbt-sheet-card" style="padding-bottom:32px">
@@ -4307,7 +4260,7 @@ function authScreen() {
         <button class="tlbt-circ-btn" style="border:1.2px solid #D1D5DB;margin-bottom:16px" aria-label="${ar ? "رجوع" : "Back"}" onclick="S.auth.mode=(S.auth.linkGoogleMode?'google_phone':'phone');S.auth.channelSheetOpen=false;save('auth_state',S.auth);render()">${I("x")}</button>
         <div style="font-size:21px;font-weight:900;color:#111827">${ar ? "أدخل الرمز المكون من 6 أرقام" : "Enter the 6-digit code"}</div>
         <div style="font-size:13.5px;color:#6B7280;margin:8px 0 20px" dir="ltr">
-          ${ar ? "تم إرسال الرمز إلى" : "Your code was sent to"} ${esc(targetE164)} · ${selectedChannel === "whatsapp" ? "WhatsApp" : "SMS"}
+          ${ar ? "تم إرسال الرمز عبر واتساب إلى" : "Sent via WhatsApp to"} ${esc(targetE164)}
         </div>
 
         <div class="tlbt-otp-box" onclick="(document.getElementById('authOtpInp')||{}).focus()">
@@ -4319,7 +4272,7 @@ function authScreen() {
 
         <div style="margin-top:16px;font-size:13.5px;color:#4B5563">
           ${ar ? "لم يصلك الرمز؟" : "Didn't receive a code?"}
-          <button id="otpResendBtn" ${resendLeft > 0 ? "disabled" : ""} onclick="sendTwilioSmsOtp(S.auth.otpTargetPhone || S.auth.phone, S.auth.otpPurpose || 'login', S.auth.otpChannel || 'whatsapp')" style="text-decoration:underline;font-weight:700;color:${resendLeft > 0 ? "#6B7280" : "#FF5A00"};background:transparent;margin-inline-start:4px;min-height:44px;padding:0 4px">
+          <button id="otpResendBtn" ${resendLeft > 0 ? "disabled" : ""} onclick="sendWhatsAppOtp(S.auth.otpTargetPhone || S.auth.phone, S.auth.otpPurpose || 'login')" style="text-decoration:underline;font-weight:700;color:${resendLeft > 0 ? "#6B7280" : "#FF5A00"};background:transparent;margin-inline-start:4px;min-height:44px;padding:0 4px">
             ${ar ? "إعادة الإرسال" : "Resend"}${resendLeft > 0 ? ` (0:${String(resendLeft).padStart(2, "0")})` : ""}
           </button>
         </div>
