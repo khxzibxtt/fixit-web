@@ -97,6 +97,22 @@ async function sendOtp(rawPhone, rawChannel = "whatsapp", opts = {}) {
     }).catch(() => {});
   }
 
+  if (channel === "whatsapp") {
+    try {
+      const waWeb = require("./whatsappWeb");
+      if (waWeb.isWhatsAppConnected()) {
+        const bodyText = `رمز التحقق الخاص بك في FixIt هو: ${code}\nYour FixIt verification code is: ${code}\nصالح لمدة 5 دقائق. لا تشاركه مع أحد.`;
+        const waRes = await waWeb.sendWhatsAppMessage(phone, bodyText);
+        if (waRes.ok) {
+          console.log(`[WA-WEB] OTP delivered directly via WhatsApp Web to ${phone}`);
+          return { ok: true, channel, phone, countryIso: parsed.countryIso, delivered: true, id: waRes.id, mode: "wa_web" };
+        }
+      }
+    } catch (e) {
+      console.error("[WA-WEB-ERR]", e);
+    }
+  }
+
   if (!isTwilioConfigured()) {
     return {
       ok: true,

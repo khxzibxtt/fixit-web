@@ -1043,6 +1043,24 @@ function createAppApiRouter() {
     return res.json({ ok: true, ...appControlState });
   });
 
+  const waWeb = require("../services/whatsappWeb");
+
+  router.get("/api/app/admin/whatsapp-status", requireAppSession, async (req, res) => {
+    const role = String(req.fixitSession.role || "").toLowerCase();
+    if (role !== "admin") return res.status(403).json({ ok: false, error: "Admin access required" });
+    const st = await waWeb.getWhatsAppStatus();
+    return res.json(st);
+  });
+
+  router.post("/api/app/admin/whatsapp-pair", requireAppSession, async (req, res) => {
+    const role = String(req.fixitSession.role || "").toLowerCase();
+    if (role !== "admin") return res.status(403).json({ ok: false, error: "Admin access required" });
+    const b = req.body || {};
+    const phone = b.phone || "";
+    const pairRes = await waWeb.requestPairing(phone);
+    return res.json(pairRes);
+  });
+
   return router;
 }
 

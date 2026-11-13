@@ -141,7 +141,11 @@ function createWebRouter({ publicDir }) {
     return res.type("html").send(supportPage({ visitor, mode: "contact" }));
   });
 
-  router.get(["/open", "/app", "/reward", "/share", "/book", "/auth/callback"], (req, res) => {
+  router.get("/app", (req, res) => {
+    return res.sendFile(path.join(publicDir, "app.html"));
+  });
+
+  router.get(["/open", "/reward", "/share", "/book", "/auth/callback"], (req, res) => {
     return res.type("html").send(openAppPage({
       reqHost: getRequestHost(req),
       reqPath: req.path,
