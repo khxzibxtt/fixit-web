@@ -12,7 +12,11 @@ function isConfigured() {
   return Boolean(SUPABASE_URL && SUPABASE_SERVICE_KEY);
 }
 
-async function supabaseRequest(path, method = "GET", body = undefined) {
+function getSupabaseUrl() {
+  return SUPABASE_URL;
+}
+
+async function supabaseRequest(path, method = "GET", body = undefined, extraHeaders = {}) {
   if (!isConfigured()) {
     return { ok: false, status: 503, error: "SUPABASE_SERVICE_KEY env var is not configured" };
   }
@@ -20,16 +24,17 @@ async function supabaseRequest(path, method = "GET", body = undefined) {
     apikey: SUPABASE_SERVICE_KEY,
     Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
     "Content-Type": "application/json",
-    Prefer: "return=representation"
+    Prefer: method === "GET" ? "return=representation" : "return=representation",
+    ...(extraHeaders && typeof extraHeaders === "object" ? extraHeaders : {})
   };
 
   const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 8000);
+  const timer = setTimeout(() => ctrl.abort(), 9000);
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1${path}`, {
       method,
       headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: body !== undefined ? (typeof body === "string" ? body : JSON.stringify(body)) : undefined,
       signal: ctrl.signal
     });
     const text = await res.text();
@@ -41,6 +46,32 @@ async function supabaseRequest(path, method = "GET", body = undefined) {
     return { ok: true, status: res.status, data };
   } catch (err) {
     return { ok: false, status: 502, error: err && err.message ? err.message : "Supabase network error" };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function supabaseAuthUser(accessToken) {
+  if (!isConfigured() || !accessToken) {
+    return { ok: false, status: 400, error: "Missing Supabase configuration or token" };
+  }
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 7000);
+  try {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      headers: {
+        apikey: SUPABASE_SERVICE_KEY,
+        Authorization: `Bearer ${accessToken}`
+      },
+      signal: ctrl.signal
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok || !data) {
+      return { ok: false, status: res.status, error: (data && data.msg) || "Unable to verify Supabase user token" };
+    }
+    return { ok: true, status: 200, data };
+  } catch (err) {
+    return { ok: false, status: 502, error: err && err.message ? err.message : "Network error verifying token" };
   } finally {
     clearTimeout(timer);
   }
@@ -107,6 +138,8 @@ async function saveWebsiteSupportTicket({ sourceTag = "WEBSITE", name, email, ph
 
 module.exports = {
   isConfigured,
+  getSupabaseUrl,
   supabaseRequest,
+  supabaseAuthUser,
   saveWebsiteSupportTicket
 };

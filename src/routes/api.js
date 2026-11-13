@@ -194,11 +194,11 @@ function createApiRouter() {
     return res.status(status).json(result);
   });
 
-  router.post("/api/otp/verify", otpLimiter, (req, res) => {
+  router.post("/api/otp/verify", otpLimiter, async (req, res) => {
     const body = req.body && typeof req.body === "object" ? req.body : {};
     const phone = body.phone || body.to || "";
     const code = body.code || body.otp || "";
-    const result = verifyOtp(phone, code);
+    const result = await verifyOtp(phone, code);
     const status = result.status || (result.ok ? 200 : 400);
     return res.status(status).json(result);
   });

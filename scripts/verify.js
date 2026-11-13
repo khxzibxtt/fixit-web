@@ -538,26 +538,116 @@ async function run() {
       ok("Engine 9: Multi-Account Fingerprint, Anti-Poaching Chat Regex & Live Activity Feed verified");
     }
 
+    // 10. App BFF Auth Gateway, Strict Oman/Tourist Phone Validation & Session Guards
+    {
+      // Invalid Oman number starting with 8 -> must be denied (400)
+      const badOmanStart = await fetch(`${base}/api/auth/otp/send`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ countryIso: "OM", dialCode: "+968", nationalNumber: "81234567", channel: "whatsapp" })
+      });
+      assert.strictEqual(badOmanStart.status, 400, "Oman number starting with 8 must be denied");
+
+      // Invalid Oman short number (7 digits) -> must be denied (400)
+      const badOmanLen = await fetch(`${base}/api/auth/otp/send`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ countryIso: "OM", dialCode: "+968", nationalNumber: "9123456", channel: "sms" })
+      });
+      assert.strictEqual(badOmanLen.status, 400, "7-digit Oman number must be denied");
+
+      // Valid Oman number starting with 7 -> 200
+      const goodOman = await fetch(`${base}/api/auth/otp/send`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ countryIso: "OM", dialCode: "+968", nationalNumber: "71234567", channel: "whatsapp" })
+      });
+      assert.strictEqual(goodOman.status, 200, "Valid Oman 7XXXXXXX must be accepted");
+
+      // Tourist / International number (+14155551234) -> 200
+      const goodIntl = await fetch(`${base}/api/auth/otp/send`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ countryIso: "US", dialCode: "+1", nationalNumber: "4155551234", channel: "sms" })
+      });
+      assert.strictEqual(goodIntl.status, 200, "Valid US tourist number must be accepted");
+
+      // Resend cooldown on immediate second request for same number -> 429
+      const cooldownRes = await fetch(`${base}/api/auth/otp/send`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ countryIso: "US", dialCode: "+1", nationalNumber: "4155551234", channel: "sms" })
+      });
+      assert.strictEqual(cooldownRes.status, 429, "Immediate OTP resend for same number must trigger 429 cooldown");
+
+      // Unauthenticated app gateway routes must return 401
+      const noSessRest = await fetch(`${base}/api/app/rest/users`);
+      assert.strictEqual(noSessRest.status, 401, "Unauthenticated /api/app/rest/users must return 401");
+      const noSessBoot = await fetch(`${base}/api/app/bootstrap`);
+      assert.strictEqual(noSessBoot.status, 401, "Unauthenticated /api/app/bootstrap must return 401");
+      const noSessHb = await fetch(`${base}/api/auth/session/heartbeat`, { method: "POST" });
+      assert.strictEqual(noSessHb.status, 401, "Unauthenticated heartbeat must return 401");
+      const noSessComplete = await fetch(`${base}/api/auth/profile/complete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ firstName: "Ali", lastName: "Sami" })
+      });
+      assert.strictEqual(noSessComplete.status, 401, "Unauthenticated profile/complete must return 401");
+
+      // Missing Google credential rejected with 400/503 cleanly (never crashes)
+      const gEmpty = await fetch(`${base}/api/auth/google/exchange`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({})
+      });
+      assert(gEmpty.status === 400 || gEmpty.status === 503, `Expected 400/503 on empty google exchange, got ${gEmpty.status}`);
+
+      // Admin login rejects invalid code / missing config cleanly
+      const adminBad = await fetch(`${base}/api/auth/admin-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accessCode: "wrong_code" })
+      });
+      assert(adminBad.status === 403 || adminBad.status === 503, `Expected 403/503 on invalid admin login, got ${adminBad.status}`);
+
+      ok("App BFF strict phone validation, cooldowns & session security guards verified");
+    }
+
     await serverA.stop();
     serverA = null;
 
-    // Phase B: Dedicated 429 rate-limit check
-    serverB = await startServer({ TEST_RATE_MAX: "5" });
+    // Phase B: Dedicated 429 rate-limit check (global + auth login limiter)
+    serverB = await startServer({ TEST_RATE_MAX: "12", TEST_AUTH_SEND_MAX: "2" });
     const baseB = serverB.baseUrl;
-    for (let i = 0; i < 4; i++) {
-      // Note: waitForReady consumed 1 request, so 4 more reach max=5
+    for (let i = 0; i < 2; i++) {
+      const aRes = await fetch(`${baseB}/api/auth/otp/send`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ countryIso: "GB", dialCode: "+44", nationalNumber: "7700900123", channel: "sms" })
+      });
+      assert(aRes.status === 200 || aRes.status === 429, `Auth warmup ${i + 1} unexpected status ${aRes.status}`);
+    }
+    const authLimited = await fetch(`${baseB}/api/auth/otp/send`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ countryIso: "GB", dialCode: "+44", nationalNumber: "7700900123", channel: "sms" })
+    });
+    assert.strictEqual(authLimited.status, 429, "Expected 429 from authSendLimiter on 3rd request");
+
+    for (let i = 0; i < 8; i++) {
+      // Note: waitForReady(1) + 3 auth requests + 8 health = 12 requests reaching TEST_RATE_MAX=12
       const okRes = await fetch(`${baseB}/api/health`);
       assert.strictEqual(okRes.status, 200, `Rate-limit warmup request ${i + 1} failed with ${okRes.status}`);
     }
     const throttledApi = await fetch(`${baseB}/api/health`);
-    assert.strictEqual(throttledApi.status, 429, "Expected HTTP 429 JSON on 6th request");
+    assert.strictEqual(throttledApi.status, 429, "Expected HTTP 429 JSON on 13th request");
     assert(throttledApi.headers.get("retry-after"), "429 response missing Retry-After header");
     const throttledJson = await throttledApi.json();
     assert.strictEqual(throttledJson.ok, false);
 
     const throttledHtml = await fetch(`${baseB}/`, { headers: { Accept: "text/html" } });
     assert.strictEqual(throttledHtml.status, 429, "Expected HTTP 429 HTML when Accept: text/html");
-    ok("Global sliding-window HTTP 429 rate limiter (JSON & HTML) verified");
+    ok("Global & Auth login sliding-window HTTP 429 rate limiters verified");
 
     console.log(`\nALL CHECKS PASSED (${passed}/${passed})`);
   } finally {

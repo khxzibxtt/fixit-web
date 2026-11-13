@@ -13,7 +13,13 @@ function getClientIp(req) {
   return String(raw).trim().replace(/^::ffff:/, "");
 }
 
-function createRateLimiter({ name = "global", windowMs = 60000, max = 120, message = "Too many requests. Please slow down." } = {}) {
+function createRateLimiter({
+  name = "global",
+  windowMs = 60000,
+  max = 120,
+  message = "Too many requests. Please slow down.",
+  keyGenerator = null
+} = {}) {
   const buckets = new Map();
   stores.set(name, buckets);
 
@@ -29,9 +35,9 @@ function createRateLimiter({ name = "global", windowMs = 60000, max = 120, messa
 
   return function rateLimitMiddleware(req, res, next) {
     const now = Date.now();
-    const ip = getClientIp(req);
+    const key = String((typeof keyGenerator === "function" ? keyGenerator(req) : getClientIp(req)) || getClientIp(req));
     const cutoff = now - windowMs;
-    const prev = buckets.get(ip) || [];
+    const prev = buckets.get(key) || [];
     const active = prev.filter(ts => ts > cutoff);
 
     if (active.length >= max) {
@@ -56,7 +62,7 @@ function createRateLimiter({ name = "global", windowMs = 60000, max = 120, messa
     }
 
     active.push(now);
-    buckets.set(ip, active);
+    buckets.set(key, active);
     res.setHeader("RateLimit-Limit", String(max));
     res.setHeader("RateLimit-Remaining", String(Math.max(0, max - active.length)));
     res.setHeader("RateLimit-Reset", String(Math.ceil(windowMs / 1000)));

@@ -9,6 +9,7 @@ const express = require("express");
 const cors = require("cors");
 const { createRateLimiter } = require("./src/middleware/rateLimit");
 const { createApiRouter } = require("./src/routes/api");
+const { createAppApiRouter } = require("./src/routes/appApi");
 const { createWebRouter, renderNotFoundPage } = require("./src/routes/web");
 const { createEnginesRouter } = require("./src/routes/engines");
 const { startAutoConfirmCron } = require("./src/workers/autoConfirmCron");
@@ -34,8 +35,8 @@ function createApp() {
   });
 
   app.use(cors());
-  app.use(express.json({ limit: "100kb" }));
-  app.use(express.urlencoded({ extended: true, limit: "100kb" }));
+  app.use(express.json({ limit: "600kb" }));
+  app.use(express.urlencoded({ extended: true, limit: "600kb" }));
 
   // Global sliding-window rate limiter across all HTTP routes
   const globalLimiter = createRateLimiter({
@@ -48,6 +49,9 @@ function createApp() {
 
   // Deterministic Algorithms & Viral Engines routes
   app.use(createEnginesRouter());
+
+  // App BFF & Session Gateway routes (must run before generic /api 404 catch-all)
+  app.use(createAppApiRouter());
 
   // API & Digital Asset Links routes
   app.use(createApiRouter());
