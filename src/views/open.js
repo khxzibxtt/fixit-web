@@ -94,6 +94,17 @@ function openAppPage({ reqHost = "fixit-web.onrender.com", reqPath = "/open", qu
           });
         }
 
+        var hash = window.location.hash || "";
+        var search = window.location.search || "";
+        if (hash) {
+          if (intentUrl.indexOf("#Intent;") !== -1) {
+            intentUrl = intentUrl.replace("#Intent;", (intentUrl.includes("?") ? "&" : "?") + hash.slice(1) + "#Intent;");
+          } else {
+            intentUrl += hash;
+          }
+          schemeUrl += (schemeUrl.includes("?") ? "&" : "?") + hash.slice(1);
+        }
+
         if (isAndroid) {
           setTimeout(function () {
             window.location.href = intentUrl;
