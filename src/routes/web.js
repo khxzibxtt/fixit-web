@@ -100,7 +100,7 @@ function createWebRouter({ publicDir }) {
     return res.type("html").send(supportPage({ visitor, mode: "contact" }));
   });
 
-  router.get(["/open", "/app", "/reward", "/share", "/book"], (req, res) => {
+  router.get(["/open", "/app", "/reward", "/share", "/book", "/auth/callback"], (req, res) => {
     return res.type("html").send(openAppPage({
       reqHost: getRequestHost(req),
       reqPath: req.path,
