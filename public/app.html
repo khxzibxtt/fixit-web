@@ -741,7 +741,14 @@ body {
 <script>
 "use strict";
 const Leaf = typeof window !== "undefined" ? window.L : undefined;
-let ROLE = "consumer"; // consumer | vendor | admin
+let ROLE = (() => {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const r = (params.get("role") || "").toLowerCase();
+    if (r === "admin" || r === "vendor" || r === "consumer") return r;
+  } catch (e) {}
+  return "consumer";
+})(); // consumer | vendor | admin
 const CONSUMER_ID = "bd5b7118-e852-4d66-8082-c0d768195007";
 const VENDOR_ID = "8a16bdd6-0a42-4dd8-99d7-a14302183e37";
 let ME = (() => {
