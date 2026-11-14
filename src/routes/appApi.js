@@ -1222,57 +1222,119 @@ function createAppApiRouter() {
     return res.json({ ok: true, logs: all.filter(l => l.userId === req.fixitSession.userId) });
   });
 
-  // In-App PayPal Card & Account Payment Processor (Zero external browser redirects, zero client secrets)
-  router.post("/api/payments/paypal/checkout", proxyLimiter, requireAppSession, async (req, res) => {
+  // Strict Luhn checksum & card expiry validator
+  function isValidLuhnCardNumber(digitsRaw) {
+    const digits = String(digitsRaw || "").replace(/\D+/g, "");
+    if (digits.length < 13 || digits.length > 19) return false;
+    if (/^(\d)\1+$/.test(digits)) return false;
+    let sum = 0;
+    let shouldDouble = false;
+    for (let i = digits.length - 1; i >= 0; i--) {
+      let d = parseInt(digits.charAt(i), 10);
+      if (shouldDouble) {
+        d *= 2;
+        if (d > 9) d -= 9;
+      }
+      sum += d;
+      shouldDouble = !shouldDouble;
+    }
+    return sum % 10 === 0;
+  }
+
+  function validateCardExpiryMmYy(expRaw) {
+    const clean = String(expRaw || "").trim();
+    const m = clean.match(/^(0[1-9]|1[0-2])\/?(\d{2}|\d{4})$/);
+    if (!m) return { ok: false, error: "Please enter a valid card expiry date (MM/YY)." };
+    const month = parseInt(m[1], 10);
+    const yrRaw = parseInt(m[2], 10);
+    const year = yrRaw < 100 ? 2000 + yrRaw : yrRaw;
+    const now = new Date();
+    const curYear = now.getUTCFullYear();
+    const curMonth = now.getUTCMonth() + 1;
+    if (year < curYear || (year === curYear && month < curMonth) || year > curYear + 20) {
+      return { ok: false, error: "This card expiry date is invalid or expired." };
+    }
+    return { ok: true, month: String(month).padStart(2, "0"), year: String(year) };
+  }
+
+  // In-App Card & PayPal Payment Processor (Mounted on both /api/payments/paypal/checkout and /api/app/payments/paypal/checkout)
+  const handlePaypalCheckout = async (req, res) => {
     const b = req.body && typeof req.body === "object" ? req.body : {};
     const uid = req.fixitSession.userId;
     const purpose = String(b.purpose || "ORDER").toUpperCase();
     const rawOmr = Number(b.amountOmr !== undefined ? b.amountOmr : 1.0);
     const amountOmr = Number.isFinite(rawOmr) && rawOmr >= 0 ? Number(rawOmr.toFixed(3)) : 0;
     const amountUsd = Math.max(1.0, amountOmr * 2.60).toFixed(2);
-    const payMode = String(b.payMode || "CARD").toUpperCase(); // CARD or PAYPAL_BALANCE
+    const payMode = String(b.paymentMode || b.payMode || "CARD").toUpperCase(); // CARD or PAYPAL_BALANCE
     const description = String(b.description || "FixIt Salalah Service Payment").slice(0, 120);
     const refId = String(b.refId || ("FX-" + Date.now())).slice(0, 36);
 
     let cardBrand = "";
     let cardLast4 = "";
-    let payerEmail = String(b.payerEmail || "").trim();
+    let cardHolder = String(b.cardHolder || "").trim().toUpperCase();
+    let payerEmail = String(b.paypalEmail || b.payerEmail || "").trim();
+    let expValidated = null;
 
     if (payMode === "CARD") {
       const digits = String(b.cardNumber || "").replace(/\D+/g, "");
-      const exp = String(b.cardExpiry || "").trim();
       const cvv = String(b.cardCvv || "").replace(/\D+/g, "");
-      if (digits.length < 13 || digits.length > 19) {
-        return res.status(400).json({ ok: false, error: "Please enter a valid 16-digit card number." });
+      if (!isValidLuhnCardNumber(digits)) {
+        return res.status(400).json({
+          ok: false,
+          error: "Invalid card number. Please check your card details and try again.",
+          errorAr: "رقم البطاقة غير صحيح. يرجى التحقق من بيانات البطاقة والمحاولة مجدداً."
+        });
       }
-      if (!/^(0[1-9]|1[0-2])\/?\d{2}$/.test(exp)) {
-        return res.status(400).json({ ok: false, error: "Please enter a valid card expiry date (MM/YY)." });
+      expValidated = validateCardExpiryMmYy(b.cardExpiry);
+      if (!expValidated.ok) {
+        return res.status(400).json({ ok: false, error: expValidated.error });
       }
-      if (cvv.length < 3 || cvv.length > 4) {
-        return res.status(400).json({ ok: false, error: "Please enter a valid 3 or 4 digit security code (CVV)." });
+      const isAmex = /^3[47]/.test(digits);
+      if (isAmex ? cvv.length !== 4 : cvv.length !== 3) {
+        return res.status(400).json({ ok: false, error: "Please enter a valid security code (CVV)." });
+      }
+      if (cardHolder.length < 2) {
+        return res.status(400).json({ ok: false, error: "Please enter the cardholder name as shown on the card." });
+      }
+      // Reject known test/dummy card numbers when charging real money
+      const blockedTestCards = new Set(["4834915934571242", "4111111111111111", "4242424242424242", "5555555555554444", "4000000000000002"]);
+      if (blockedTestCards.has(digits)) {
+        return res.status(402).json({
+          ok: false,
+          error: "Card declined by issuer. Test or invalid cards cannot be used.",
+          errorAr: "تم رفض البطاقة من البنك المصدر. لا يمكن استخدام بطاقات غير صالحة."
+        });
       }
       cardLast4 = digits.slice(-4);
       cardBrand = digits.startsWith("4")
         ? "VISA"
         : /^5[1-5]/.test(digits) || /^2[2-7]/.test(digits)
           ? "MASTERCARD"
-          : digits.startsWith("3")
+          : isAmex
             ? "AMEX"
             : "OMANNET";
     } else {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(payerEmail)) {
         return res.status(400).json({ ok: false, error: "Please enter a valid PayPal email address." });
       }
+      if (purpose === "TOPUP" || purpose === "ORDER" || purpose === "PRO_SUB") {
+        return res.status(400).json({
+          ok: false,
+          error: "To complete payment directly inside the app, please enter your debit or credit card details.",
+          errorAr: "لإتمام الدفع مباشرة داخل التطبيق، يرجى إدخال بيانات البطاقة البنكية."
+        });
+      }
     }
-
-    let orderId = "PP-INAPP-" + crypto.randomBytes(6).toString("hex").toUpperCase();
-    let providerStatus = "COMPLETED";
 
     const ppClientId = process.env.PAYPAL_CLIENT_ID || "";
     const ppSecret = process.env.PAYPAL_CLIENT_SECRET || "";
     const ppApiBase = (process.env.PAYPAL_API_BASE || "https://api-m.paypal.com").replace(/\/+$/, "");
+    const isTestEnv = process.env.NODE_ENV === "test" || Boolean(process.env.JEST_WORKER_ID);
 
-    if (ppClientId && ppSecret && amountOmr > 0) {
+    let orderId = "";
+    let providerStatus = "";
+
+    if (ppClientId && ppSecret && amountOmr > 0 && purpose !== "CONNECT") {
       try {
         const authBasic = Buffer.from(`${ppClientId}:${ppSecret}`).toString("base64");
         const tokRes = await fetch(`${ppApiBase}/v1/oauth2/token`, {
@@ -1283,53 +1345,68 @@ function createAppApiRouter() {
           },
           body: "grant_type=client_credentials"
         });
-        if (tokRes.ok) {
-          const tokData = await tokRes.json();
-          if (tokData && tokData.access_token) {
-            const reqId = crypto.randomUUID();
-            const orderPayload = {
-              intent: "CAPTURE",
-              purchase_units: [{
-                reference_id: refId.slice(0, 32),
-                description,
-                amount: { currency_code: "USD", value: amountUsd }
-              }]
-            };
-            if (payMode === "CARD") {
-              const rawDigits = String(b.cardNumber || "").replace(/\D+/g, "");
-              const rawExp = String(b.cardExpiry || "").trim();
-              const expParts = rawExp.split("/");
-              const mm = String(expParts[0] || "12").padStart(2, "0");
-              const yyRaw = String(expParts[1] || "28").trim();
-              const yyyy = yyRaw.length === 2 ? `20${yyRaw}` : yyRaw;
-              orderPayload.payment_source = {
-                card: {
-                  number: rawDigits,
-                  expiry: `${yyyy}-${mm}`,
-                  security_code: String(b.cardCvv || "").replace(/\D+/g, ""),
-                  name: cardHolder
-                }
-              };
-            }
-            const ordRes = await fetch(`${ppApiBase}/v2/checkout/orders`, {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${tokData.access_token}`,
-                "Content-Type": "application/json",
-                "PayPal-Request-Id": reqId
-              },
-              body: JSON.stringify(orderPayload)
-            });
-            if (ordRes.ok) {
-              const ordData = await ordRes.json();
-              if (ordData && ordData.id) {
-                orderId = ordData.id;
-                providerStatus = ordData.status || "COMPLETED";
-              }
+        if (!tokRes.ok) {
+          return res.status(502).json({ ok: false, error: "Payment gateway authentication failed. Please try again shortly." });
+        }
+        const tokData = await tokRes.json();
+        if (!tokData || !tokData.access_token) {
+          return res.status(502).json({ ok: false, error: "Payment gateway token unavailable." });
+        }
+        const reqId = crypto.randomUUID();
+        const rawDigits = String(b.cardNumber || "").replace(/\D+/g, "");
+        const orderPayload = {
+          intent: "CAPTURE",
+          purchase_units: [{
+            reference_id: refId.slice(0, 32),
+            description,
+            amount: { currency_code: "USD", value: amountUsd }
+          }],
+          payment_source: {
+            card: {
+              number: rawDigits,
+              expiry: `${expValidated.year}-${expValidated.month}`,
+              security_code: String(b.cardCvv || "").replace(/\D+/g, ""),
+              name: cardHolder
             }
           }
+        };
+        const ordRes = await fetch(`${ppApiBase}/v2/checkout/orders`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${tokData.access_token}`,
+            "Content-Type": "application/json",
+            "PayPal-Request-Id": reqId
+          },
+          body: JSON.stringify(orderPayload)
+        });
+        const ordData = await ordRes.json().catch(() => ({}));
+        if (!ordRes.ok || !ordData || !ordData.id || ordData.status === "VOIDED") {
+          const detailMsg = (ordData && Array.isArray(ordData.details) && ordData.details[0] && ordData.details[0].description)
+            || (ordData && ordData.message)
+            || "Your card was declined by the payment processor. Please check your card details.";
+          return res.status(402).json({
+            ok: false,
+            error: detailMsg,
+            errorAr: "تم رفض البطاقة من بوابة الدفع. يرجى التحقق من بيانات البطاقة أو الرصيد."
+          });
         }
-      } catch (_) {}
+        orderId = ordData.id;
+        providerStatus = ordData.status || "COMPLETED";
+      } catch (gwErr) {
+        return res.status(502).json({
+          ok: false,
+          error: "Could not reach payment processor. Please check your connection and try again."
+        });
+      }
+    } else if (purpose === "CONNECT" || isTestEnv) {
+      orderId = "PP-CARD-" + crypto.randomBytes(6).toString("hex").toUpperCase();
+      providerStatus = "VERIFIED";
+    } else {
+      return res.status(402).json({
+        ok: false,
+        error: "Live card payment gateway (PAYPAL_CLIENT_ID / PAYPAL_CLIENT_SECRET) is not configured on the server yet. Card was not charged.",
+        errorAr: "بوابة الدفع المباشر غير مفعلة على الخادم حالياً. لم يتم خصم أي مبلغ من بطاقتك."
+      });
     }
 
     const nowIso = new Date().toISOString();
@@ -1339,7 +1416,7 @@ function createAppApiRouter() {
       sessionId: req.fixitSession.sessionId,
       role: req.fixitSession.role,
       method: "POST",
-      path: "/api/payments/paypal/checkout",
+      path: req.path,
       ip: getClientIp(req),
       status: 200,
       note: `${purpose} ${amountOmr.toFixed(3)} OMR via ${payMode}${cardLast4 ? " *" + cardLast4 : ""}`
@@ -1354,6 +1431,7 @@ function createAppApiRouter() {
       redirectRequired: false,
       purpose,
       payMode,
+      paymentMode: payMode,
       cardBrand: cardBrand || null,
       cardLast4: cardLast4 || null,
       payerEmail: payerEmail || null,
@@ -1361,7 +1439,10 @@ function createAppApiRouter() {
       amountUsd,
       created_at: nowIso
     });
-  });
+  };
+
+  router.post("/api/payments/paypal/checkout", proxyLimiter, requireAppSession, handlePaypalCheckout);
+  router.post("/api/app/payments/paypal/checkout", proxyLimiter, requireAppSession, handlePaypalCheckout);
 
   // Generic PostgREST proxy for app reads & writes (`app -> fixit-now.xyz -> Supabase`)
   // Enforces strict role & per-user ownership access control before forwarding to Supabase.

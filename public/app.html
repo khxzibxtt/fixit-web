@@ -73,7 +73,8 @@ svg.brand-svg{flex-shrink:0;display:block}
 input.search{color:var(--tx)}
 
 /* ---------- layout ---------- */
-.pad{padding:16px;display:flex;flex-direction:column;gap:14px;animation:tlbtPageIn .22s var(--ease)}
+.pad{padding:16px;display:flex;flex-direction:column;gap:14px}
+.page-anim .pad{animation:tlbtPageIn .18s var(--ease)}
 .row{display:flex;align-items:center;gap:12px}
 .sp{flex:1;min-width:0}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -85,7 +86,7 @@ input.search{color:var(--tx)}
 .sec{display:flex;align-items:flex-end;justify-content:space-between;margin-top:6px}
 .sec h2{font-size:20px;font-weight:800;letter-spacing:-.4px}
 .sec a,.sec span{font-size:14px;font-weight:700;color:var(--o)}
-.card{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:var(--sh);animation:tlbtCardRise .26s var(--ease) both;transition:transform .18s var(--ease),box-shadow .18s var(--ease)}
+.card{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:var(--sh);transition:transform .18s var(--ease),box-shadow .18s var(--ease)}
 .card-hero{background:linear-gradient(135deg,var(--o),#FF7A2E);color:#fff}
 .ico{width:44px;height:44px;border-radius:12px;background:var(--o2);color:var(--o);display:grid;place-items:center;flex-shrink:0;transition:transform .18s var(--spring)}
 .ico svg{width:22px;height:22px}
@@ -1058,10 +1059,7 @@ const S = {
   ]),
   wallet: load("wallet", { balance: 0.0, locked_balance: 0.0 }),
   txns: load("txns", []),
-  addresses: load("addresses", [
-    { address_id: "a-1", label: "Home (Salalah)", address_line: "Al Haffa Beach Rd, Villa 14", is_default: true },
-    { address_id: "a-2", label: "Office", address_line: "As Saadah Commercial Zone, Bld 2", is_default: false }
-  ]),
+  addresses: load("addresses", []),
   coupons: load("coupons", [
     { code: "SALALAH25", discount_pct: 25, is_active: true },
     { code: "FIXIT10", discount_pct: 10, is_active: true },
@@ -1174,11 +1172,17 @@ function validateAndApplyCoupon(rawCode) {
 
 const fmtOmr = v => {
   let n = Number(v || 0);
-  if (n > 99999) n = 125.000; // sanitize corrupted test balance
+  if (n > 99999) n = 0.000;
   return n.toLocaleString("en-US", { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 };
 const ago = d => { const m = Math.max(0, Math.round((Date.now() - new Date(d || Date.now())) / 60000)); return m < 1 ? (L === "ar" ? "الآن" : "now") : m < 60 ? m + (L === "ar" ? " د" : "m") : m < 1440 ? Math.round(m / 60) + (L === "ar" ? " س" : "h") : Math.round(m / 1440) + (L === "ar" ? " ي" : "d"); };
 const cleanDesc = d => String(d || "").replace(/\s*\[[^\]]*\]\s*/g, " ").trim();
+const getJobScheduleLabel = j => {
+  if (!j) return "";
+  if (j.scheduled_for) return String(j.scheduled_for).trim();
+  const m = String(j.description || "").match(/\[Schedule:\s*([^\]]+)\]/i);
+  return m && m[1] ? m[1].trim() : "";
+};
 const isDone = j => j.status === "COMPLETED" || j.status === "CANCELLED";
 const myJobs = () => ROLE === "consumer" ? S.jobs.filter(j => ME && j.consumer_id === ME) : ROLE === "vendor" ? S.jobs.filter(j => j.status !== "OPEN" && (S.bids.some(b => b.job_id === j.job_id && b.vendor_id === ME && b.status === "SELECTED") || j.assigned_vendor_id === ME || j.vendor_id === ME)) : S.jobs;
 const jobMsgs = id => S.msgs.filter(m => m.job_id === id).sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
@@ -1220,7 +1224,14 @@ function salalahAreaName(lat, lng) {
   if (lat < 17.008) return ar ? "الحافة، صلالة" : "Al Haffa, Salalah";
   return ar ? "وسط صلالة" : "Central Salalah";
 }
-const defAddr = () => (S.addresses && (S.addresses.find(a => a.is_default) || S.addresses[0])) || { address_id: "a-def", label: L === "ar" ? "المنزل (صلالة)" : "Home (Salalah)", details: "Al Haffa Rd, Central Salalah", building: "14", floor: "2", lat: 17.0150, lng: 54.0924, is_default: true };
+const defAddr = () => (S.addresses && S.addresses.length && (S.addresses.find(a => a.is_default) || S.addresses[0])) || {
+  address_id: null,
+  label: L === "ar" ? "حدد موقعك" : "Set your location",
+  details: S.userGpsAddress || (L === "ar" ? "اضغط لتحديد الموقع على الخريطة" : "Tap to pin your location on the map"),
+  lat: (S.userGps && S.userGps[0]) || 17.0150,
+  lng: (S.userGps && S.userGps[1]) || 54.0924,
+  is_empty: true
+};
 const addrText = a => a ? (a.details || a.address_line || salalahAreaName(a.lat || 17.015, a.lng || 54.0924)) : "";
 const addrCoords = a => {
   if (!a) return [17.0150, 54.0924];
@@ -1229,14 +1240,62 @@ const addrCoords = a => {
   return [17.0150, 54.0924];
 };
 
-// Initialize extra state fields safely
+function isValidLuhnCard(digitsRaw) {
+  const digits = String(digitsRaw || "").replace(/\D+/g, "");
+  if (digits.length < 13 || digits.length > 19) return false;
+  if (/^(\d)\1+$/.test(digits)) return false;
+  const blocked = new Set(["4834915934571242", "4111111111111111", "4242424242424242", "5555555555554444", "4000000000000002"]);
+  if (blocked.has(digits)) return false;
+  let sum = 0, dbl = false;
+  for (let i = digits.length - 1; i >= 0; i--) {
+    let d = parseInt(digits.charAt(i), 10);
+    if (dbl) { d *= 2; if (d > 9) d -= 9; }
+    sum += d;
+    dbl = !dbl;
+  }
+  return sum % 10 === 0;
+}
+
+function isValidCardExpiryMmYy(expRaw) {
+  const m = String(expRaw || "").trim().match(/^(0[1-9]|1[0-2])\/?(\d{2}|\d{4})$/);
+  if (!m) return false;
+  const month = parseInt(m[1], 10);
+  const yrRaw = parseInt(m[2], 10);
+  const year = yrRaw < 100 ? 2000 + yrRaw : yrRaw;
+  const now = new Date();
+  const curY = now.getFullYear(), curM = now.getMonth() + 1;
+  return !(year < curY || (year === curY && month < curM) || year > curY + 20);
+}
+
+// Initialize extra state fields safely & purge legacy demo addresses/cards
 if (!S.profile) S.profile = load("profile", { full_name: "", phone_number: "", email: "", push_enabled: true, order_alerts: true, promo_alerts: true });
+if (Array.isArray(S.addresses)) {
+  const cleanedAddrs = S.addresses.filter(a => a && a.address_id !== "a-1" && a.address_id !== "a-2" && a.address_id !== "a-def" && !/Al Haffa Beach Rd,\s*Villa 14|Al Haffa Rd,\s*Central Salalah|As Saadah Commercial Zone,\s*Bld 2/i.test((a.address_line || "") + " " + (a.details || "")));
+  if (cleanedAddrs.length !== S.addresses.length) {
+    S.addresses = cleanedAddrs;
+    save("addresses", S.addresses);
+  }
+}
 if (!S.cards) S.cards = load("cards", []);
+if (Array.isArray(S.cards)) {
+  const cleanedCards = S.cards.filter(c => c && c.cardNumber && isValidLuhnCard(c.cardNumber) && !/BANK MUSCAT VISA|THAWANI OMANNET/i.test(c.brand || ""));
+  if (cleanedCards.length !== S.cards.length) {
+    S.cards = cleanedCards;
+    save("cards", S.cards);
+  }
+}
 if (!S.usedCoupons) S.usedCoupons = load("usedCoupons", []);
 if (!S.cpnTab) S.cpnTab = "UNUSED";
 if (!S.wFilter) S.wFilter = "ALL";
 if (!S.userGps) S.userGps = null;
-if (S.wallet && Number(S.wallet.balance) > 99999) { S.wallet.balance = 125.000; save("wallet", S.wallet); }
+if (S.wallet && (Number(S.wallet.balance) > 99999 || Number(S.wallet.balance) === 500 || Number(S.wallet.balance) === 125)) {
+  // Purge legacy demo/unverified 500.000 / 125.000 wallet balance if no verified PayPal capture exists
+  const hasRealTopup = Array.isArray(S.txns) && S.txns.some(tx => Number(tx.amount) > 0 && tx.paypal_order_id && !String(tx.paypal_order_id).startsWith("PP-INAPP-"));
+  if (!hasRealTopup) {
+    S.wallet.balance = 0.000;
+    save("wallet", S.wallet);
+  }
+}
 if (!Array.isArray(S.txns)) {
   S.txns = [];
   save("txns", S.txns);
@@ -1477,7 +1536,11 @@ function snapInAppCameraFrame() {
     // Client-side compression (< 85 KB JPEG)
     const dataUrl = canvas.toDataURL("image/jpeg", 0.78);
     closeInAppCameraModal();
-    if (typeof cb === "function") cb(dataUrl);
+    if (!withStamp && typeof cb === "function") {
+      openPhotoCropper(dataUrl, cb);
+    } else if (typeof cb === "function") {
+      cb(dataUrl);
+    }
   });
 }
 
@@ -1506,7 +1569,7 @@ function triggerSystemFilePickerFallback() {
         const img = new Image();
         img.onload = function() {
           const canvas = document.createElement("canvas");
-          const maxDim = 800;
+          const maxDim = 900;
           let w = img.width, h = img.height;
           if (w > h && w > maxDim) { h = Math.round(h * (maxDim / w)); w = maxDim; }
           else if (h > maxDim) { w = Math.round(w * (maxDim / h)); h = maxDim; }
@@ -1515,8 +1578,12 @@ function triggerSystemFilePickerFallback() {
           const ctx = canvas.getContext("2d");
           ctx.drawImage(img, 0, 0, w, h);
           if (withStamp) burnGpsTimestampOnCanvas(canvas, ctx, w, h, lat, lng);
-          const outUrl = canvas.toDataURL("image/jpeg", 0.78);
-          if (typeof cb === "function") cb(outUrl);
+          const outUrl = canvas.toDataURL("image/jpeg", 0.82);
+          if (!withStamp && typeof cb === "function") {
+            openPhotoCropper(outUrl, cb);
+          } else if (typeof cb === "function") {
+            cb(outUrl);
+          }
         };
         img.onerror = function() {
           if (typeof cb === "function") cb(re.target.result);
@@ -1529,9 +1596,130 @@ function triggerSystemFilePickerFallback() {
   inp.click();
 }
 
+function openPhotoCropper(srcDataUrl, onDoneCb) {
+  S.cropModal = {
+    src: srcDataUrl,
+    zoom: 1,
+    offsetX: 0,
+    offsetY: 0,
+    cb: onDoneCb
+  };
+  render();
+  setTimeout(initCropTouchHandlers, 30);
+}
+
+function initCropTouchHandlers() {
+  const box = document.getElementById("fxCropViewport");
+  const img = document.getElementById("fxCropPreviewImg");
+  if (!box || !img || !S.cropModal) return;
+  let dragging = false, startX = 0, startY = 0, origX = 0, origY = 0;
+  const updateTransform = () => {
+    if (!S.cropModal) return;
+    const z = Number(S.cropModal.zoom || 1);
+    const ox = Number(S.cropModal.offsetX || 0);
+    const oy = Number(S.cropModal.offsetY || 0);
+    img.style.transform = `translate(${ox}px, ${oy}px) scale(${z})`;
+  };
+  box.onpointerdown = function(e) {
+    dragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    origX = S.cropModal.offsetX || 0;
+    origY = S.cropModal.offsetY || 0;
+    try { box.setPointerCapture(e.pointerId); } catch (_) {}
+  };
+  box.onpointermove = function(e) {
+    if (!dragging || !S.cropModal) return;
+    S.cropModal.offsetX = Math.max(-140, Math.min(140, origX + (e.clientX - startX)));
+    S.cropModal.offsetY = Math.max(-140, Math.min(140, origY + (e.clientY - startY)));
+    updateTransform();
+  };
+  box.onpointerup = box.onpointercancel = function() { dragging = false; };
+  updateTransform();
+}
+
+function updatePhotoCropZoom(val) {
+  if (!S.cropModal) return;
+  S.cropModal.zoom = Math.max(1, Math.min(3, parseFloat(val) || 1));
+  const img = document.getElementById("fxCropPreviewImg");
+  if (img) {
+    img.style.transform = `translate(${S.cropModal.offsetX || 0}px, ${S.cropModal.offsetY || 0}px) scale(${S.cropModal.zoom})`;
+  }
+}
+
+function confirmPhotoCrop() {
+  const cm = S.cropModal;
+  if (!cm || !cm.src) { S.cropModal = null; render(); return; }
+  const img = new Image();
+  img.onload = function() {
+    const outSize = 480;
+    const canvas = document.createElement("canvas");
+    canvas.width = outSize;
+    canvas.height = outSize;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#111827";
+    ctx.fillRect(0, 0, outSize, outSize);
+
+    const viewSize = 260;
+    const scaleRatio = outSize / viewSize;
+    const z = Number(cm.zoom || 1);
+    const ox = Number(cm.offsetX || 0) * scaleRatio;
+    const oy = Number(cm.offsetY || 0) * scaleRatio;
+
+    const iw = img.width, ih = img.height;
+    const baseScale = Math.max(outSize / iw, outSize / ih);
+    const drawW = iw * baseScale * z;
+    const drawH = ih * baseScale * z;
+    const dx = (outSize - drawW) / 2 + ox;
+    const dy = (outSize - drawH) / 2 + oy;
+
+    ctx.drawImage(img, dx, dy, drawW, drawH);
+    const croppedUrl = canvas.toDataURL("image/jpeg", 0.84);
+    const cb = cm.cb;
+    S.cropModal = null;
+    render();
+    if (typeof cb === "function") cb(croppedUrl);
+  };
+  img.onerror = function() {
+    const cb = cm.cb;
+    const raw = cm.src;
+    S.cropModal = null;
+    render();
+    if (typeof cb === "function") cb(raw);
+  };
+  img.src = cm.src;
+}
+
 function renderInAppCameraModal() {
-  if (!S.cameraModal) return "";
   const ar = L === "ar";
+  if (S.cropModal && S.cropModal.src) {
+    return `<div class="cam-modal" role="dialog" aria-label="Crop Photo" style="background:#0B0F17;justify-content:space-between;padding:calc(16px + env(safe-area-inset-top)) 18px calc(24px + env(safe-area-inset-bottom))">
+      <div class="row" style="justify-content:space-between">
+        <button class="ib" style="background:rgba(255,255,255,.14);color:#fff" onclick="S.cropModal=null;render()">${I("x")}</button>
+        <div style="font-size:17px;font-weight:800;color:#fff">${ar ? "قص وتعديل الصورة" : "Crop & Adjust Photo"}</div>
+        <div style="width:40px"></div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;align-items:center;gap:14px;margin:auto 0">
+        <div id="fxCropViewport" style="width:260px;height:260px;border-radius:24px;overflow:hidden;position:relative;border:3px solid #FF5A00;background:#111827;touch-action:none;cursor:grab;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 36px rgba(0,0,0,.5)">
+          <img id="fxCropPreviewImg" src="${esc(S.cropModal.src)}" alt="Crop preview" draggable="false" style="width:100%;height:100%;object-fit:cover;transform-origin:center center;pointer-events:none;user-select:none" />
+          <div style="position:absolute;inset:0;border-radius:50%;border:1.5px dashed rgba(255,255,255,.55);pointer-events:none"></div>
+        </div>
+        <div style="font-size:12px;color:#9CA3AF">${ar ? "اسحب الصورة لتحريكها أو استخدم شريط التكبير" : "Drag photo to reposition or use zoom slider"}</div>
+        <div class="row" style="width:260px;gap:10px;color:#fff">
+          <span style="font-size:12px;font-weight:700">1x</span>
+          <input type="range" min="1" max="3" step="0.05" value="${S.cropModal.zoom || 1}" oninput="updatePhotoCropZoom(this.value)" style="flex:1;accent-color:#FF5A00;-webkit-appearance:auto;appearance:auto;height:6px" />
+          <span style="font-size:12px;font-weight:700">3x</span>
+        </div>
+      </div>
+
+      <div class="row" style="gap:10px">
+        <button class="btn outline" style="flex:1;background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)!important" onclick="S.cropModal=null;render()">${ar ? "إلغاء" : "Cancel"}</button>
+        <button class="btn" style="flex:2" onclick="confirmPhotoCrop()">${ar ? "حفظ الصورة المقصوصة" : "Crop & Save"}</button>
+      </div>
+    </div>`;
+  }
+  if (!S.cameraModal) return "";
   return `<div class="cam-modal" role="dialog" aria-label="Camera">
     <div style="position:absolute;top:0;left:0;right:0;z-index:20;padding:calc(12px + env(safe-area-inset-top)) 16px 12px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,rgba(0,0,0,0.6) 0%,transparent 100%)">
       <button class="ib" style="width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,0.4);backdrop-filter:blur(10px);color:#fff;border:0" onclick="closeInAppCameraModal()" aria-label="Close">${I("x")}</button>
@@ -2259,8 +2447,7 @@ async function sync() {
     } else {
       if (data.wallet) {
         if (Number(data.wallet.balance) > 99999) {
-          data.wallet.balance = 125.000;
-          if (data.wallet.wallet_id) sb(`/wallets?wallet_id=eq.${data.wallet.wallet_id}`, "PATCH", { balance: 125.000 }).catch(() => {});
+          data.wallet.balance = 0.000;
         }
         S.wallet = data.wallet;
         save("wallet", data.wallet);
@@ -2269,7 +2456,7 @@ async function sync() {
         const dbTx = data.walletTransactions.map(t => ({
           ...t,
           tx_id: t.tx_id || t.paypal_order_id || t.transaction_id || "",
-          payment_method: t.payment_method || (Number(t.amount) > 0 ? "PayPal Checkout" : "FixIt Wallet"),
+          payment_method: t.payment_method || (Number(t.amount) > 0 ? "Card / PayPal" : "FixIt Wallet"),
           job_id: t.job_id || null
         }));
         const localOnlyTx = (S.txns || []).filter(lt => lt._local && !dbTx.some(dt => (dt.transaction_id && dt.transaction_id === lt.transaction_id) || (lt.job_id && dt.job_id === lt.job_id && Number(dt.amount) === Number(lt.amount))));
@@ -2278,7 +2465,8 @@ async function sync() {
       }
       if (Array.isArray(data.addresses)) {
         let seenDef = false;
-        S.addresses = data.addresses.map(a => {
+        const cleanRemoteAddrs = data.addresses.filter(a => a && a.address_id !== "a-1" && a.address_id !== "a-2" && a.address_id !== "a-def" && !/Al Haffa Beach Rd,\s*Villa 14|Al Haffa Rd,\s*Central Salalah|As Saadah Commercial Zone,\s*Bld 2/i.test((a.address_line || "") + " " + (a.details || "")));
+        S.addresses = cleanRemoteAddrs.map(a => {
           const isDef = Boolean(a.is_default) && !seenDef;
           if (isDef) seenDef = true;
           return { ...a, is_default: isDef };
@@ -2307,6 +2495,13 @@ async function sync() {
       return;
     }
 
+    // Never re-render DOM during background sync if user is in a sheet, camera, cropper, or interactive form screen
+    const activeTopScreen = S.stack.length ? S.stack[S.stack.length - 1] : null;
+    const interactiveScreens = new Set(["book", "checkout", "last_check", "account_info", "addr_map", "addr_form", "settings", "shop_kyc", "auth"]);
+    if (busyTyping() || S.sheet || S.cameraModal || S.cropModal || (activeTopScreen && interactiveScreens.has(activeTopScreen))) {
+      return;
+    }
+
     const latestMsgId = S.msgs && S.msgs[0] ? (S.msgs[0].message_id || S.msgs[0].created_at) : "";
     const sig = (S.jobs.length + "_" + (S.jobs[0] ? S.jobs[0].status + S.jobs[0].updated_at : "") + "_" + S.msgs.length + "_" + latestMsgId + "_" + S.bids.length + "_" + S.photos.length + "_" + (S.tickets ? S.tickets.length : 0) + "_" + (S.offline ? "1" : "0"));
     if (window._lastDataSig !== sig || wasOffline) {
@@ -2322,10 +2517,10 @@ async function sync() {
         updateTalabatMapInPlace("fullTrackLeafletMap", S.jobId);
         if ((curJob && curJob._renderedSig !== jobSig) || wasOffline) {
           if (curJob) curJob._renderedSig = jobSig;
-          if (!busyTyping()) render();
+          render();
         }
       } else {
-        if (!busyTyping()) render();
+        render();
       }
     }
   } catch (e) {
@@ -2338,9 +2533,10 @@ const isOpenScreen = n => S.stack.length && S.stack[S.stack.length - 1] === n;
 const busyTyping = () => { const a = document.activeElement; return Boolean(a && (a.tagName === "INPUT" || a.tagName === "TEXTAREA" || a.tagName === "SELECT")); };
 
 /* ---------- navigation ---------- */
-function tab(n) { S.tab = n; S.stack = []; S.jobId = null; scrollTo(0, 0); render(); }
+function tab(n) { S.tab = n; S.stack = []; S.jobId = null; S._navChanged = true; scrollTo(0, 0); render(); }
 function go(screen, id) {
   S.stack.push(screen);
+  S._navChanged = true;
   if (screen === "support_chat" && id) S.ticketId = id;
   else if (id) { S.jobId = id; markSeen(id); }
   scrollTo(0, 0); render();
@@ -4738,8 +4934,23 @@ async function sendMsg(text) {
 }
 
 async function postJob() {
+  const ar = L === "ar";
+  const d = S.draft || {};
+  if (!d.cat || !CATS.some(x => x[0] === d.cat)) {
+    d.step = 1;
+    render();
+    toast(ar ? "اختر نوع الخدمة أولاً" : "Please select a service category first");
+    return;
+  }
+  const rawNote = (d.note || "").trim();
+  if (rawNote.length < 3) {
+    d.step = 2;
+    render();
+    toast(ar ? "يرجى كتابة وصف المشكلة أولاً قبل إرسال الطلب" : "Please describe the problem before sending your request");
+    return;
+  }
   if (!checkRateLimit("create_job", 3, 60000, "New Order Post", "نشر طلب جديد")) return;
-  const d = S.draft || {}, c = cat(d.cat || "AC_REPAIR"), sh = String(Math.floor(100000 + Math.random() * 900000));
+  const c = cat(d.cat), sh = String(Math.floor(100000 + Math.random() * 900000));
   const addr = (S.addresses && S.addresses.find(a => a.address_id === d.address_id)) || defAddr();
   const [lat, lng] = addrCoords(addr);
   const tags = Array.from(new Set([
@@ -4747,7 +4958,6 @@ async function postJob() {
     ...(S.profile && S.profile.isProMember ? ["PRO_PRIORITY"] : [])
   ]));
   const tagStr = tags.length ? `[${tags.join(", ")}] ` : "";
-  const rawNote = (d.note || "").trim() || c.name;
   const destStr = d.destination ? ` [Destination: ${d.destination}]` : "";
   const schedStr = (d.when === "scheduled" && d.schedTime) ? ` [Schedule: ${d.schedTime}]` : "";
   const instStr = Array.isArray(d.instructions) && d.instructions.length ? ` [Instructions: ${d.instructions.join(", ")}]` : "";
@@ -4764,6 +4974,7 @@ async function postJob() {
     category_id: c.id,
     sub_issue_tags: tags,
     urgency: urg,
+    scheduled_for: (d.when === "scheduled" && d.schedTime) ? d.schedTime : null,
     description: desc,
     original_description: rawNote,
     location_geom: toEWKB(lat, lng),
@@ -4811,6 +5022,7 @@ async function postJob() {
     const realJob = Array.isArray(created) && created[0] ? created[0] : localJob;
     realJob.videoUrl = d.videoUrl || null;
     realJob.videoName = d.videoName || null;
+    if (localJob.scheduled_for) realJob.scheduled_for = localJob.scheduled_for;
 
     // Save Customer Before verification photos into DB with valid phase='BEFORE'
     if (Array.isArray(d.photos) && d.photos.length) {
@@ -4822,14 +5034,14 @@ async function postJob() {
       save("photos", S.photos);
     }
 
-    // Calculate real distance to vendor & send "New Job X.X km away" notification to VENDOR_ID (NOT consumer!)
     const vLoc = (S.vendorLocs && S.vendorLocs[0] && S.vendorLocs[0].live_geom) ? fromEWKB(S.vendorLocs[0].live_geom) : [17.0185, 54.0882];
     const distKm = Math.max(0.4, calcDistKm([lat, lng], vLoc)).toFixed(1);
+    const schedNote = (d.when === "scheduled" && d.schedTime) ? ` (Scheduled: ${d.schedTime})` : "";
     sb("/notifications", "POST", {
       user_id: VENDOR_ID,
       kind: "NEW_JOB",
-      title: `New ${cat(c.id).name} Job · ${distKm} km away`,
-      body: `#${sh}: "${rawNote.slice(0, 70)}" — Tap to view photos & send your bid!`,
+      title: `New ${cat(c.id).name} Job${schedNote} · ${distKm} km away`,
+      body: `#${sh}: "${rawNote.slice(0, 70)}" — Tap to view details & send your bid!`,
       job_id: realJob.job_id
     }).catch(() => {});
 
@@ -4985,7 +5197,7 @@ async function confirmBidPayment() {
   if (payMethod === "WALLET") {
     const curBal = Number((S.wallet && S.wallet.balance) || 0);
     if (curBal < totalAmt) {
-      toast(ar ? `⚠ رصيد المحفظة غير كافٍ (${fmtOmr(curBal)} ر.ع) — اشحن المحفظة أو اختر الدفع الفوري` : `⚠ Insufficient FixIt Pay balance (${fmtOmr(curBal)} OMR) — Top up or use Instant Pay!`);
+      toast(ar ? `⚠ رصيد المحفظة غير كافٍ (${fmtOmr(curBal)} ر.ع) — اشحن المحفظة أو اختر الدفع بالبطاقة` : `⚠ Insufficient Wallet balance (${fmtOmr(curBal)} OMR) — Top up or pay by card!`);
       return;
     }
     S.wallet.balance = Number((curBal - totalAmt).toFixed(3));
@@ -5011,7 +5223,7 @@ async function confirmBidPayment() {
       return;
     }
     try {
-      toast(ar ? "جاري معالجة الدفع داخل التطبيق..." : "Processing in-app payment...");
+      toast(ar ? "جاري معالجة الدفع..." : "Processing payment...");
       S.paypalPurpose = "ORDER";
       ppOrderInfo = await createRealPayPalOrder(totalAmt, `FixIt ${cat(j.category_id).name} (${sid(j)})`, j.job_id, S.inAppCardDraft || null);
     } catch (payErr) {
@@ -5088,18 +5300,22 @@ async function confirmBidPayment() {
   S.jobId = j.job_id;
   render();
 
+  const schedLbl = getJobScheduleLabel(j);
   try {
     if (b && b.bid_id) await sb(`/bids?bid_id=eq.${b.bid_id}`, "PATCH", { status: "SELECTED" });
     await sb(`/jobs?job_id=eq.${j.job_id}`, "PATCH", { status: "BID_SELECTED", updated_at: new Date().toISOString() });
-    // Notify Vendor that their bid was accepted & paid!
     sb("/notifications", "POST", {
       user_id: (b && b.vendor_id) || VENDOR_ID,
       kind: "ORDER_UPDATE",
-      title: `Offer Accepted & Paid (${totalAmt.toFixed(3)} OMR)!`,
-      body: `Customer accepted your offer on ${sid(j)} — head to the pinned location now!`,
+      title: schedLbl ? `Scheduled Booking Confirmed (${totalAmt.toFixed(3)} OMR)` : `Offer Accepted & Paid (${totalAmt.toFixed(3)} OMR)!`,
+      body: schedLbl
+        ? `Customer confirmed your offer on ${sid(j)} scheduled for ${schedLbl}. Head to the location at the scheduled time!`
+        : `Customer accepted your offer on ${sid(j)} — head to the pinned location now!`,
       job_id: j.job_id
     }).catch(() => {});
-    toast(ar ? "✓ تم الدفع وتأكيد الفني بنجاح! يمكنك الآن المحادثة وتتبع الفني" : "✓ Payment complete & Pro confirmed! Live tracking & chat unlocked.");
+    toast(schedLbl
+      ? (ar ? `✓ تم تأكيد الحجز المجدول (${schedLbl}) بنجاح!` : `✓ Scheduled booking (${schedLbl}) confirmed!`)
+      : (ar ? "✓ تم الدفع وتأكيد الفني بنجاح! يمكنك الآن المحادثة وتتبع الفني" : "✓ Payment complete & Pro confirmed! Live tracking & chat unlocked."));
     sync();
   } catch (e) {
     toast(ar ? "✓ تم تأكيد العرض والدفع بنجاح" : "✓ Offer confirmed & paid!");
@@ -5370,24 +5586,25 @@ async function saveProfile() {
 async function addCard() {
   const num = ((document.getElementById("cardNum") || {}).value || "").replace(/\D/g, "");
   const holder = ((document.getElementById("cardHolder") || {}).value || S.profile.full_name).trim().toUpperCase();
-  const exp = ((document.getElementById("cardExp") || {}).value || "08/28").trim();
-  if (num.length < 4) { toast(L === "ar" ? "أدخل رقم بطاقة صحيح" : "Enter a valid card number"); return; }
+  const exp = ((document.getElementById("cardExp") || {}).value || "").trim();
+  const cvv = ((document.getElementById("cardCvv") || {}).value || "").replace(/\D/g, "");
+  if (!isValidLuhnCard(num)) { toast(L === "ar" ? "رقم البطاقة غير صحيح" : "Invalid card number. Please check your card details."); return; }
+  if (!isValidCardExpiryMmYy(exp)) { toast(L === "ar" ? "تاريخ انتهاء البطاقة غير صالح" : "Please enter a valid non-expired date (MM/YY)"); return; }
+  if (cvv.length < 3 || cvv.length > 4) { toast(L === "ar" ? "أدخل رمز الأمان CVV" : "Please enter your card CVV code"); return; }
+  if (holder.length < 2) { toast(L === "ar" ? "أدخل اسم حامل البطاقة" : "Please enter the cardholder name"); return; }
   const last4 = num.slice(-4);
-  const brand = num.startsWith("4") ? "BANK MUSCAT VISA" : num.startsWith("5") ? "MASTERCARD" : "THAWANI OMANNET";
+  const brand = num.startsWith("4") ? "VISA" : /^5[1-5]/.test(num) || /^2[2-7]/.test(num) ? "MASTERCARD" : num.startsWith("3") ? "AMEX" : "OMANNET";
   const parts = exp.split("/");
   const exp_month = Math.min(12, Math.max(1, parseInt(parts[0], 10) || 9));
   const rawYr = parseInt(parts[1], 10) || 28;
   const exp_year = rawYr < 100 ? 2000 + rawYr : rawYr;
   S.cards.forEach(c => { c.is_default = false; });
-  const newCard = { pm_id: "pm-" + Date.now(), user_id: ME, brand, last4, exp_month, exp_year, holder_name: holder, is_default: true };
+  const newCard = { pm_id: "pm-" + Date.now(), user_id: ME, brand, last4, cardNumber: num, cvv, exp_month, exp_year, holder_name: holder, is_default: true };
   S.cards.push(newCard);
   save("cards", S.cards);
   S.sheet = null;
   render();
-  toast(L === "ar" ? "✓ تمت إضافة البطاقة بنجاح" : "✓ Card added to FixIt Pay");
-  try {
-    await sb("/payment_methods", "POST", { user_id: ME, brand, last4, exp_month, exp_year, holder_name: holder, is_default: newCard.is_default });
-  } catch (e) {}
+  toast(L === "ar" ? "✓ تم حفظ البطاقة" : "✓ Card saved");
 }
 
 function delCard(id) {
@@ -5395,7 +5612,6 @@ function delCard(id) {
   save("cards", S.cards);
   render();
   toast(L === "ar" ? "✓ تم حذف البطاقة" : "✓ Card removed");
-  sb(`/payment_methods?pm_id=eq.${id}`, "DELETE").catch(() => {});
 }
 
 function exportReceiptPdf(jobId) {
@@ -5496,8 +5712,19 @@ function addJobPhoto(jobId) {
 
 async function depositFunds(amountOmr, existingPpOrder) {
   const amt = parseFloat(amountOmr);
-  if (isNaN(amt) || amt <= 0) return;
-  const ppOrd = existingPpOrder || await createRealPayPalOrder(amt, `FixIt Wallet Top-Up (${amt.toFixed(3)} ${t("omr")})`, "TOPUP-" + Date.now());
+  if (isNaN(amt) || amt <= 0) {
+    toast(L === "ar" ? "أدخل مبلغاً صحيحاً للشحن" : "Please enter a valid top-up amount");
+    return;
+  }
+  if (!existingPpOrder || !existingPpOrder.id) {
+    // Open card checkout sheet instead of granting free balance without card verification!
+    S.topupAmtDraft = amt;
+    S.paypalPurpose = "TOPUP";
+    S.sheet = "paypal";
+    render();
+    return;
+  }
+  const ppOrd = existingPpOrder;
   const newBal = Number(S.wallet.balance || 0) + amt;
   S.wallet.balance = newBal;
   save("wallet", S.wallet);
@@ -5508,8 +5735,8 @@ async function depositFunds(amountOmr, existingPpOrder) {
     kind: "TOPUP",
     category: "TOPUP",
     amount: amt,
-    note: `Wallet Top-Up · PayPal`,
-    payment_method: "PayPal Checkout",
+    note: `Wallet Top-Up`,
+    payment_method: ppOrd.cardBrand && ppOrd.cardLast4 ? `${ppOrd.cardBrand} •••• ${ppOrd.cardLast4}` : "Card / PayPal",
     status: "COMPLETED",
     created_at: new Date().toISOString()
   });
@@ -5518,11 +5745,11 @@ async function depositFunds(amountOmr, existingPpOrder) {
   try {
     if (S.wallet.wallet_id) {
       await sb(`/wallets?wallet_id=eq.${S.wallet.wallet_id}`, "PATCH", { balance: newBal, updated_at: new Date().toISOString() });
-      await sb("/wallet_transactions", "POST", { wallet_id: S.wallet.wallet_id, user_id: ME, kind: "TOPUP", amount: amt, balance_after: newBal, external_ref: ppOrd.id || null, note: "PayPal Wallet Top-Up" });
+      await sb("/wallet_transactions", "POST", { wallet_id: S.wallet.wallet_id, user_id: ME, kind: "TOPUP", amount: amt, balance_after: newBal, external_ref: ppOrd.id || null, note: "Wallet Top-Up" });
     }
-    toast(`Top-Up +${amt.toFixed(3)} ${t("omr")} via PayPal`);
+    toast(`+${amt.toFixed(3)} ${t("omr")} added to wallet`);
     sync();
-  } catch (e) { toast(`Top-Up +${amt.toFixed(3)} ${t("omr")} via PayPal`); }
+  } catch (e) { toast(`+${amt.toFixed(3)} ${t("omr")} added to wallet`); }
 }
 
 async function withdrawFunds(amountOmr) {
@@ -5547,7 +5774,7 @@ async function withdrawFunds(amountOmr) {
 async function adminRefundJob(jobId) {
   try {
     await setStatus(jobId, "CANCELLED", "Refunded by FixIt Admin to Consumer Wallet");
-    toast("✓ Refunded 18.000 OMR to Consumer Wallet");
+    toast("✓ Refunded to Consumer Wallet");
     sync();
   } catch (e) { toast("⚠ " + e.message); }
 }
@@ -5561,13 +5788,13 @@ async function adminReleaseEscrow(jobId) {
 }
 
 function depositSheet() {
-  const ar = L === "ar", dep = true;
+  const ar = L === "ar";
   return `<div class="sheet" onclick="if(event.target===this){S.sheet=null;render()}"><div>
     <div class="grab"></div>
-    <div class="row"><div class="sp"><div class="t1" style="font-size:22px;font-weight:900">${dep ? (ar ? "شحن المحفظة" : "Top up wallet") : (ar ? "سحب الرصيد" : "Withdraw")}</div><div class="t2">${dep ? "Thawani · Bank Muscat" : (ar ? "المتاح" : "Available") + ": " + fmtOmr(S.wallet.balance || 0) + " " + t("omr")}</div></div><button class="ib" onclick="S.sheet=null;render()">${I("x")}</button></div>
-    <div class="amt">${(dep ? [5, 10, 20, 50, 100, 250] : [10, 25, 50, 100, 200, 500]).map(a => `<button onclick="${dep ? "depositFunds" : "withdrawFunds"}(${a})">${a}</button>`).join("")}</div>
+    <div class="row"><div class="sp"><div class="t1" style="font-size:22px;font-weight:900">${ar ? "شحن المحفظة" : "Top up wallet"}</div><div class="t2">${ar ? "اختر المبلغ للمتابعة إلى الدفع" : "Select an amount to continue to payment"}</div></div><button class="ib" onclick="S.sheet=null;render()">${I("x")}</button></div>
+    <div class="amt">${[5, 10, 20, 50, 100, 250].map(a => `<button onclick="depositFunds(${a})">${a}</button>`).join("")}</div>
     <div class="fld"><label>${ar ? "مبلغ آخر" : "Other amount"} (${t("omr")})</label><input id="amtInp" type="number" inputmode="decimal" placeholder="0.000"></div>
-    <button class="btn ${dep ? "" : "g"}" onclick="${dep ? "depositFunds" : "withdrawFunds"}(document.getElementById('amtInp').value)">${dep ? t("deposit") : t("withdraw")}</button>
+    <button class="btn" onclick="depositFunds(document.getElementById('amtInp').value)">${t("deposit")}</button>
   </div></div>`;
 }
 
@@ -6014,13 +6241,12 @@ const bar = (title, withBack, right) => {
         <div class="talabat-loc-addr ell">${esc(a.label)} · ${esc(addrText(a))} <span style="font-size:10px">▼</span></div></div>
       </div>
       <button class="talabat-circle-btn" onclick="go('notifs')">${I("bell")}${unreadNotifs ? `<span class="badge" style="position:absolute;top:-3px;right:-3px">${unreadNotifs}</span>` : ""}</button>
-      ${langBtn()}
     </div>`;
   }
   return `<div class="talabat-top-bar">
     ${withBack ? `<button class="talabat-back-btn" onclick="back()">${I("back", "flip")}</button>` : ""}
     <div class="sp ell hdr-title" style="${withBack ? "font-size:18px" : ""}">${title}</div>
-    <div class="row" style="gap:8px">${right || langBtn()}</div>
+    ${right ? `<div class="row" style="gap:8px">${right}</div>` : ""}
   </div>`;
 };
 const langBtn = () => `<button class="talabat-circle-btn" onclick="setLang(L==='ar'?'en':'ar')" style="font-weight:800;font-size:13px">${L === "ar" ? "EN" : "ع"}</button>`;
@@ -6033,6 +6259,7 @@ function jobCard(j) {
   const jobBids = S.bids.filter(b => b.job_id === j.job_id);
   const bidsCount = jobBids.length;
   const chosenBid = jobBids.find(b => b.status === "SELECTED" || b.status === "ACCEPTED");
+  const schedLbl = getJobScheduleLabel(j);
   const priceDisplay = chosenBid
     ? `${Number(chosenBid.bid_amount).toFixed(3)} <span class="t2" style="font-size:12px">${t("omr")}</span>`
     : (j.status === "OPEN"
@@ -6044,7 +6271,7 @@ function jobCard(j) {
       <div class="sp">
         <div class="row" style="gap:8px;justify-content:space-between"><div class="t1 ell">${c.name}</div>${statusPill(j)}</div>
         <div class="desc ell">${esc(displayTranslated(cleanDesc(j.description))) || sid(j)}</div>
-        <div class="t2" style="font-size:12px;margin-top:2px">${sid(j)} · ${ago(j.created_at)} ${j.status === "OPEN" && bidsCount ? `· <b style="color:var(--o)">${bidsCount} ${t("offers")}</b>` : ""}</div>
+        <div class="t2" style="font-size:12px;margin-top:2px">${sid(j)} · ${ago(j.created_at)} ${schedLbl ? `· <span style="color:#1D4ED8;font-weight:800">${ar ? "مجدول:" : "Scheduled:"} ${esc(schedLbl)}</span>` : ""} ${j.status === "OPEN" && bidsCount ? `· <b style="color:var(--o)">${bidsCount} ${t("offers")}</b>` : ""}</div>
       </div>
     </div>
     <div class="foot" onclick="event.stopPropagation()">
@@ -6294,11 +6521,13 @@ const ISSUE_TAGS = {
 };
 
 function openBookPage(catId) {
-  const cid = CATS.some(x => x[0] === catId) ? catId : "AC_REPAIR";
+  const hasPreselectedCat = Boolean(catId && CATS.some(x => x[0] === catId));
+  const cid = hasPreselectedCat ? catId : "";
   S.draft = {
     cat: cid,
+    step: hasPreselectedCat ? 2 : 1,
     when: "now",
-    schedTime: "Today, 5:00 PM",
+    schedTime: "Tomorrow, 10:00 AM",
     assetType: /TAXI|BREAKDOWN|TOW_TRUCK|MECHANIC|TIRE_FIX/.test(cid) ? "VEHICLE" : "APARTMENT",
     scopeItems: [],
     unitCount: 1,
@@ -6324,12 +6553,41 @@ function addDraftPhoto() {
     if (!Array.isArray(S.draft.photos)) S.draft.photos = [];
     S.draft.photos.push(dataUrl);
     render();
-    toast(L === "ar" ? "تم التقاط صورة التوثيق بختم الموقع والوقت" : "Live 'Before' photo stamped with GPS & Timestamp");
+    toast(L === "ar" ? "تم التقاط الصورة" : "Photo added");
   });
 }
 
+function advanceBookStep2To3() {
+  const ar = L === "ar";
+  const d = S.draft || {};
+  const nInp = document.getElementById("note");
+  if (nInp) d.note = nInp.value;
+  const tInp = document.getElementById("taxiDest") || document.getElementById("towDest");
+  if (tInp) d.destination = tInp.value;
+  const rawNote = (d.note || "").trim();
+  if (!d.cat || !CATS.some(x => x[0] === d.cat)) {
+    d.step = 1;
+    render();
+    toast(ar ? "اختر نوع الخدمة أولاً" : "Please choose a service first");
+    return;
+  }
+  const isTaxiOrTow = d.cat === "TAXI" || d.cat === "BREAKDOWN" || d.cat === "TOW_TRUCK";
+  if (isTaxiOrTow && !(d.destination || "").trim()) {
+    toast(ar ? "يرجى إدخال الوجهة المطلوبة أولاً" : "Please enter your destination first");
+    return;
+  }
+  if (rawNote.length < 3) {
+    toast(ar ? "يرجى كتابة تفاصيل المشكلة أو الطلب قبل المتابعة" : "Please describe what you need help with before continuing");
+    if (nInp) nInp.focus();
+    return;
+  }
+  d.step = 3;
+  scrollTo(0, 0);
+  render();
+}
+
 function bookScreen() {
-  const d = S.draft || (S.draft = { cat: "AC_REPAIR", when: "now", assetType: "APARTMENT", scopeItems: [], unitCount: 1, partsPref: "PRO_BRINGS", tags: [], photos: [], instructions: ["Message on WhatsApp"] });
+  const d = S.draft || (S.draft = { cat: "", step: 1, when: "now", schedTime: "Tomorrow, 10:00 AM", assetType: "APARTMENT", scopeItems: [], unitCount: 1, partsPref: "PRO_BRINGS", tags: [], photos: [], instructions: ["Message on WhatsApp"] });
   if (!Array.isArray(d.tags)) d.tags = [];
   if (!Array.isArray(d.scopeItems)) d.scopeItems = [];
   if (!Array.isArray(d.photos)) d.photos = [];
@@ -6337,12 +6595,19 @@ function bookScreen() {
   if (!d.assetType) d.assetType = "APARTMENT";
   if (!d.unitCount) d.unitCount = 1;
   if (!d.partsPref) d.partsPref = "PRO_BRINGS";
-  const c = cat(d.cat || "AC_REPAIR"), ar = L === "ar";
-  const tags = ISSUE_TAGS[c.id] || ISSUE_TAGS.DEFAULT;
-  const pkgs = SERVICE_PACKAGES[c.id] || SERVICE_PACKAGES.DEFAULT;
+
+  const ar = L === "ar";
+  const hasValidCat = Boolean(d.cat && CATS.some(x => x[0] === d.cat));
+  const step = !hasValidCat ? 1 : (d.step === 3 ? 3 : 2);
+  d.step = step;
+
+  const c = hasValidCat ? cat(d.cat) : { id: "", name: ar ? "اختر الخدمة" : "Select Service", icon: "tool" };
+  const tags = (hasValidCat && ISSUE_TAGS[c.id]) || ISSUE_TAGS.DEFAULT;
   const a = (S.addresses && S.addresses.find(x => x.address_id === d.address_id)) || defAddr();
   const [lat, lng] = addrCoords(a);
-  setTimeout(() => initMiniPreviewMap("bookMiniMap", lat, lng), 50);
+  if (step === 3) {
+    setTimeout(() => initMiniPreviewMap("bookMiniMap", lat, lng), 50);
+  }
 
   const instOptions = [
     ["whatsapp", "Message on WhatsApp", "واتساب عند الوصول"],
@@ -6352,175 +6617,185 @@ function bookScreen() {
   ];
 
   const timeSlots = [
-    ["now", ar ? "عاجل الآن" : "Now (Priority)"],
-    ["today", ar ? "اليوم (ساعات)" : "Later Today"],
+    ["now", ar ? "الآن" : "Now"],
+    ["today", ar ? "اليوم لاحقاً" : "Later Today"],
     ["scheduled", ar ? "جدولة موعد" : "Schedule"]
+  ];
+
+  const quickSchedules = [
+    ["Tomorrow, 10:00 AM", "غداً 10:00 صباحاً"],
+    ["Tomorrow, 5:00 PM", "غداً 5:00 مساءً"],
+    ["In 2 Days, 10:00 AM", "بعد يومين 10:00 صباحاً"]
   ];
 
   const isTaxi = c.id === "TAXI";
   const isBreakdown = c.id === "BREAKDOWN" || c.id === "TOW_TRUCK";
 
+  const stepTitles = [
+    ar ? "1. اختر نوع الخدمة" : "Step 1 of 3 · Choose Service",
+    ar ? "2. اشرح المشكلة وأضف صوراً" : "Step 2 of 3 · Describe Problem",
+    ar ? "3. الموقع وموعد الزيارة" : "Step 3 of 3 · Location & Time"
+  ];
+
   return `<div style="background:#fff;min-height:100vh;padding-bottom:125px">
-    <!-- Top Header -->
-    <div class="book-header" style="padding:12px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--ln);position:sticky;top:0;background:#fff;z-index:9999">
-      <button class="ib" style="background:#fff;border:1px solid #E5E7EB!important" onclick="back()">${I("back", "flip")}</button>
-      <div class="sp">
-        <div style="font-size:18px;font-weight:800;line-height:1.15">${c.name}</div>
-        <div style="font-size:12.5px;color:#6B7280">${isTaxi ? (ar ? "طلب سيارة أجرة في صلالة · عروض مباشرة من الكباتن" : "Request a ride in Salalah · Compare direct driver bids") : isBreakdown ? (ar ? "طلب سطحة ومساعدة على الطريق · وصول سريع" : "Request flatbed towing or roadside recovery") : (ar ? "اكتب المشكلة واحصل على عروض الفنيين · الدفع بعد القبول" : "Describe your issue · Get bids & pay only when accepted")}</div>
+    <!-- Top 3-Step Onboarding Header -->
+    <div class="book-header" style="padding:12px 16px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--ln);position:sticky;top:0;background:#fff;z-index:9999">
+      <div class="row" style="gap:12px">
+        <button class="ib" style="background:#fff;border:1px solid #E5E7EB!important" onclick="if(S.draft&&S.draft.step>1){S.draft.step--;render();}else{back();}">${I("back", "flip")}</button>
+        <div class="sp">
+          <div style="font-size:17.5px;font-weight:800;line-height:1.15">${step === 1 ? (ar ? "ما الخدمة التي تحتاجها؟" : "What do you need help with?") : c.name}</div>
+          <div style="font-size:12px;color:#6B7280;font-weight:700;margin-top:2px">${stepTitles[step - 1]}</div>
+        </div>
+        ${step > 1 ? `<button style="height:34px;padding:0 12px;border-radius:99px;border:1px solid #D1D5DB!important;font-weight:700;font-size:12px;color:var(--o)" onclick="S.draft.step=1;render()">${ar ? "تغيير الخدمة" : "Change"}</button>` : ""}
       </div>
-      <button style="height:36px;padding:0 12px;border-radius:99px;border:1px solid #D1D5DB!important;font-weight:700;font-size:12.5px" onclick="S.showAllCats=!S.showAllCats;render()">
-        ${ar ? "القسم" : "Service"} ⌄
-      </button>
+      <!-- 3-Step Progress Bar -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+        <div style="height:5px;border-radius:99px;background:var(--o)"></div>
+        <div style="height:5px;border-radius:99px;background:${step >= 2 ? "var(--o)" : "#E5E7EB"}"></div>
+        <div style="height:5px;border-radius:99px;background:${step >= 3 ? "var(--o)" : "#E5E7EB"}"></div>
+      </div>
     </div>
 
-    ${S.showAllCats ? `<div style="padding:10px 16px;background:#F9FAFB;border-bottom:1px solid var(--ln);position:relative;z-index:9998">
-      <div class="chips" style="margin:0;padding:0">
-        ${CATS.map(ct => `<button class="chip ${c.id === ct[0] ? "on" : ""}" style="height:34px;font-size:12.5px" onclick="S.draft.cat='${ct[0]}';S.showAllCats=false;render()">${ar ? ct[3] : ct[2]}</button>`).join("")}
-      </div>
-    </div>` : ""}
-
-    <div class="pad" style="gap:18px">
-      <!-- 1. Service / Pickup Location Card -->
-      <div class="card" style="padding:0;overflow:hidden;border:1px solid #E5E7EB;position:relative;z-index:1">
-        <div id="bookMiniMap" style="height:100px;width:100%;background:#EAECEF;position:relative;z-index:1;overflow:hidden"></div>
-        <div class="row" style="padding:12px 14px;gap:10px">
-          <div style="color:var(--o)">${I("pin")}</div>
-          <div class="sp">
-            <div style="font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;color:var(--o)">${isTaxi ? (ar ? "موقع الركوب (الانطلاق)" : "Pickup Location") : (ar ? "موقع الخدمة" : "Service Location")}</div>
-            <div style="font-size:15px;font-weight:800;margin-top:2px">${esc(a.label)} (${esc(a.area || salalahAreaName(lat, lng))})</div>
-            <div style="font-size:12.5px;color:#6B7280" class="ell">${esc(addrText(a))}</div>
-          </div>
-          <button style="text-decoration:underline;font-weight:800;font-size:13.5px;color:var(--o)" onclick="S.sheet='loc_picker';render()">${ar ? "تغيير" : "Change"}</button>
+    ${step === 1 ? `
+      <div class="pad" style="gap:14px">
+        <div style="font-size:14px;color:#6B7280">${ar ? "اختر القسم المناسب لنوجهك للخطوة التالية:" : "Pick a category below to get started in 3 quick steps:"}</div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
+          ${CATS.map(ct => `<button class="card" style="display:flex;align-items:center;gap:12px;padding:14px;text-align:start;border:1.5px solid ${d.cat === ct[0] ? "var(--o)" : "#E5E7EB"};background:${d.cat === ct[0] ? "#FFF7ED" : "#fff"}" onclick="S.draft.cat='${ct[0]}';S.draft.assetType=/TAXI|BREAKDOWN|TOW_TRUCK|MECHANIC|TIRE_FIX/.test('${ct[0]}')?'VEHICLE':'APARTMENT';S.draft.step=2;scrollTo(0,0);render()">
+            <div class="ico" style="background:${ccol(ct[0])}18;color:${ccol(ct[0])};width:44px;height:44px;border-radius:12px;flex-shrink:0">${I(ct[1])}</div>
+            <div class="sp" style="min-width:0">
+              <div style="font-size:14px;font-weight:800;color:var(--tx);line-height:1.25">${ar ? ct[3] : ct[2]}</div>
+            </div>
+          </button>`).join("")}
         </div>
       </div>
+    ` : step === 2 ? `
+      <div class="pad" style="gap:18px">
+        ${isTaxi ? `
+          <div class="card" style="padding:14px;border:1px solid #E5E7EB">
+            <div style="font-size:13.5px;font-weight:800;color:var(--tx);margin-bottom:6px">${ar ? "الوجهة المطلوبة في صلالة (إلى أين؟)" : "Drop-off Destination (Where to?)"}</div>
+            <input class="tlbt-input" id="taxiDest" style="height:46px" value="${esc(d.destination || "")}" placeholder="${ar ? "مثال: مطار صلالة، الحافة، السعادة..." : "e.g. Salalah Airport, Al Haffa, Saada..."}" oninput="S.draft.destination=this.value">
+          </div>
+          <div>
+            <div style="font-size:16.5px;font-weight:800;margin-bottom:8px">${ar ? "تفاصيل الرحلة وملاحظات السائق *" : "Ride Notes & Passenger Details *"}</div>
+            <textarea id="note" style="min-height:105px;background:#F9FAFB;border:1.5px solid #D1D5DB!important;border-radius:14px;padding:12px 14px;font-size:15px" placeholder="${ar ? "عدد الركاب، الحقائب، أو تفاصيل موقع الانطلاق..." : "Number of passengers, luggage, or pickup instructions..."}" oninput="S.draft.note=this.value">${esc(d.note || "")}</textarea>
+          </div>
+        ` : isBreakdown ? `
+          <div class="card" style="padding:14px;border:1px solid #E5E7EB">
+            <div style="font-size:13.5px;font-weight:800;color:var(--tx);margin-bottom:6px">${ar ? "وجهة سحب السيارة أو السطحة *" : "Tow Destination (Where to tow?) *"}</div>
+            <input class="tlbt-input" id="towDest" style="height:46px" value="${esc(d.destination || "")}" placeholder="${ar ? "مثال: صناعية عوقد، ورشة معينة، أو المنزل..." : "e.g. Auqad Sanaiya workshop, home, or roadside fix..."}" oninput="S.draft.destination=this.value">
+          </div>
+          <div>
+            <div style="font-size:16.5px;font-weight:800;margin-bottom:8px">${ar ? "تفاصيل المركبة ونوع العطل *" : "Vehicle & Breakdown Details *"}</div>
+            <textarea id="note" style="min-height:105px;background:#F9FAFB;border:1.5px solid #D1D5DB!important;border-radius:14px;padding:12px 14px;font-size:15px" placeholder="${ar ? "نوع وموديل السيارة، المشكلة (بنشر، بطارية، عطل بالمكينة)..." : "Car make & model, what happened (flat tire, dead battery, won't start)..."}" oninput="S.draft.note=this.value">${esc(d.note || "")}</textarea>
+            <div class="chips-wrap" style="margin-top:10px">
+              ${tags.map(tg => {
+                const label = ar ? tg[1] : tg[0];
+                return `<button class="chip" type="button" onclick="const n=document.getElementById('note');if(n){n.value=(n.value?(n.value.trim()+' · '):'')+ '${esc(label)}';S.draft.note=n.value;}">+ ${esc(label)}</button>`;
+              }).join("")}
+            </div>
+          </div>
+        ` : `
+          <div>
+            <div style="font-size:16.5px;font-weight:800;margin-bottom:8px">${ar ? "اشرح المشكلة بالتفصيل *" : "Describe the problem *"}</div>
+            <textarea id="note" style="min-height:115px;background:#F9FAFB;border:1.5px solid #D1D5DB!important;border-radius:14px;padding:12px 14px;font-size:15px" placeholder="${ar ? "ما الذي يحتاج إلى إصلاح أو صيانة؟ اكتب التفاصيل هنا..." : "Tell the pro what is broken, leaking, or needs service..."}" oninput="S.draft.note=this.value">${esc(d.note || "")}</textarea>
+            <div class="chips-wrap" style="margin-top:10px">
+              ${tags.map(tg => {
+                const label = ar ? tg[1] : tg[0];
+                return `<button class="chip" type="button" onclick="const n=document.getElementById('note');if(n){n.value=(n.value?(n.value.trim()+' · '):'')+ '${esc(label)}';S.draft.note=n.value;}">+ ${esc(label)}</button>`;
+              }).join("")}
+            </div>
+          </div>
+        `}
 
-      ${isTaxi ? `
-        <!-- Taxi Destination -->
-        <div class="card" style="padding:14px;border:1px solid #E5E7EB;position:relative;z-index:1">
-          <div style="font-size:13.5px;font-weight:800;color:var(--tx);margin-bottom:6px">${ar ? "الوجهة المطلوبة في صلالة (إلى أين؟)" : "Drop-off Destination (Where to?)"}</div>
-          <input class="tlbt-input" id="taxiDest" style="height:46px" value="${esc(d.destination || "")}" placeholder="${ar ? "مثال: مطار صلالة، الحافة، السعادة، صلالة مول..." : "e.g. Salalah Airport, Al Haffa, Saada, Salalah Grand Mall..."}" oninput="S.draft.destination=this.value">
+        ${!isTaxi ? `
+          <div>
+            <div style="margin-bottom:8px">
+              <div style="font-size:16px;font-weight:800">${ar ? "صور المشكلة أو فيديو قصير (اختياري)" : "Photos or Short Video (Optional)"}</div>
+              <div style="font-size:12px;color:#6B7280">${ar ? "تساعد الصور الفنيين على تقديم عرض سعر دقيق" : "Helps pros give you an accurate price offer"}</div>
+            </div>
+            <div class="two">
+              <button class="tlbt-loc-card" style="justify-content:center;border:1.5px dashed var(--o)!important;background:var(--o2);color:var(--o);font-weight:800" onclick="addDraftPhoto()">
+                ${I("camera")}
+                <span>${ar ? "إضافة صورة" : "Add Photo"} (${d.photos.length})</span>
+              </button>
+              <button class="tlbt-loc-card" style="justify-content:center;border:1.5px dashed #6B21A8!important;background:#F3E8FF;color:#6B21A8;font-weight:800" onclick="pickVideoFile()">
+                ${I("mobile")}
+                <span>${d.videoUrl ? (ar ? "✓ الفيديو جاهز" : "✓ Video Ready") : (ar ? "إرفاق فيديو" : "Add Video")}</span>
+              </button>
+            </div>
+            ${d.photos.length ? `<div class="hscroll" style="margin:10px 0 0">
+              ${d.photos.map((ph, idx) => `<div style="position:relative;flex-shrink:0"><img src="${esc(ph)}" style="width:88px;height:88px;border-radius:12px;object-fit:cover;border:2px solid var(--gr)" onclick="S.previewImg=this.src;render()"><button style="position:absolute;top:-5px;right:-5px;width:22px;height:22px;border-radius:50%;background:var(--rd);color:#fff;font-size:12px;font-weight:900" onclick="S.draft.photos.splice(${idx},1);render()">×</button></div>`).join("")}
+            </div>` : ""}
+            ${d.videoUrl ? `<div style="margin-top:10px;position:relative;border-radius:14px;overflow:hidden;border:2px solid #6B21A8;background:#000">
+              <video src="${esc(d.videoUrl)}" controls playsinline style="width:100%;max-height:190px;display:block"></video>
+              <div class="row" style="padding:6px 10px;background:#1A1A1A;color:#fff;font-size:11.5px;justify-content:space-between">
+                <span>${esc(d.videoName || "Problem Video")}</span>
+                <button style="color:#F87171;font-weight:800" onclick="S.draft.videoUrl=null;S.draft.videoName=null;render()">${ar ? "حذف ×" : "Remove ×"}</button>
+              </div>
+            </div>` : ""}
+          </div>
+        ` : ""}
+      </div>
+
+      <div style="position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;background:#fff;padding:12px 16px calc(14px + env(safe-area-inset-bottom));box-shadow:0 -4px 20px rgba(0,0,0,.07);border-top:1px solid var(--ln);z-index:9999">
+        <button class="tlbt-pill-btn" onclick="advanceBookStep2To3()">${ar ? "المتابعة لتحديد الموقع والموعد" : "Next: Location & Time"}</button>
+      </div>
+    ` : `
+      <div class="pad" style="gap:18px">
+        <!-- Step 3: Location Card -->
+        <div class="card" style="padding:0;overflow:hidden;border:1px solid #E5E7EB;position:relative;z-index:1">
+          <div id="bookMiniMap" style="height:105px;width:100%;background:#EAECEF;position:relative;z-index:1;overflow:hidden"></div>
+          <div class="row" style="padding:12px 14px;gap:10px">
+            <div style="color:var(--o)">${I("pin")}</div>
+            <div class="sp">
+              <div style="font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;color:var(--o)">${isTaxi ? (ar ? "موقع الانطلاق" : "Pickup Location") : (ar ? "موقع الخدمة" : "Service Location")}</div>
+              <div style="font-size:15px;font-weight:800;margin-top:2px">${esc(a.label)} ${a.is_empty ? "" : `(${esc(a.area || salalahAreaName(lat, lng))})`}</div>
+              <div style="font-size:12.5px;color:#6B7280" class="ell">${esc(addrText(a))}</div>
+            </div>
+            <button style="text-decoration:underline;font-weight:800;font-size:13.5px;color:var(--o)" onclick="S.sheet='loc_picker';render()">${a.is_empty ? (ar ? "تحديد الموقع" : "Set Location") : (ar ? "تغيير" : "Change")}</button>
+          </div>
         </div>
 
-        <!-- Taxi Passenger / Ride Notes -->
+        <!-- Timing / Schedule -->
         <div>
-          <div style="font-size:17px;font-weight:800;margin-bottom:8px">${ar ? "تفاصيل الرحلة وملاحظات السائق" : "Ride Notes & Passenger Details"}</div>
-          <textarea id="note" style="min-height:96px;background:#F9FAFB;border:1.5px solid #D1D5DB!important;border-radius:14px;padding:12px 14px;font-size:15px" placeholder="${ar ? "عدد الركاب، الحقائب، موعد الطيران، أو أي تفاصيل خاصة..." : "Number of passengers, luggage, flight details, or specific pickup spot..."}" oninput="S.draft.note=this.value">${esc(d.note || "")}</textarea>
-        </div>
-      ` : isBreakdown ? `
-        <!-- Towing Destination -->
-        <div class="card" style="padding:14px;border:1px solid #E5E7EB;position:relative;z-index:1">
-          <div style="font-size:13.5px;font-weight:800;color:var(--tx);margin-bottom:6px">${ar ? "وجهة سحب السيارة أو السطحة" : "Tow Destination (Where to tow?)"}</div>
-          <input class="tlbt-input" id="towDest" style="height:46px" value="${esc(d.destination || "")}" placeholder="${ar ? "مثال: صناعية عوقد، ورشة معينة، أو المنزل..." : "e.g. Auqad Sanaiya workshop, home, or roadside fix..."}" oninput="S.draft.destination=this.value">
-        </div>
-
-        <!-- Breakdown Description -->
-        <div>
-          <div class="row" style="justify-content:space-between;margin-bottom:8px">
-            <div style="font-size:17px;font-weight:800">${ar ? "تفاصيل المركبة ونوع العطل" : "Vehicle & Breakdown Details"}</div>
-            <span class="pill" style="font-size:11px;background:#EFF6FF;color:#1D4ED8">${I("globe")}${ar ? "يُترجم للكابتن" : "Auto-translates"}</span>
+          <div style="font-size:16.5px;font-weight:800;margin-bottom:8px">${ar ? "متى تحتاج الخدمة؟" : "When do you need this?"}</div>
+          <div class="seg3">
+            ${timeSlots.map(ts => `<button class="${d.when === ts[0] ? "on" : ""}" onclick="S.draft.when='${ts[0]}';render()">${ts[1]}</button>`).join("")}
           </div>
-          <textarea id="note" style="min-height:100px;background:#F9FAFB;border:1.5px solid #D1D5DB!important;border-radius:14px;padding:12px 14px;font-size:15px" placeholder="${ar ? "نوع وموديل السيارة، المشكلة (بنشر، بطارية، عطل بالمكينة، حادث)..." : "Car make & model, what happened (flat tire, dead battery, won't start, accident)..."}" oninput="S.draft.note=this.value">${esc(d.note || "")}</textarea>
-
-          <div class="chips-wrap" style="margin-top:10px">
-            ${tags.map(tg => {
-              const label = ar ? tg[1] : tg[0];
-              return `<button class="chip" type="button" onclick="const n=document.getElementById('note');if(n){n.value=(n.value?(n.value.trim()+' · '):'')+ '${esc(label)}';S.draft.note=n.value;}">+ ${esc(label)}</button>`;
-            }).join("")}
-          </div>
-        </div>
-      ` : `
-        <!-- General Service: User Writes What The Issue Is -->
-        <div>
-          <div class="row" style="justify-content:space-between;margin-bottom:8px">
-            <div style="font-size:17px;font-weight:800">${ar ? "اشرح المشكلة بالتفصيل" : "Describe the problem in detail"}</div>
-            <span class="pill" style="font-size:11px;background:#EFF6FF;color:#1D4ED8">${I("globe")}${ar ? "يُترجم تلقائياً للفني" : "Auto-translates"}</span>
-          </div>
-          <textarea id="note" style="min-height:115px;background:#F9FAFB;border:1.5px solid #D1D5DB!important;border-radius:14px;padding:12px 14px;font-size:15px" placeholder="${ar ? "اشرح المشكلة بالتفصيل، ما الذي لا يعمل، الماركة/الموديل، أو ما تحتاجه بالضبط من الفني..." : "Describe the issue, what is broken or leaking, brand/model, or what needs to be fixed..."}" oninput="S.draft.note=this.value">${esc(d.note || "")}</textarea>
-
-          <div class="chips-wrap" style="margin-top:10px">
-            ${tags.map(tg => {
-              const label = ar ? tg[1] : tg[0];
-              return `<button class="chip" type="button" onclick="const n=document.getElementById('note');if(n){n.value=(n.value?(n.value.trim()+' · '):'')+ '${esc(label)}';S.draft.note=n.value;}">+ ${esc(label)}</button>`;
-            }).join("")}
-          </div>
-        </div>
-      `}
-
-      ${!isTaxi ? `
-        <!-- Live Camera Verification Photo & Video Upload -->
-        <div>
-          <div style="margin-bottom:8px">
-            <div style="font-size:17px;font-weight:800">${ar ? "صور الكاميرا المباشرة أو فيديو توضيحي (اختياري)" : "Live Photo or Short Video (Optional)"}</div>
-            <div style="font-size:12px;color:#6B7280">${ar ? "التقط صورة فورية بالكاميرا توضح مكان العطل لمساعدة الفنيين في تقديم عروض دقيقة" : "Snap a live photo or video of the issue to help pros give accurate quotes"}</div>
-          </div>
-          <div class="two">
-            <button class="tlbt-loc-card" style="justify-content:center;border:1.5px dashed var(--o)!important;background:var(--o2);color:var(--o);font-weight:800" onclick="addDraftPhoto()">
-              ${I("camera")}
-              <span>${ar ? "التقاط صورة" : "Take Photo"} (${d.photos.length})</span>
-            </button>
-            <button class="tlbt-loc-card" style="justify-content:center;border:1.5px dashed #6B21A8!important;background:#F3E8FF;color:#6B21A8;font-weight:800" onclick="pickVideoFile()">
-              ${I("mobile")}
-              <span>${d.videoUrl ? (ar ? "✓ الفيديو جاهز" : "✓ Video Ready") : (ar ? "إرفاق فيديو" : "Add Video")}</span>
-            </button>
-          </div>
-
-          ${d.photos.length ? `<div class="hscroll" style="margin:10px 0 0">
-            ${d.photos.map((ph, idx) => `<div style="position:relative;flex-shrink:0"><img src="${esc(ph)}" style="width:92px;height:92px;border-radius:12px;object-fit:cover;border:2px solid var(--gr)" onclick="S.previewImg=this.src;render()"><span style="position:absolute;bottom:2px;left:2px;right:2px;background:rgba(0,168,98,.9);color:#fff;font-size:9px;font-weight:800;text-align:center;border-radius:4px">Stamped #${idx+1}</span><button style="position:absolute;top:-5px;right:-5px;width:22px;height:22px;border-radius:50%;background:var(--rd);color:#fff;font-size:12px;font-weight:900" onclick="S.draft.photos.splice(${idx},1);render()">×</button></div>`).join("")}
-          </div>` : ""}
-
-          ${d.videoUrl ? `<div style="margin-top:10px;position:relative;border-radius:14px;overflow:hidden;border:2px solid #6B21A8;background:#000">
-            <video src="${esc(d.videoUrl)}" controls playsinline style="width:100%;max-height:200px;display:block"></video>
-            <div class="row" style="padding:6px 10px;background:#1A1A1A;color:#fff;font-size:11.5px;justify-content:space-between">
-              <span>${esc(d.videoName || "Problem Video")}</span>
-              <button style="color:#F87171;font-weight:800" onclick="S.draft.videoUrl=null;S.draft.videoName=null;render()">${ar ? "حذف ×" : "Remove ×"}</button>
+          ${d.when === "scheduled" ? `<div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+            <div class="chips" style="margin:0">
+              ${quickSchedules.map(qs => `<button class="chip ${d.schedTime === qs[0] ? "on" : ""}" type="button" onclick="S.draft.schedTime='${qs[0]}';const inp=document.getElementById('schedTimeInp');if(inp)inp.value='${qs[0]}';render()">${ar ? qs[1] : qs[0]}</button>`).join("")}
+            </div>
+            <input id="schedTimeInp" class="tlbt-input" style="height:44px" value="${esc(d.schedTime || "Tomorrow, 10:00 AM")}" placeholder="${ar ? "مثال: غداً 10:00 صباحاً أو الخميس 4:00 مساءً" : "e.g. Tomorrow, 10:00 AM or Thursday 4:00 PM"}" oninput="S.draft.schedTime=this.value">
+            <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:12px;padding:10px 12px;font-size:12px;color:#1E3A8A;line-height:1.4">
+              ${ar ? "يمكن للفني قبول حجزك المجدول مسبقاً، ولن يتوجه إلى موقعك إلا في الموعد المحدد." : "A pro can confirm your scheduled booking in advance and will only head to your location at the scheduled time."}
             </div>
           </div>` : ""}
         </div>
-      ` : ""}
 
-      <!-- Arrival Timing / Urgency -->
-      <div>
-        <div style="font-size:16.5px;font-weight:800;margin-bottom:8px">${ar ? "متى تحتاج الخدمة؟" : "When do you need this?"}</div>
-        <div class="seg3">
-          ${timeSlots.map(ts => `<button class="${d.when === ts[0] ? "on" : ""}" onclick="S.draft.when='${ts[0]}';render()">${ts[1]}</button>`).join("")}
-        </div>
-        ${d.when === "scheduled" ? `<div style="margin-top:8px">
-          <input class="tlbt-input" style="height:44px" value="${esc(d.schedTime || "Tomorrow, 10:00 AM")}" placeholder="${ar ? "مثال: غداً 10 صباحاً" : "e.g. Tomorrow, 10:00 AM"}" oninput="S.draft.schedTime=this.value">
-        </div>` : ""}
-      </div>
-
-      <!-- Arrival Instructions -->
-      <div>
-        <div style="font-size:16px;font-weight:800;margin-bottom:10px">${ar ? "تعليمات وصول الفني أو السائق" : "Arrival instructions for pro"}</div>
-        <div class="hscroll" style="margin:0 -4px;padding:2px 4px">
-          ${instOptions.map(ins => {
-            const on = d.instructions.includes(ins[1]);
-            return `<button class="inst-card ${on ? "on" : ""}" onclick="const idx=S.draft.instructions.indexOf('${ins[1]}');if(idx>-1)S.draft.instructions.splice(idx,1);else S.draft.instructions.push('${ins[1]}');render()">
-              <div style="color:var(--tx)">${I(ins[0])}</div>
-              <div>${ar ? ins[2] : ins[1]}</div>
-            </button>`;
-          }).join("")}
+        <!-- Arrival Instructions -->
+        <div>
+          <div style="font-size:16px;font-weight:800;margin-bottom:10px">${ar ? "تعليمات الوصول" : "Arrival instructions"}</div>
+          <div class="hscroll" style="margin:0 -4px;padding:2px 4px">
+            ${instOptions.map(ins => {
+              const on = d.instructions.includes(ins[1]);
+              return `<button class="inst-card ${on ? "on" : ""}" onclick="const idx=S.draft.instructions.indexOf('${ins[1]}');if(idx>-1)S.draft.instructions.splice(idx,1);else S.draft.instructions.push('${ins[1]}');render()">
+                <div style="color:var(--tx)">${I(ins[0])}</div>
+                <div>${ar ? ins[2] : ins[1]}</div>
+              </button>`;
+            }).join("")}
+          </div>
         </div>
       </div>
 
-      <!-- Transparent Quote Policy -->
-      <div class="card" style="background:#FFF8F4;border:1px solid var(--o3);display:flex;gap:12px;align-items:center;position:relative;z-index:1">
-        <div class="ico" style="background:var(--o);color:#fff">${I("check")}</div>
-        <div class="sp">
-          <div style="font-size:14.5px;font-weight:800;color:var(--tx)">${ar ? "لا يوجد سعر مسبق — قارن عروض الفنيين" : "No fixed upfront price — Pros bid on your exact problem"}</div>
-          <div style="font-size:12.5px;color:#6B7280;margin-top:2px">${ar ? "يقوم الفنيون بفحص ما كتبته وتقديم عروضهم بالريال العُماني. تدفع فقط بعد قبولك للعرض." : "Nearby pros review your notes and submit direct bids in OMR. You pay only after accepting an offer."}</div>
-        </div>
+      <div style="position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;background:#fff;padding:12px 16px calc(14px + env(safe-area-inset-bottom));box-shadow:0 -4px 20px rgba(0,0,0,.07);border-top:1px solid var(--ln);z-index:9999">
+        <button class="tlbt-pill-btn" onclick="startLastCheckFlow()">${ar ? "مراجعة وإرسال الطلب" : "Review & Send Request"}</button>
       </div>
-    </div>
-
-    <!-- Sticky Bottom Bar -->
-    <div style="position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;background:#fff;padding:12px 16px calc(14px + env(safe-area-inset-bottom));box-shadow:0 -4px 20px rgba(0,0,0,.07);border-top:1px solid var(--ln);z-index:9999">
-      <button class="tlbt-pill-btn" onclick="const nInp=document.getElementById('note');if(nInp)S.draft.note=nInp.value;const tInp=document.getElementById('taxiDest')||document.getElementById('towDest');if(tInp)S.draft.destination=tInp.value;startLastCheckFlow()">${ar ? "مراجعة وإرسال الطلب للفنيين" : "Review & Send Request to Pros"}</button>
-    </div>
+    `}
   </div>`;
 }
 
-// POST-BID CHECKOUT SCREEN: Only opened AFTER customer accepts a specific Technician's Bid! (Instant Pay / FixIt Wallet ONLY — NO CASH!)
+// POST-BID CHECKOUT SCREEN: Only opened AFTER customer accepts a specific Technician's Bid!
 function checkoutScreen() {
   const ar = L === "ar";
   const jobId = S.checkoutJobId || S.jobId || (S.jobs[0] && S.jobs[0].job_id);
@@ -6599,18 +6874,18 @@ function checkoutScreen() {
         </div>
       </div>
 
-      <!-- 4. Payment Method (In-App Card via PayPal or Wallet Balance) -->
+      <!-- 4. Payment Method -->
       <div>
         <div class="row" style="justify-content:space-between;margin-bottom:8px">
-          <div style="font-size:18px;font-weight:800">${ar ? "طريقة الدفع داخل التطبيق" : "Pay in-app with"}</div>
-          <button style="text-decoration:underline;font-weight:700;font-size:13.5px;color:#003087" onclick="S.paypalPurpose='CONNECT';S.sheet='paypal';render()">${ar ? "إدخال البطاقة / PayPal" : "Card / PayPal Details"}</button>
+          <div style="font-size:18px;font-weight:800">${ar ? "طريقة الدفع" : "Payment Method"}</div>
+          <button style="text-decoration:underline;font-weight:700;font-size:13.5px;color:#003087" onclick="S.paypalPurpose='CONNECT';S.sheet='paypal';render()">${ar ? "تعديل" : "Edit"}</button>
         </div>
         <div class="card" style="padding:0 16px">
           <button class="li" onclick="S.draft.payMethod='PAYPAL';render()">
             <div style="background:#003087;color:#fff;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-weight:900;font-style:italic;font-size:17px">P</div>
             <div class="sp">
-              <div class="t1" style="font-size:15px">${ar ? "بطاقة بنكية أو PayPal (داخل التطبيق)" : "Debit / Credit Card or PayPal (In-App)"}</div>
-              <div class="t2" style="font-size:12px">${S.cards && S.cards[0] ? `${esc(S.cards[0].brand || "CARD")} •••• ${esc(S.cards[0].last4)}` : esc(S.profile.paypal_email || S.profile.email || (ar ? "دفع مباشر بدون مغادرة التطبيق" : "Instant in-app checkout · No browser redirect"))}</div>
+              <div class="t1" style="font-size:15px">${ar ? "بطاقة بنكية أو PayPal" : "Card or PayPal"}</div>
+              <div class="t2" style="font-size:12px">${S.cards && S.cards[0] ? `${esc(S.cards[0].brand || "CARD")} •••• ${esc(S.cards[0].last4)}` : esc(S.profile.paypal_email || S.profile.email || (ar ? "فيزا، ماستركارد، أو PayPal" : "Visa, Mastercard, or PayPal"))}</div>
             </div>
             <div class="radio-dot ${S.draft.payMethod === 'PAYPAL' ? 'on' : ''}"></div>
           </button>
@@ -6618,7 +6893,7 @@ function checkoutScreen() {
             <div style="background:var(--o2);color:var(--o);width:38px;height:38px;border-radius:10px;display:grid;place-items:center">${I("wallet")}</div>
             <div class="sp">
               <div class="t1" style="font-size:15px">${ar ? "رصيد المحفظة" : "Wallet Balance"} (${fmtOmr(S.wallet.balance)} ${t("omr")})</div>
-              <div class="t2" style="font-size:12px">${ar ? "خصم مباشر من رصيدك" : "Pay directly from account balance"}</div>
+              <div class="t2" style="font-size:12px">${ar ? "خصم مباشر من رصيدك" : "Pay from your wallet balance"}</div>
             </div>
             <div class="radio-dot ${S.draft.payMethod === 'WALLET' ? 'on' : ''}"></div>
           </button>
@@ -6677,12 +6952,30 @@ function checkoutScreen() {
   </div>`;
 }
 
-// SCREENSHOT B: Talabat "One last check..." 6-Second Confirmation Screen (Shows actual customer description, tags, photos & video!)
+// Talabat "One last check..." 6-Second Confirmation Screen
 let _lastCheckInterval = null;
 function startLastCheckFlow() {
+  const ar = L === "ar";
   const d = S.draft || {};
   const noteEl = document.getElementById("note");
   if (noteEl && noteEl.value) d.note = noteEl.value.trim();
+  const schedInp = document.getElementById("schedTimeInp");
+  if (schedInp && schedInp.value) d.schedTime = schedInp.value.trim();
+
+  if (!d.cat || !CATS.some(x => x[0] === d.cat)) {
+    d.step = 1;
+    render();
+    toast(ar ? "اختر نوع الخدمة أولاً" : "Please select a service category first");
+    return;
+  }
+  const rawNote = (d.note || "").trim();
+  if (rawNote.length < 3) {
+    d.step = 2;
+    render();
+    toast(ar ? "يرجى كتابة وصف المشكلة أولاً قبل إرسال الطلب" : "Please describe the problem before sending your request");
+    return;
+  }
+
   clearInterval(_lastCheckInterval);
   S.lastCheckSec = 6;
   go("last_check");
@@ -6721,7 +7014,7 @@ function lastCheckScreen() {
   const c = cat(d.cat || "AC_REPAIR"), ar = L === "ar";
   const a = (S.addresses && S.addresses.find(x => x.address_id === d.address_id)) || defAddr();
   const [lat, lng] = addrCoords(a);
-  const userText = (d.note || "").trim() || (d.tags && d.tags.length ? d.tags.join(" · ") : c.name);
+  const userText = (d.note || "").trim();
   const photos = Array.isArray(d.photos) ? d.photos : [];
 
   return `<div class="peach-bg">
@@ -6951,10 +7244,11 @@ function cJob() {
   const jobVid = (S.jobVideos && S.jobVideos[j.job_id]) || (S.photos || []).find(p => p.job_id === j.job_id && String(p.url || "").startsWith("[VID]"));
   const vidSrc = typeof jobVid === "string" ? jobVid : (jobVid && jobVid.url ? String(jobVid.url).slice(5) : null);
   const assignedProInfo = getProDirectoryInfo((chosen && chosen.vendor_id) || VENDOR_ID);
+  const schedLbl = getJobScheduleLabel(j);
 
   return `<div class="jh no-print" style="background:${ccol(c.id)}">
     <div class="jhb"><button onclick="back()">${I("back", "flip")}</button><div class="sp"></div>${statusPill(j)}</div>
-    <div style="font-size:13px;font-weight:700;opacity:.88">#${sid(j)} · ${ago(j.created_at)}</div>
+    <div style="font-size:13px;font-weight:700;opacity:.88">#${sid(j)} · ${ago(j.created_at)}${schedLbl ? ` · ${ar ? "مجدول:" : "Scheduled:"} ${esc(schedLbl)}` : ""}</div>
     <h1>${c.name}</h1>
     ${cleanDesc(j.description) ? `<div style="font-size:14px;opacity:.95;margin-top:4px;max-width:90%">${esc(displayTranslated(cleanDesc(j.description)))}</div>` : ""}
     ${I(c.icon, "bg")}
@@ -6971,12 +7265,12 @@ function cJob() {
         <div class="row" style="gap:8px">
           <span class="live" style="padding:0;background:none;box-shadow:none"><span class="dot"></span></span>
           <div>
-            <div class="t1" style="font-size:14px">${live ? (ar ? "الفني في الطريق إليك" : "Pro is on the way") : (ar ? "موقع الخدمة" : "Service Location")}</div>
+            <div class="t1" style="font-size:14px">${live ? (schedLbl && j.status === "BID_SELECTED" ? `${ar ? "تم تأكيد الموعد:" : "Scheduled for"} ${esc(schedLbl)}` : (ar ? "الفني في الطريق إليك" : "Pro is on the way")) : (ar ? "موقع الخدمة" : "Service Location")}</div>
             <div class="t2" style="font-size:12px">${salalahAreaName(jLat, jLng)}</div>
           </div>
         </div>
         <div class="row" style="gap:6px">
-          <span id="liveSubEtaText" class="pill ${live ? "ok" : ""}">${live ? (ar ? "الفني في الطريق" : "On the way") : t(j.status)}</span>
+          <span id="liveSubEtaText" class="pill ${live ? "ok" : ""}">${live ? (schedLbl && j.status === "BID_SELECTED" ? (ar ? "حجز مجدول مؤكد" : "Scheduled") : (ar ? "الفني في الطريق" : "On the way")) : t(j.status)}</span>
           <button class="act o" style="height:32px;padding:0 12px;border-radius:99px;background:var(--o);color:#fff;font-weight:700;font-size:12px" onclick="go('tracking','${j.job_id}')">${ar ? "تكبير الخريطة" : "Full Map"}</button>
         </div>
       </div>
@@ -7379,16 +7673,17 @@ async function completePaypalAction() {
   const cardHolder = (((document.getElementById("ppCardHolderInp") || {}).value || S.profile.full_name || "")).trim().toUpperCase();
 
   if (mode === "CARD") {
-    if (cardNumRaw.length < 13 || cardNumRaw.length > 19) {
-      toast(ar ? "يرجى إدخال رقم البطاقة البنكية الصحيح (16 رقماً)" : "Please enter a valid 16-digit card number");
+    if (!isValidLuhnCard(cardNumRaw)) {
+      toast(ar ? "رقم البطاقة غير صحيح. يرجى التحقق من البطاقة." : "Invalid card number. Please check your card details.");
       return;
     }
-    if (!/^(0[1-9]|1[0-2])\/\d{2,4}$/.test(cardExp)) {
-      toast(ar ? "يرجى إدخال تاريخ انتهاء البطاقة بصيغة MM/YY" : "Please enter card expiry as MM/YY");
+    if (!isValidCardExpiryMmYy(cardExp)) {
+      toast(ar ? "تاريخ انتهاء البطاقة غير صالح أو منتهي (MM/YY)" : "Please enter a valid non-expired date (MM/YY)");
       return;
     }
-    if (cardCvv.length < 3 || cardCvv.length > 4) {
-      toast(ar ? "يرجى إدخال رمز الأمان CVV (3 أو 4 أرقام)" : "Please enter the 3 or 4 digit CVV code");
+    const isAmex = /^3[47]/.test(cardNumRaw);
+    if (isAmex ? cardCvv.length !== 4 : cardCvv.length !== 3) {
+      toast(ar ? "يرجى إدخال رمز الأمان CVV الصحيح" : "Please enter a valid CVV security code");
       return;
     }
     if (cardHolder.length < 2) {
@@ -7396,7 +7691,7 @@ async function completePaypalAction() {
       return;
     }
     const last4 = cardNumRaw.slice(-4);
-    const brand = cardNumRaw.startsWith("4") ? "VISA" : /^5[1-5]/.test(cardNumRaw) || /^2[2-7]/.test(cardNumRaw) ? "MASTERCARD" : cardNumRaw.startsWith("3") ? "AMEX" : "OMANNET";
+    const brand = cardNumRaw.startsWith("4") ? "VISA" : /^5[1-5]/.test(cardNumRaw) || /^2[2-7]/.test(cardNumRaw) ? "MASTERCARD" : isAmex ? "AMEX" : "OMANNET";
     const parts = cardExp.split("/");
     const exp_month = Math.min(12, Math.max(1, parseInt(parts[0], 10) || 12));
     const rawYr = parseInt(parts[1], 10) || 28;
@@ -7421,6 +7716,12 @@ async function completePaypalAction() {
       toast(ar ? "يرجى إدخال بريد إلكتروني صحيح لحساب PayPal" : "Please enter a valid PayPal email address");
       return;
     }
+    if (S.paypalPurpose === "TOPUP" || S.paypalPurpose === "ORDER_CHECKOUT" || S.paypalPurpose === "PRO_SUB") {
+      toast(ar ? "يرجى اختيار البطاقة البنكية لإتمام الدفع المباشر" : "Please select Debit / Credit Card to complete payment");
+      S.inAppPayMode = "CARD";
+      render();
+      return;
+    }
     S.profile.paypal_email = ppEm;
     save("profile", S.profile);
   }
@@ -7442,7 +7743,7 @@ async function completePaypalAction() {
       return;
     }
     if (S.paypalPurpose === "PRO_SUB") {
-      toast(ar ? "جاري تفعيل الاشتراك داخل التطبيق..." : "Processing subscription in-app...");
+      toast(ar ? "جاري تفعيل الاشتراك..." : "Processing subscription...");
       const ppOrd = await createRealPayPalOrder(1.980, "FixIt Pro Monthly Subscription", "SUB-" + Date.now(), S.inAppCardDraft);
       S.profile.isProMember = true;
       if (S.draft) S.draft.useProPlan = true;
@@ -7457,30 +7758,30 @@ async function completePaypalAction() {
           balance_after: curBal,
           kind: "SUBSCRIPTION",
           external_ref: (ppOrd && ppOrd.id) ? ppOrd.id : null,
-          note: "FixIt Pro Monthly · In-App PayPal"
+          note: "FixIt Pro Monthly"
         });
         if (Array.isArray(dbRes) && dbRes[0]) S.txns.unshift({ ...dbRes[0], paypal_order_id: ppOrd && ppOrd.id, status: "ACTIVE" });
       } catch (e) {}
       save("txns", S.txns);
       S.sheet = null;
       render();
-      toast(ar ? "✓ تم تفعيل FixIt Pro فوراً داخل التطبيق" : "✓ FixIt Pro activated in-app!");
+      toast(ar ? "✓ تم تفعيل اشتراك FixIt Pro" : "✓ FixIt Pro subscription active");
       return;
     }
     if (S.paypalPurpose === "TOPUP") {
       const topAmt = Number(S.topupAmtDraft || 10);
-      toast(ar ? "جاري شحن المحفظة داخل التطبيق..." : "Processing wallet top-up in-app...");
+      toast(ar ? "جاري معالجة الدفع..." : "Processing payment...");
       const ppOrd = await createRealPayPalOrder(topAmt, "FixIt Wallet Top-Up", "TOPUP-" + Date.now(), S.inAppCardDraft);
       S.sheet = null;
       await depositFunds(topAmt, ppOrd);
       return;
     }
-    await createRealPayPalOrder(1.000, "FixIt In-App Payment Method Verification", "CONNECT-" + Date.now(), S.inAppCardDraft);
+    await createRealPayPalOrder(0.000, "FixIt Payment Method Verification", "CONNECT-" + Date.now(), S.inAppCardDraft);
     S.sheet = null;
     render();
-    toast(ar ? "✓ تم حفظ البطاقة وطريقة الدفع داخل التطبيق" : "✓ Card & PayPal saved for in-app checkout");
+    toast(ar ? "✓ تم حفظ طريقة الدفع" : "✓ Payment method saved");
   } catch (err) {
-    toast((err && err.message) || (ar ? "تعذر إتمام الدفع داخل التطبيق" : "In-app payment could not be completed"));
+    toast((err && err.message) || (ar ? "تعذر إتمام الدفع" : "Payment could not be completed"));
   }
 }
 
@@ -7510,7 +7811,6 @@ function paypalSheet() {
   const topAmt = Number(S.topupAmtDraft || 10);
   const ordAmt = Number((S.draft && S.draft.finalTotal) || 0);
   const omrAmt = isSub ? 1.980 : isTop ? topAmt : isOrd ? ordAmt : 0.000;
-  const usdAmt = (omrAmt * 2.60).toFixed(2);
   const mode = (S.inAppPayMode === "PAYPAL_BALANCE") ? "PAYPAL_BALANCE" : "CARD";
   const savedCard = (S.cards && S.cards.find(c => c.is_default)) || (S.cards && S.cards[0]) || null;
   const defaultNum = (S.inAppCardDraft && S.inAppCardDraft.cardNumber)
@@ -7526,28 +7826,25 @@ function paypalSheet() {
       <div class="row" style="gap:10px">
         <div style="width:42px;height:42px;border-radius:12px;background:#003087;color:#fff;display:grid;place-items:center;font-weight:900;font-style:italic;font-size:22px">P</div>
         <div>
-          <div class="t1" style="font-size:18px;font-weight:900">${ar ? "الدفع المباشر داخل التطبيق" : "PayPal In-App Card Checkout"}</div>
-          <div class="t2" style="font-size:11.5px">${ar ? "أدخل بطاقتك مباشرة بدون مغادرة التطبيق" : "Pay by Card or PayPal inside the app · No redirect"}</div>
+          <div class="t1" style="font-size:18px;font-weight:900">${isOrd ? (ar ? "إتمام الدفع" : "Checkout") : isTop ? (ar ? "شحن المحفظة" : "Top Up Wallet") : isSub ? (ar ? "الاشتراك الشهري" : "FixIt Pro") : (ar ? "طريقة الدفع" : "Payment Method")}</div>
+          <div class="t2" style="font-size:12px">${ar ? "البطاقات البنكية أو PayPal" : "Debit / Credit Card or PayPal"}</div>
         </div>
       </div>
       <button class="ib" onclick="S.sheet=null;render()">${I("x")}</button>
     </div>
 
-    <div class="paypal-card" style="flex-direction:column;align-items:flex-start;gap:6px">
-      <div class="row" style="justify-content:space-between;width:100%">
-        <span style="font-size:12px;opacity:.9">${isOrd ? (ar ? "دفع الطلب المحمي داخل التطبيق" : "Protected Order Checkout") : isSub ? (ar ? "اشتراك FixIt Pro الشهري" : "FixIt Pro Monthly") : isTop ? (ar ? "شحن رصيد المحفظة" : "Add Wallet Credit") : (ar ? "بطاقة الدفع المحفوظة" : "In-App Payment Method")}</span>
-        <span class="pill ok" style="font-size:10px;background:rgba(255,255,255,.2);color:#fff">${I("shield")}<span>In-App TLS</span></span>
-      </div>
-      <div style="font-size:22px;font-weight:900">${omrAmt > 0 ? `${omrAmt.toFixed(3)} ${t("omr")} ($${usdAmt} USD)` : (ar ? "بطاقة بنكية / PayPal" : "Debit / Credit Card & PayPal")}</div>
-    </div>
+    ${omrAmt > 0 ? `<div class="paypal-card" style="flex-direction:column;align-items:flex-start;gap:4px">
+      <span style="font-size:12px;opacity:.9">${isOrd ? (ar ? "إجمالي الطلب" : "Order Total") : isSub ? (ar ? "اشتراك FixIt Pro الشهري" : "FixIt Pro Monthly") : (ar ? "مبلغ الشحن" : "Top-Up Amount")}</span>
+      <div style="font-size:22px;font-weight:900">${omrAmt.toFixed(3)} ${t("omr")}</div>
+    </div>` : ""}
 
     ${isTop ? `<div class="chips" style="margin:0">
       ${[5, 10, 20, 50].map(amt => `<button class="chip ${topAmt === amt ? 'on' : ''}" onclick="S.topupAmtDraft=${amt};render()">+${amt.toFixed(3)} ${t("omr")}</button>`).join("")}
     </div>` : ""}
 
     <div class="seg3" style="grid-template-columns:1fr 1fr">
-      <button class="${mode === 'CARD' ? 'on' : ''}" onclick="S.inAppPayMode='CARD';render()">${ar ? "بطاقة بنكية (Visa / Mastercard)" : "Debit / Credit Card"}</button>
-      <button class="${mode === 'PAYPAL_BALANCE' ? 'on' : ''}" onclick="S.inAppPayMode='PAYPAL_BALANCE';render()">${ar ? "حساب PayPal" : "PayPal Account"}</button>
+      <button class="${mode === 'CARD' ? 'on' : ''}" onclick="S.inAppPayMode='CARD';render()">${ar ? "بطاقة بنكية" : "Card"}</button>
+      <button class="${mode === 'PAYPAL_BALANCE' ? 'on' : ''}" onclick="S.inAppPayMode='PAYPAL_BALANCE';render()">PayPal</button>
     </div>
 
     ${mode === "CARD" ? `
@@ -7555,7 +7852,7 @@ function paypalSheet() {
         ${S.cards.map(c => `<button class="chip ${c.is_default ? 'on' : ''}" style="font-size:12px" onclick="selectSavedInAppCard('${esc(c.pm_id)}')">${esc(c.brand)} •••• ${esc(c.last4)}</button>`).join("")}
       </div>` : ""}
       <div class="fld">
-        <label>${ar ? "رقم البطاقة البنكية (Visa / Mastercard / OmanNet)" : "Card Number (Visa / Mastercard / OmanNet)"}</label>
+        <label>${ar ? "رقم البطاقة" : "Card Number"}</label>
         <input id="ppCardNumInp" dir="ltr" inputmode="numeric" maxlength="19" class="tlbt-input" value="${esc(defaultNum)}" placeholder="XXXX XXXX XXXX XXXX" oninput="formatInAppCardInput(this)">
       </div>
       <div class="two">
@@ -7564,24 +7861,23 @@ function paypalSheet() {
           <input id="ppCardExpInp" dir="ltr" inputmode="numeric" maxlength="5" class="tlbt-input" value="${esc(defaultExp)}" placeholder="MM/YY" oninput="formatInAppExpInput(this)">
         </div>
         <div class="fld">
-          <label>${ar ? "رمز الأمان (CVV)" : "Security Code (CVV)"}</label>
+          <label>${ar ? "رمز الأمان (CVV)" : "CVV"}</label>
           <input id="ppCardCvvInp" dir="ltr" type="password" inputmode="numeric" maxlength="4" class="tlbt-input" value="${esc((S.inAppCardDraft && S.inAppCardDraft.cardCvv) || '')}" placeholder="CVV">
         </div>
       </div>
       <div class="fld">
         <label>${ar ? "اسم حامل البطاقة" : "Cardholder Name"}</label>
-        <input id="ppCardHolderInp" dir="ltr" class="tlbt-input" value="${esc((S.inAppCardDraft && S.inAppCardDraft.cardHolder) || S.profile.full_name || '')}" placeholder="FULL NAME ON CARD">
+        <input id="ppCardHolderInp" dir="ltr" class="tlbt-input" value="${esc((S.inAppCardDraft && S.inAppCardDraft.cardHolder) || S.profile.full_name || '')}" placeholder="Name on card">
       </div>
     ` : `
       <div class="fld">
-        <label>${ar ? "بريد حساب PayPal الإلكتروني" : "PayPal Account Email"}</label>
+        <label>${ar ? "بريد حساب PayPal" : "PayPal Email"}</label>
         <input id="ppEmailInp" dir="ltr" class="tlbt-input" value="${esc(S.profile.paypal_email || S.profile.email || '')}" placeholder="name@example.com">
       </div>
     `}
 
-    <button class="paypal-btn" onclick="completePaypalAction()">
-      <span style="font-style:italic;font-size:18px">PayPal</span>
-      <span>${isOrd ? (ar ? `تأكيد الدفع الآن (${omrAmt.toFixed(3)} ${t("omr")})` : `Pay Order Now (${omrAmt.toFixed(3)} ${t("omr")})`) : isSub ? (ar ? `تأكيد الاشتراك الآن (${omrAmt.toFixed(3)} ${t("omr")})` : `Pay In-App Now (${omrAmt.toFixed(3)} ${t("omr")})`) : isTop ? (ar ? `شحن المحفظة الآن (${omrAmt.toFixed(3)} ${t("omr")})` : `Add ${omrAmt.toFixed(3)} ${t("omr")} In-App`) : (ar ? "حفظ البطاقة للدفع داخل التطبيق" : "Save Card for In-App Payment")}</span>
+    <button class="btn" onclick="completePaypalAction()">
+      <span>${isOrd ? (ar ? `دفع ${omrAmt.toFixed(3)} ${t("omr")}` : `Pay ${omrAmt.toFixed(3)} ${t("omr")}`) : isSub ? (ar ? `اشتراك (${omrAmt.toFixed(3)} ${t("omr")})` : `Subscribe (${omrAmt.toFixed(3)} ${t("omr")})`) : isTop ? (ar ? `إضافة ${omrAmt.toFixed(3)} ${t("omr")}` : `Add ${omrAmt.toFixed(3)} ${t("omr")}`) : (ar ? "حفظ" : "Save")}</span>
     </button>
   </div></div>`;
 }
@@ -7910,18 +8206,15 @@ function accountScreen() {
     <div class="card" style="padding:0 16px">
       ${row("wallet", ar ? "محفظة FixIt Pay والرصيد" : "FixIt Pay Wallet", `${fmtOmr((S.wallet && S.wallet.balance) || 0)} ${t("omr")}`, "go('wallet')")}
       ${row("user", ar ? "معلومات الحساب" : "Account info", "", "go('account_info')")}
-      ${row("pin", ar ? "العناوين المحفوظة" : "Saved addresses", esc(dAddr.label), "go('addresses')")}
+      ${row("pin", ar ? "العناوين المحفوظة" : "Saved addresses", (S.addresses && S.addresses.length) ? esc(dAddr.label) : (ar ? "غير مضاف" : "None"), "go('addresses')")}
       ${row("tag", ar ? "قسائم الخصم والكوبونات" : "Vouchers & coupons", S.coupons.length, "go('coupons')")}
       ${row("bell", t("notifs"), unreadNotifs || "", "go('notifs')")}
     </div>`}
 
-    <div class="mh">${ar ? "الإعدادات والأمان" : "Settings & Security"}</div>
+    <div class="mh">${ar ? "الإعدادات والدعم" : "Settings & Support"}</div>
     <div class="card" style="padding:0 16px">
-      ${ROLE !== "admin" ? row("user", ar ? "تبديل الحساب / التحقق" : "Phone Verification & Sign In", esc(getMyPhone()), "openAuthScreen('welcome')") : ""}
-      ${(ROLE !== "admin" && typeof window !== "undefined" && window.FixItNative && typeof window.FixItNative.canUseBiometric === "function") ? row("fingerprint", ar ? "البصمة والوجه" : "Fingerprint & Face", isBiometricLoginReady() ? (ar ? "مفعّل" : "Enabled") : (ar ? "تفعيل" : "Enable"), "toggleBiometricLogin()") : ""}
       ${row("settings", ar ? "إعدادات التطبيق" : "Settings", "", "go('settings')")}
       ${row("help", ar ? "مركز المساعدة" : "Get Help", "", "go('tickets')")}
-      ${row("globe", t("language"), ar ? "العربية" : "English", "setLang(L==='ar'?'en':'ar')")}
       ${row("shield", ar ? "الشؤون القانونية (Legal)" : "Legal", ar ? "الشروط والخصوصية" : "Terms & Privacy", "go('legal')")}
       ${row("box", ar ? "عن تطبيق FixIt" : "About FixIt", "fixit-now.xyz", "go('about')")}
       ${ROLE !== "admin" ? `<button class="li" onclick="logoutCurrentAccount()"><div class="ico" style="width:38px;height:38px;border-radius:10px;background:#FEE2E2;color:#DC2626">${I("x")}</div><span class="sp t1" style="font-size:15px;font-weight:800;color:#DC2626">${ar ? "تسجيل الخروج من الحساب" : "Log Out"}</span>${I("next", "flip")}</button>` : ""}
@@ -8097,8 +8390,8 @@ function settingsScreen() {
     <div class="mh">${ar ? "الحساب، المحفظة والدفع" : "Account, Wallet & Payments"}</div>
     <div class="card" style="padding:0 16px">
       <button class="li" onclick="go('account_info')"><div class="ico">${I("user")}</div><div class="sp"><div class="t1">${ar ? "معلومات الحساب" : "Account info"}</div><div class="t2">${esc(S.profile.full_name || "Profile")}</div></div>${I("next","flip")}</button>
-      ${(ROLE !== "admin" && typeof window !== "undefined" && window.FixItNative && typeof window.FixItNative.canUseBiometric === "function") ? `<div class="li"><div class="ico">${I("fingerprint")}</div><div class="sp"><div class="t1">${ar ? "الدخول بالبصمة والوجه" : "Fingerprint & Face Login"}</div><div class="t2">${isBiometricLoginReady() ? (ar ? "مفعّل على هذا الجهاز" : "Active on this device") : (isBiometricHardwareAvailable() ? (ar ? "دخول سريع وآمن لحسابك" : "Fast sign-in on this device") : (ar ? "يتطلب تفعيل قفل الشاشة أولاً" : "Requires device lock screen"))}</div></div><button class="tog ${isBiometricLoginReady() ? "on" : ""}" onclick="toggleBiometricLogin()" ${window._biometricBusy ? "disabled" : ""} aria-label="${ar ? "الدخول بالبصمة والوجه" : "Fingerprint & Face Login"}"></button></div>` : ""}
-      <button class="li" onclick="go('addresses')"><div class="ico">${I("pin")}</div><div class="sp"><div class="t1">${ar ? "العناوين المحفوظة" : "Saved addresses"}</div><div class="t2">${esc((defAddr() || {}).label || "Location")}</div></div>${I("next","flip")}</button>
+      ${ROLE !== "admin" ? `<div class="li"><div class="ico">${I("fingerprint")}</div><div class="sp"><div class="t1">${ar ? "الدخول بالبصمة والوجه" : "Fingerprint & Face Login"}</div><div class="t2">${isBiometricLoginReady() ? (ar ? "مفعّل على هذا الجهاز" : "Active on this device") : (isBiometricHardwareAvailable() ? (ar ? "دخول سريع وآمن لحسابك" : "Fast sign-in on this device") : (ar ? "دخول سريع بالبصمة أو الوجه" : "Use device fingerprint or face unlock"))}</div></div><button class="tog ${isBiometricLoginReady() ? "on" : ""}" onclick="toggleBiometricLogin()" ${window._biometricBusy ? "disabled" : ""} aria-label="${ar ? "الدخول بالبصمة والوجه" : "Fingerprint & Face Login"}"></button></div>` : ""}
+      <button class="li" onclick="go('addresses')"><div class="ico">${I("pin")}</div><div class="sp"><div class="t1">${ar ? "العناوين المحفوظة" : "Saved addresses"}</div><div class="t2">${(S.addresses && S.addresses.length) ? esc((defAddr() || {}).label) : (ar ? "لم يتم إضافة موقع" : "None")}</div></div>${I("next","flip")}</button>
       <button class="li" onclick="go('wallet')"><div class="ico" style="background:var(--o2);color:var(--o)">${I("wallet")}</div><div class="sp"><div class="t1">${ar ? "المحفظة وسجل الفواتير" : "Wallet & Billing History"}</div><div class="t2">${fmtOmr((S.wallet && S.wallet.balance) || 0)} ${t("omr")}</div></div>${I("next","flip")}</button>
       <button class="li" onclick="S.paypalPurpose='CONNECT';S.sheet='paypal';render()"><div class="ico" style="background:#E0F2FE;color:#003087;font-weight:900;font-style:italic">P</div><div class="sp"><div class="t1">PayPal & FixIt Pro</div><div class="t2">${S.profile.isProMember ? (ar ? "نشط" : "Active") : esc(S.profile.paypal_email || S.profile.email || "PayPal")}</div></div>${I("next","flip")}</button>
       ${S.profile.isProMember ? `<button class="li" onclick="openCancelSubSheet()"><div class="ico" style="background:#FEE2E2;color:#DC2626">${I("x")}</div><div class="sp"><div class="t1" style="color:#DC2626">${ar ? "إلغاء باقة FixIt Pro" : "Cancel FixIt Pro Membership"}</div><div class="t2">${ar ? "إلغاء فوري في أي وقت" : "Instant cancellation anytime"}</div></div></button>` : ""}
@@ -9389,7 +9682,6 @@ function vJobs() {
   const rightBar = `<div class="row" style="gap:8px">
     <button class="talabat-circle-btn" style="position:relative" onclick="go('notifs')">${I("bell")}${unreadNotifs ? `<span class="badge" style="position:absolute;top:-3px;right:-3px">${unreadNotifs}</span>` : ""}</button>
     <button class="tog ${S.online ? "on" : ""}" onclick="S.online=!S.online;save('online',S.online);render()"></button>
-    ${langBtn()}
   </div>`;
 
   return `${bar(ar ? "بوابة شريك FixIt" : "FixIt Partner Hub", false, rightBar)}
@@ -9427,14 +9719,17 @@ function vJobs() {
       </div>
     </div>
 
-    ${activeMine.length ? `<div class="live" onclick="go('job','${activeMine[0].job_id}')">
-      <div class="ring">${I(cat(activeMine[0].category_id).icon)}</div>
-      <div class="sp">
-        <div class="row" style="gap:6px"><span class="dot"></span><span style="font-size:12px;font-weight:800;opacity:.9">${t(activeMine[0].status)} · ${sid(activeMine[0])}</span></div>
-        <div style="font-size:15.5px;font-weight:900;margin-top:2px">${cat(activeMine[0].category_id).name} — ${ar ? "اضغط لفتح الخريطة وتحديث الحالة" : "Tap to navigate & update job status"}</div>
-      </div>
-      ${I("next", "flip")}
-    </div>` : ""}
+    ${activeMine.length ? activeMine.slice(0, 3).map(aj => {
+      const schedLbl = getJobScheduleLabel(aj);
+      return `<div class="live" style="${schedLbl ? "background:linear-gradient(135deg,#1E3A8A,#2563EB)" : ""}" onclick="go('job','${aj.job_id}')">
+        <div class="ring">${I(cat(aj.category_id).icon)}</div>
+        <div class="sp">
+          <div class="row" style="gap:6px;flex-wrap:wrap"><span class="dot"></span><span style="font-size:12px;font-weight:800;opacity:.9">${t(aj.status)} · ${sid(aj)}</span>${schedLbl ? `<span class="pill" style="background:rgba(255,255,255,.22);color:#fff;font-size:10.5px">${ar ? "موعد مجدول:" : "Scheduled:"} ${esc(schedLbl)}</span>` : ""}</div>
+          <div style="font-size:15px;font-weight:900;margin-top:2px">${cat(aj.category_id).name} — ${schedLbl ? (ar ? `الزيارة في الموعد المحدد (${esc(schedLbl)}) · يمكنك قبول طلبات أخرى` : `Visit at scheduled time (${esc(schedLbl)}) · Free to take other jobs`) : (ar ? "اضغط لفتح الخريطة وتحديث الحالة" : "Tap to navigate & update job status")}</div>
+        </div>
+        ${I("next", "flip")}
+      </div>`;
+    }).join("") : ""}
 
     <div class="chips" style="margin-bottom:2px">
       <button class="chip ${showNew ? "on" : ""}" onclick="S.filter='NEW';render()">${I("radar")}${t("newJobs")} (${allOpenJobs.length})</button>
@@ -9463,6 +9758,7 @@ function vLeadCard(j) {
   const jVid = (S.jobVideos && S.jobVideos[j.job_id]) || (S.photos || []).find(p => p.job_id === j.job_id && String(p.url || "").startsWith("[VID]"));
   const vidSrc = typeof jVid === "string" ? jVid : (jVid && jVid.url ? String(jVid.url).slice(5) : null);
   const isProCust = isProCustomerJob(j);
+  const schedLbl = getJobScheduleLabel(j);
 
   return `<div class="card" style="display:flex;flex-direction:column;gap:12px;border:${isProCust ? "2px solid #F59E0B" : "1.5px solid #E5E7EB"};background:${isProCust ? "linear-gradient(180deg,#FFFBEB 0%,#FFFFFF 55px)" : "#fff"}">
     ${isProCust ? `<div class="row" style="justify-content:space-between;margin-bottom:-4px">
@@ -9475,6 +9771,7 @@ function vLeadCard(j) {
         <div class="row" style="gap:6px;flex-wrap:wrap">
           <span class="t1">${c.name} · ${sid(j)}</span>
           <span class="pill" style="font-size:11px;background:var(--o2);color:var(--o);font-weight:800">${dist} km · ~${etaMins} min</span>
+          ${schedLbl ? `<span class="pill" style="font-size:11px;background:#DBEAFE;color:#1D4ED8;font-weight:800">${ar ? "مجدول:" : "Scheduled:"} ${esc(schedLbl)}</span>` : `<span class="pill ok" style="font-size:10.5px">${ar ? "فوري الآن" : "Now"}</span>`}
         </div>
         <div class="t2" style="margin-top:4px;color:var(--tx);font-size:14px;font-weight:600">${esc(displayTranslated(cleanDesc(j.description))) || sid(j)}</div>
         <div class="t2" style="font-size:11.5px;margin-top:2px">${salalahAreaName(jCoords[0], jCoords[1])} · ${ago(j.created_at)}</div>
@@ -9541,9 +9838,17 @@ function vJob() {
   const areaName = salalahAreaName(jLat, jLng);
   const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(jLat + "," + jLng)}`;
   const netInfo = chosenBid ? calcVendorNetPayoutOmr(chosenBid.bid_amount) : null;
+  const schedLbl = getJobScheduleLabel(j);
 
   return `${bar(c.name + " · " + sid(j), true, proAssigned ? `<a class="ib" href="https://wa.me/${getJobWaDigits(j)}" target="_blank" rel="noopener" style="background:#DCFCE7;color:#15803D">${I("whatsapp")}</a>` : "")}<div class="pad">
     <div class="card">${stepper(j)}</div>
+    ${schedLbl ? `<div class="card" style="background:#EFF6FF;border:1.5px solid #93C5FD;display:flex;align-items:center;gap:10px">
+      <div class="ico" style="background:#1D4ED8;color:#fff">${I("clock")}</div>
+      <div class="sp">
+        <div style="font-size:13.5px;font-weight:900;color:#1E3A8A">${ar ? "موعد مجدول:" : "Scheduled Booking:"} ${esc(schedLbl)}</div>
+        <div style="font-size:12px;color:#1D4ED8;margin-top:2px">${ar ? "التوجه للعميل يكون في الموعد المحدد فقط — يمكنك استقبال وإنجاز طلبات أخرى في نفس اليوم بحرية." : "Only head to the customer at the scheduled time — you are free to accept and complete other jobs meanwhile."}</div>
+      </div>
+    </div>` : ""}
 
     <div class="card" style="padding:0;overflow:hidden">
       ${renderTalabatLeafletMap("vjobLeafletMap", "210px", false, j.job_id)}
@@ -9647,7 +9952,7 @@ function aOverview() {
   const openTickets = (S.tickets || []).filter(tk => tk.status !== "RESOLVED");
   const webTickets = (S.tickets || []).filter(tk => /\[WEBSITE\]/i.test((tk.subject || "") + " " + (tk.body || "")));
   const tile = (icon, label, val, goAct) => `<button class="card" style="text-align:start" onclick="${goAct}"><div class="ico" style="margin-bottom:10px">${I(icon)}</div><div class="big">${val}</div><div class="t2">${label}</div></button>`;
-  return `${bar(ar ? "بوابة عمليات FixIt" : "FixIt Operations Portal", false, `<button class="ib" onclick="sync().then(()=>toast('Synced'))">${I("refresh")}</button>${langBtn()}`)}<div class="pad">
+  return `${bar(ar ? "بوابة عمليات FixIt" : "FixIt Operations Portal", false, `<button class="ib" onclick="sync().then(()=>toast('Synced'))">${I("refresh")}</button>`)}<div class="pad">
     <div class="two">
       ${tile("list", t("orders"), J.length, "S.filter='ALL';tab('orders')")}
       ${tile("box", ar ? "توثيق الشركاء والسجلات" : "Partner KYC & CRs", (S.shops || []).length, "tab('shops')")}
@@ -10356,10 +10661,20 @@ function render() {
     }
   });
 
+  const prevScrollY = typeof window !== "undefined" ? window.scrollY : 0;
   const appEl = document.getElementById("app");
   if (appEl) {
+    if (S._navChanged) {
+      appEl.classList.add("page-anim");
+    } else {
+      appEl.classList.remove("page-anim");
+    }
     appEl.innerHTML = banner + offlineBanner + mainContent + nav + sheet + imgModal + camModal;
   }
+  if (!S._navChanged && typeof window !== "undefined" && prevScrollY > 0) {
+    window.scrollTo(0, prevScrollY);
+  }
+  S._navChanged = false;
 
   // Re-attach preserved map DOM nodes immediately so there is 0ms flash!
   Object.keys(preservedMaps).forEach(mid => {
@@ -10489,7 +10804,7 @@ setInterval(() => {
   if ((typeof document === "undefined" || !document.hidden) && S.auth && S.auth.loggedIn && S.auth.sessionCode) {
     sync();
   }
-}, 10000);
+}, 30000);
 setInterval(() => {
   if ((typeof document === "undefined" || !document.hidden) && S.auth && S.auth.loggedIn && S.auth.sessionCode) {
     sendSessionHeartbeat();
