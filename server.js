@@ -40,14 +40,17 @@ function createApp() {
   app.use(express.json({ limit: "600kb" }));
   app.use(express.urlencoded({ extended: true, limit: "600kb" }));
 
-  // Global sliding-window rate limiter across all HTTP routes
+  // Global sliding-window rate limiter across all HTTP routes (uptime /ping bypasses limiter)
   const globalLimiter = createRateLimiter({
     name: "global",
     windowMs: 60 * 1000,
     max: positiveIntEnv("TEST_RATE_MAX", 120),
     message: "Too many requests from your IP. Please try again shortly."
   });
-  app.use(globalLimiter);
+  app.use((req, res, next) => {
+    if (req.path === "/ping") return next();
+    return globalLimiter(req, res, next);
+  });
 
   // Deterministic Algorithms & Viral Engines routes
   app.use(createEnginesRouter());

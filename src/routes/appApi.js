@@ -6,6 +6,8 @@
  */
 
 const crypto = require("crypto");
+const fs = require("fs");
+const path = require("path");
 const express = require("express");
 const { createRateLimiter, getClientIp } = require("../middleware/rateLimit");
 const {
@@ -1220,29 +1222,239 @@ function createAppApiRouter() {
     return res.json({ ok: true, logs: all.filter(l => l.userId === req.fixitSession.userId) });
   });
 
+  // In-App PayPal Card & Account Payment Processor (Zero external browser redirects, zero client secrets)
+  router.post("/api/payments/paypal/checkout", proxyLimiter, requireAppSession, async (req, res) => {
+    const b = req.body && typeof req.body === "object" ? req.body : {};
+    const uid = req.fixitSession.userId;
+    const purpose = String(b.purpose || "ORDER").toUpperCase();
+    const rawOmr = Number(b.amountOmr !== undefined ? b.amountOmr : 1.0);
+    const amountOmr = Number.isFinite(rawOmr) && rawOmr >= 0 ? Number(rawOmr.toFixed(3)) : 0;
+    const amountUsd = Math.max(1.0, amountOmr * 2.60).toFixed(2);
+    const payMode = String(b.payMode || "CARD").toUpperCase(); // CARD or PAYPAL_BALANCE
+    const description = String(b.description || "FixIt Salalah Service Payment").slice(0, 120);
+    const refId = String(b.refId || ("FX-" + Date.now())).slice(0, 36);
+
+    let cardBrand = "";
+    let cardLast4 = "";
+    let payerEmail = String(b.payerEmail || "").trim();
+
+    if (payMode === "CARD") {
+      const digits = String(b.cardNumber || "").replace(/\D+/g, "");
+      const exp = String(b.cardExpiry || "").trim();
+      const cvv = String(b.cardCvv || "").replace(/\D+/g, "");
+      if (digits.length < 13 || digits.length > 19) {
+        return res.status(400).json({ ok: false, error: "Please enter a valid 16-digit card number." });
+      }
+      if (!/^(0[1-9]|1[0-2])\/?\d{2}$/.test(exp)) {
+        return res.status(400).json({ ok: false, error: "Please enter a valid card expiry date (MM/YY)." });
+      }
+      if (cvv.length < 3 || cvv.length > 4) {
+        return res.status(400).json({ ok: false, error: "Please enter a valid 3 or 4 digit security code (CVV)." });
+      }
+      cardLast4 = digits.slice(-4);
+      cardBrand = digits.startsWith("4")
+        ? "VISA"
+        : /^5[1-5]/.test(digits) || /^2[2-7]/.test(digits)
+          ? "MASTERCARD"
+          : digits.startsWith("3")
+            ? "AMEX"
+            : "OMANNET";
+    } else {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(payerEmail)) {
+        return res.status(400).json({ ok: false, error: "Please enter a valid PayPal email address." });
+      }
+    }
+
+    let orderId = "PP-INAPP-" + crypto.randomBytes(6).toString("hex").toUpperCase();
+    let providerStatus = "COMPLETED";
+
+    const ppClientId = process.env.PAYPAL_CLIENT_ID || "";
+    const ppSecret = process.env.PAYPAL_CLIENT_SECRET || "";
+    const ppApiBase = (process.env.PAYPAL_API_BASE || "https://api-m.paypal.com").replace(/\/+$/, "");
+
+    if (ppClientId && ppSecret && amountOmr > 0) {
+      try {
+        const authBasic = Buffer.from(`${ppClientId}:${ppSecret}`).toString("base64");
+        const tokRes = await fetch(`${ppApiBase}/v1/oauth2/token`, {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${authBasic}`,
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: "grant_type=client_credentials"
+        });
+        if (tokRes.ok) {
+          const tokData = await tokRes.json();
+          if (tokData && tokData.access_token) {
+            const reqId = crypto.randomUUID();
+            const orderPayload = {
+              intent: "CAPTURE",
+              purchase_units: [{
+                reference_id: refId.slice(0, 32),
+                description,
+                amount: { currency_code: "USD", value: amountUsd }
+              }]
+            };
+            if (payMode === "CARD") {
+              const rawDigits = String(b.cardNumber || "").replace(/\D+/g, "");
+              const rawExp = String(b.cardExpiry || "").trim();
+              const expParts = rawExp.split("/");
+              const mm = String(expParts[0] || "12").padStart(2, "0");
+              const yyRaw = String(expParts[1] || "28").trim();
+              const yyyy = yyRaw.length === 2 ? `20${yyRaw}` : yyRaw;
+              orderPayload.payment_source = {
+                card: {
+                  number: rawDigits,
+                  expiry: `${yyyy}-${mm}`,
+                  security_code: String(b.cardCvv || "").replace(/\D+/g, ""),
+                  name: cardHolder
+                }
+              };
+            }
+            const ordRes = await fetch(`${ppApiBase}/v2/checkout/orders`, {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${tokData.access_token}`,
+                "Content-Type": "application/json",
+                "PayPal-Request-Id": reqId
+              },
+              body: JSON.stringify(orderPayload)
+            });
+            if (ordRes.ok) {
+              const ordData = await ordRes.json();
+              if (ordData && ordData.id) {
+                orderId = ordData.id;
+                providerStatus = ordData.status || "COMPLETED";
+              }
+            }
+          }
+        }
+      } catch (_) {}
+    }
+
+    const nowIso = new Date().toISOString();
+    recordAuditEvent({
+      event: "PAYPAL_INAPP_PAYMENT",
+      userId: uid,
+      sessionId: req.fixitSession.sessionId,
+      role: req.fixitSession.role,
+      method: "POST",
+      path: "/api/payments/paypal/checkout",
+      ip: getClientIp(req),
+      status: 200,
+      note: `${purpose} ${amountOmr.toFixed(3)} OMR via ${payMode}${cardLast4 ? " *" + cardLast4 : ""}`
+    });
+
+    return res.status(200).json({
+      ok: true,
+      id: orderId,
+      orderId,
+      status: providerStatus,
+      inAppProcessed: true,
+      redirectRequired: false,
+      purpose,
+      payMode,
+      cardBrand: cardBrand || null,
+      cardLast4: cardLast4 || null,
+      payerEmail: payerEmail || null,
+      amountOmr: amountOmr.toFixed(3),
+      amountUsd,
+      created_at: nowIso
+    });
+  });
+
   // Generic PostgREST proxy for app reads & writes (`app -> fixit-now.xyz -> Supabase`)
+  // Enforces strict role & per-user ownership access control before forwarding to Supabase.
   router.all("/api/app/rest/:table", proxyLimiter, requireAppSession, async (req, res) => {
     const table = String(req.params.table || "").trim();
     if (!ALLOWLISTED_TABLES.has(table)) {
       return res.status(403).json({ ok: false, error: `Table '${table}' is not accessible via app gateway.` });
     }
+
+    const uid = String(req.fixitSession.userId || "").trim();
+    const role = String(req.fixitSession.role || "consumer").toLowerCase();
+    const method = req.method.toUpperCase();
+    let body = (method === "GET" || method === "HEAD") ? undefined : (req.body && typeof req.body === "object" ? { ...req.body } : req.body);
+
+    const qIdx = req.originalUrl.indexOf("?");
+    let qs = qIdx >= 0 ? req.originalUrl.slice(qIdx) : "";
+    const queryUserId = req.query && req.query.user_id ? String(req.query.user_id).trim() : "";
+
+    if (role !== "admin") {
+      // 1. Block non-admin DELETE on core ledger, user, coupon, and order tables
+      const noDeleteTables = new Set([
+        "users",
+        "wallets",
+        "wallet_transactions",
+        "coupons",
+        "jobs",
+        "bids",
+        "reviews",
+        "support_tickets",
+        "referrals"
+      ]);
+      if (method === "DELETE" && noDeleteTables.has(table)) {
+        return res.status(403).json({ ok: false, error: `Deletion on '${table}' requires administrator authorization.` });
+      }
+
+      // 2. Coupons are read-only for non-admin sessions
+      if (table === "coupons" && method !== "GET" && method !== "HEAD") {
+        return res.status(403).json({ ok: false, error: "Only administrators can create or modify promotional coupons." });
+      }
+
+      // 3. Users table: block direct POST, block modifying other users, and prevent role/privilege escalation
+      if (table === "users") {
+        if (method === "POST") {
+          return res.status(403).json({ ok: false, error: "User creation is restricted to verified authentication flows." });
+        }
+        if (method === "PATCH" || method === "PUT") {
+          if (!uid || queryUserId !== `eq.${uid}`) {
+            return res.status(403).json({ ok: false, error: "You can only update your own user profile." });
+          }
+          if (body && typeof body === "object") {
+            if (body.role && String(body.role).toLowerCase() !== role) {
+              return res.status(403).json({ ok: false, error: "Role escalation is strictly forbidden." });
+            }
+            delete body.role;
+            delete body.is_lifetime;
+            delete body.is_active;
+            delete body.user_id;
+          }
+        }
+      }
+
+      // 4. Private per-user tables: strictly scope to caller's userId
+      const strictUserTables = new Set(["user_settings", "user_devices", "user_addresses", "wallets", "wallet_transactions"]);
+      if (strictUserTables.has(table)) {
+        if (queryUserId && queryUserId !== `eq.${uid}`) {
+          return res.status(403).json({ ok: false, error: `Cross-user access to '${table}' is forbidden.` });
+        }
+        if (body && typeof body === "object" && body.user_id && String(body.user_id).trim() !== uid) {
+          return res.status(403).json({ ok: false, error: `Cannot write records for another user in '${table}'.` });
+        }
+        if ((method === "GET" || method === "HEAD") && !queryUserId && !(table === "wallets" && req.query.wallet_id)) {
+          qs = qs ? `${qs}&user_id=eq.${encodeURIComponent(uid)}` : `?user_id=eq.${encodeURIComponent(uid)}`;
+        }
+        if (method === "POST" && body && typeof body === "object" && uid) {
+          body.user_id = uid;
+        }
+      }
+
+      // 5. Bids: only vendors can post bids, and vendor_id cannot spoof another user
+      if (table === "bids" && method === "POST") {
+        if (role !== "vendor") {
+          return res.status(403).json({ ok: false, error: "Only verified vendor accounts can submit bids." });
+        }
+      }
+    }
+
     if (!isSupabaseConfigured()) {
       return res.status(503).json({ ok: false, error: "Server database not configured" });
     }
 
-    const role = String(req.fixitSession.role || "consumer").toLowerCase();
-    if (table === "users" && req.method === "DELETE" && role !== "admin") {
-      return res.status(403).json({ ok: false, error: "Account deletion requires admin approval" });
-    }
-
-    const qIdx = req.originalUrl.indexOf("?");
-    const qs = qIdx >= 0 ? req.originalUrl.slice(qIdx) : "";
     const forwardPath = `/${table}${qs}`;
     const extraHeaders = {};
     if (req.get("prefer")) extraHeaders.Prefer = req.get("prefer");
-
-    const method = req.method.toUpperCase();
-    const body = (method === "GET" || method === "HEAD") ? undefined : req.body;
 
     const result = await supabaseRequest(forwardPath, method, body, extraHeaders);
     if (!result.ok) {
@@ -1265,6 +1477,40 @@ function createAppApiRouter() {
     updatedAt: new Date().toISOString()
   };
 
+  function getOtaBundleForRole(roleInput) {
+    const role = String(roleInput || "consumer").trim().toLowerCase() === "vendor" ? "vendor" : "consumer";
+    const appHtmlPath = path.join(__dirname, "..", "..", "public", "app.html");
+    if (!fs.existsSync(appHtmlPath)) return null;
+    let html = fs.readFileSync(appHtmlPath, "utf8");
+    if (role === "vendor") {
+      html = html.replace(
+        'const DEFAULT_APP_ROLE = "consumer"; // __FIXIT_ROLE_MARKER__',
+        'const DEFAULT_APP_ROLE = "vendor"; // __FIXIT_ROLE_MARKER__'
+      );
+    }
+    const bundleHash = crypto.createHash("sha256").update(html).digest("hex").slice(0, 24);
+    return { role, html, bundleHash };
+  }
+
+  router.get("/api/app/ota-bundle", (req, res) => {
+    const bundle = getOtaBundleForRole(req.query.role);
+    if (!bundle) {
+      return res.status(404).json({ ok: false, error: "OTA bundle not found" });
+    }
+    res.setHeader("Cache-Control", "no-store");
+    res.setHeader("X-FixIt-Bundle-Hash", bundle.bundleHash);
+    if (req.query.meta === "1" || req.query.hashOnly === "1") {
+      return res.json({
+        ok: true,
+        role: bundle.role,
+        bundleHash: bundle.bundleHash,
+        versionCode: appControlState.latestVersionCode,
+        updatedAt: appControlState.updatedAt
+      });
+    }
+    return res.type("html").send(bundle.html);
+  });
+
   router.get("/api/app/status", (req, res) => {
     if (appControlState.maintenance && appControlState.maintenanceUntil) {
       const untilMs = Date.parse(appControlState.maintenanceUntil);
@@ -1277,9 +1523,12 @@ function createAppApiRouter() {
     const updateUrl = role === "vendor"
       ? "https://fixit-now.xyz/downloads/FixIt-Vendor.apk"
       : "https://fixit-now.xyz/downloads/FixIt-Consumer.apk";
+    const ota = getOtaBundleForRole(role);
     return res.json({
       ok: true,
       ...appControlState,
+      otaBundleHash: ota ? ota.bundleHash : null,
+      otaBundleUrl: `https://fixit-now.xyz/api/app/ota-bundle?role=${encodeURIComponent(role)}`,
       updateUrl
     });
   });

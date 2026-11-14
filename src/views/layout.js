@@ -349,14 +349,18 @@ function renderPage({ title, description = "", activePath = "/", body = "", head
           <ul>
             <li><a href="/terms">Terms of Service</a></li>
             <li><a href="/privacy">Privacy Policy</a></li>
+            <li><a href="/cookies">Cookie &amp; Storage Policy</a></li>
+            <li><a href="/refunds">Refund &amp; Billing Policy</a></li>
+            <li><a href="/aup">Acceptable Use Policy</a></li>
+            <li><a href="/disclaimer">Platform &amp; Ad Disclaimers</a></li>
+            <li><a href="/delete-account">Account &amp; Data Deletion</a></li>
             <li><a href="/warranty">14-Day Workmanship Warranty</a></li>
-            <li><a href="/contact">Direct Support Desk</a></li>
           </ul>
         </div>
       </div>
 
       <div class="footer-bottom">
-        <div>© 2026 FixIt Oman. All rights reserved. Designed for the Sultanate of Oman.</div>
+        <div>© 2026 FixIt Oman (fixit-now.xyz). All rights reserved. Independent Omani platform — NOT affiliated with, endorsed by, or connected in any way to Talabat or Delivery Hero SE.</div>
         <div style="display:flex;gap:18px;align-items:center">
           <a href="https://wa.me/96895956361" target="_blank" rel="noopener noreferrer" style="color:#15803D;font-weight:700">WhatsApp: +968 9595 6361</a>
           <span>·</span>

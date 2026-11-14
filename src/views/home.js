@@ -304,9 +304,12 @@ function homePage({ reqHost }) {
     <!-- Talabat Hero Banner -->
     <header class="talabat-hero">
       <div class="hero-container">
-        <div class="hero-tagline">
-          ${ICONS.globe}
-          <span>Sultanate of Oman · Dhofar Governorate</span>
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap">
+          <img src="/logo.png" alt="FixIt Oman Logo" style="width:56px;height:56px;border-radius:16px;object-fit:cover;border:2px solid rgba(255,255,255,0.45);box-shadow:0 8px 24px rgba(0,0,0,0.18)" />
+          <div class="hero-tagline" style="margin-bottom:0">
+            ${ICONS.globe}
+            <span>FixIt Oman · Sultanate of Oman · Dhofar Governorate</span>
+          </div>
         </div>
         <h1 class="hero-title">On-demand repair &amp; breakdown services, right at your doorstep</h1>
         <p class="hero-subtitle">
@@ -416,9 +419,16 @@ function homePage({ reqHost }) {
         </div>
       </div>
       <!-- BEGIN AADS AD UNIT 2461953 -->
-      <div id="frame" style="width: 100%;margin: 24px auto 0;position: relative; z-index: 99998;">
-        <iframe data-aa='2461953' src='https://acceptable.a-ads.com/2461953/?size=Adaptive'
-          style='border:0; padding:0; width:70%; height:auto; overflow:hidden;display: block;margin: auto'></iframe>
+      <div style="max-width:760px;margin:28px auto 0;border-radius:14px;border:1px solid #E2E8F0;background:#F8FAFC;overflow:hidden">
+        <div style="padding:5px 12px;background:#F1F5F9;border-bottom:1px solid #E2E8F0;display:flex;align-items:center;justify-content:space-between;font-size:10.5px;font-weight:800;letter-spacing:1.2px;color:#64748B;text-transform:uppercase">
+          <span>ADVERTISEMENT · THIRD-PARTY AD (NOT AFFILIATED WITH FIXIT)</span>
+          <a href="https://aads.com/privacy_policy" target="_blank" rel="noopener noreferrer" style="color:#64748B;text-decoration:underline">A-Ads Privacy</a>
+        </div>
+        <div id="frame" style="width:100%;min-height:84px;position:relative;display:flex;align-items:center;justify-content:center;background:#F8FAFC">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;letter-spacing:5px;color:#CBD5E1;text-transform:uppercase;pointer-events:none;user-select:none;z-index:0">ADVERTISEMENT</div>
+          <iframe data-aa='2461953' src='https://acceptable.a-ads.com/2461953/?size=Adaptive'
+            style='position:relative;z-index:1;border:0;padding:0;width:100%;height:80px;overflow:hidden;display:block;margin:auto;background:transparent'></iframe>
+        </div>
       </div>
       <!-- END AADS AD UNIT 2461953 -->
     </main>

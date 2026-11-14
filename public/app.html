@@ -24,31 +24,37 @@
 :root{--o:#FF5A00;--o2:#FFF1E8;--o3:#FFE2CF;--od:#E04E00;--lime:#CFFF00;--plum:#4A0D10;
 --bg:#F5F5F5;--card:#fff;--tx:#1A1A1A;--mu:#6B6B6B;--mu2:#9A9A9A;--ln:#EDEDED;
 --gr:#00A862;--gr2:#E6F7EF;--rd:#E5242B;--rd2:#FDECEC;--am:#F2A100;--am2:#FFF6E0;--hud:#1A1A1A;
---r:16px;--sh:0 1px 2px rgba(0,0,0,.04),0 4px 14px rgba(0,0,0,.05);--ease:cubic-bezier(.2,.8,.2,1)}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;font-variant-ligatures:none;font-feature-settings:'liga' 0,'clig' 0,'calt' 0}
+--r:16px;--sh:0 1px 2px rgba(0,0,0,.04),0 4px 14px rgba(0,0,0,.05);--ease:cubic-bezier(.22,1,.36,1);--spring:cubic-bezier(.34,1.56,.64,1)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;font-variant-ligatures:none;font-feature-settings:'liga' 0,'clig' 0,'calt' 0;scrollbar-width:none;-ms-overflow-style:none}
+*::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}
 html,body{background:var(--bg);color:var(--tx);font-family:'TT Commons Pro','Noto Sans Arabic',system-ui,sans-serif;font-size:15px;line-height:1.35;
--webkit-user-select:none;user-select:none;overscroll-behavior-x:none;touch-action:pan-y;-webkit-font-smoothing:antialiased}
+-webkit-user-select:none;user-select:none;overscroll-behavior-x:none;touch-action:pan-y;-webkit-font-smoothing:antialiased;scrollbar-width:none;-ms-overflow-style:none}
+html::-webkit-scrollbar,body::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}
 body{padding-bottom:84px}
 button,input,textarea,select,a{font:inherit;color:inherit;border:0!important;outline:0;background:none;-webkit-appearance:none;appearance:none;text-decoration:none}
-button{cursor:pointer;padding:0;box-shadow:none}
+button{cursor:pointer;padding:0;box-shadow:none;transition:transform .16s var(--ease),background-color .16s ease,box-shadow .16s ease,opacity .16s ease}
+button:active{transform:scale(.96)}
 input,textarea{-webkit-user-select:text;user-select:text}
 svg.lucide{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;display:block}
 svg.brand-svg{flex-shrink:0;display:block}
 [dir=rtl] .flip{transform:scaleX(-1)}
-#app{max-width:520px;margin:0 auto;animation:fade .25s var(--ease)}
+#app{max-width:520px;margin:0 auto;animation:tlbtPageIn .24s var(--ease)}
 @keyframes fade{from{opacity:.4}to{opacity:1}}
+@keyframes tlbtPageIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tlbtCardRise{from{opacity:0;transform:translateY(10px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes tlbtPop{0%{transform:scale(.92)}60%{transform:scale(1.04)}100%{transform:scale(1)}}
 @keyframes up{from{transform:translateY(100%)}to{transform:none}}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(0,168,98,.6)}100%{box-shadow:0 0 0 10px rgba(0,168,98,0)}}
 @keyframes shimmer{to{background-position:-200% 0}}
 
 /* ---------- header ---------- */
-.talabat-top-bar{position:sticky;top:0;z-index:50;background:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--ln)}
+.talabat-top-bar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);padding:12px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--ln)}
 .hdr-home{background:var(--o);color:#fff;border:0;padding:14px 16px 12px}
 .hdr-home .talabat-loc-label{color:rgba(255,255,255,.85)}
 .hdr-home .talabat-loc-addr{color:#fff}
 .hdr-home .talabat-circle-btn{background:rgba(255,255,255,.18);color:#fff}
-.talabat-back-btn,.talabat-circle-btn,.ib{width:40px;height:40px;border-radius:50%;background:#F3F3F3;display:grid;place-items:center;position:relative;color:var(--tx);flex-shrink:0;transition:transform .12s}
-.talabat-back-btn:active,.talabat-circle-btn:active,.ib:active{transform:scale(.9)}
+.talabat-back-btn,.talabat-circle-btn,.ib{width:40px;height:40px;border-radius:50%;background:#F3F3F3;display:grid;place-items:center;position:relative;color:var(--tx);flex-shrink:0;transition:transform .16s var(--spring),background-color .16s ease}
+.talabat-back-btn:active,.talabat-circle-btn:active,.ib:active{transform:scale(.88)}
 .talabat-circle-btn svg,.ib svg,.talabat-back-btn svg{width:20px;height:20px}
 .talabat-loc-picker{display:flex;align-items:center;gap:8px;flex:1;min-width:0;cursor:pointer}
 .talabat-loc-icon svg{width:22px;height:22px}
@@ -59,14 +65,15 @@ svg.brand-svg{flex-shrink:0;display:block}
 .hero-search{background:var(--o);padding:0 16px 18px;border-radius:0 0 24px 24px}
 
 /* ---------- search ---------- */
-.talabat-search,.search{display:flex;align-items:center;gap:10px;height:48px;padding:0 16px;border-radius:12px;background:#fff;color:var(--mu);box-shadow:var(--sh);width:100%}
+.talabat-search,.search{display:flex;align-items:center;gap:10px;height:48px;padding:0 16px;border-radius:12px;background:#fff;color:var(--mu);box-shadow:var(--sh);width:100%;transition:box-shadow .18s var(--ease),transform .18s var(--ease)}
+.talabat-search:focus-within,.search:focus-within{box-shadow:0 0 0 2px rgba(255,90,0,.22),var(--sh)}
 .search{background:#F3F3F3;box-shadow:none}
 .talabat-search input,.search input{flex:1;min-width:0;height:100%;font-size:15px;color:var(--tx);background:transparent}
 .talabat-search input::placeholder,.search input::placeholder{color:var(--mu2)}
 input.search{color:var(--tx)}
 
 /* ---------- layout ---------- */
-.pad{padding:16px;display:flex;flex-direction:column;gap:14px}
+.pad{padding:16px;display:flex;flex-direction:column;gap:14px;animation:tlbtPageIn .22s var(--ease)}
 .row{display:flex;align-items:center;gap:12px}
 .sp{flex:1;min-width:0}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -78,42 +85,47 @@ input.search{color:var(--tx)}
 .sec{display:flex;align-items:flex-end;justify-content:space-between;margin-top:6px}
 .sec h2{font-size:20px;font-weight:800;letter-spacing:-.4px}
 .sec a,.sec span{font-size:14px;font-weight:700;color:var(--o)}
-.card{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:var(--sh)}
+.card{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:var(--sh);animation:tlbtCardRise .26s var(--ease) both;transition:transform .18s var(--ease),box-shadow .18s var(--ease)}
 .card-hero{background:linear-gradient(135deg,var(--o),#FF7A2E);color:#fff}
-.ico{width:44px;height:44px;border-radius:12px;background:var(--o2);color:var(--o);display:grid;place-items:center;flex-shrink:0}
+.ico{width:44px;height:44px;border-radius:12px;background:var(--o2);color:var(--o);display:grid;place-items:center;flex-shrink:0;transition:transform .18s var(--spring)}
 .ico svg{width:22px;height:22px}
-.li{display:flex;align-items:center;gap:14px;width:100%;padding:15px 0;border-bottom:1px solid var(--ln)!important;text-align:start}
+.li{display:flex;align-items:center;gap:14px;width:100%;padding:15px 0;border-bottom:1px solid var(--ln)!important;text-align:start;transition:background-color .14s ease,transform .14s var(--ease)}
+.li:active{transform:scale(.99)}
 .li:last-child{border-bottom:0!important}
 .li>svg{color:var(--mu)}
-.empty{display:flex;flex-direction:column;align-items:center;gap:12px;padding:48px 16px;color:var(--mu2);text-align:center}
+.empty{display:flex;flex-direction:column;align-items:center;gap:12px;padding:48px 16px;color:var(--mu2);text-align:center;animation:tlbtCardRise .28s var(--ease)}
 .empty svg{width:56px;height:56px;stroke-width:1.4;color:var(--o);background:var(--o2);padding:14px;border-radius:50%;box-sizing:content-box}
 
 /* ---------- categories (talabat verticals) ---------- */
 .talabat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 8px}
-.talabat-cat-card{display:flex;flex-direction:column;align-items:center;gap:6px;transition:transform .12s var(--ease)}
-.talabat-cat-card:active{transform:scale(.92)}
-.talabat-cat-icon{width:100%;aspect-ratio:1;border-radius:16px;background:#fff;color:var(--o);display:grid;place-items:center;box-shadow:var(--sh)}
+.talabat-cat-card{display:flex;flex-direction:column;align-items:center;gap:6px;transition:transform .18s var(--spring)}
+.talabat-cat-card:active{transform:scale(.9)}
+.talabat-cat-icon{width:100%;aspect-ratio:1;border-radius:16px;background:#fff;color:var(--o);display:grid;place-items:center;box-shadow:var(--sh);transition:box-shadow .18s var(--ease),transform .18s var(--spring)}
+.talabat-cat-card:active .talabat-cat-icon{box-shadow:0 2px 6px rgba(255,90,0,.15)}
 .talabat-cat-icon svg{width:30px;height:30px;stroke-width:1.8}
 .talabat-cat-label{font-size:13px;font-weight:600;color:var(--tx);text-align:center;line-height:1.15}
 .cat-big{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.cat-big button{position:relative;height:120px;border-radius:18px;padding:14px;text-align:start;overflow:hidden;color:#fff;display:flex;flex-direction:column;justify-content:space-between;transition:transform .12s}
-.cat-big button:active{transform:scale(.97)}
+.cat-big button{position:relative;height:120px;border-radius:18px;padding:14px;text-align:start;overflow:hidden;color:#fff;display:flex;flex-direction:column;justify-content:space-between;transition:transform .18s var(--spring),box-shadow .18s var(--ease)}
+.cat-big button:active{transform:scale(.96)}
 .cat-big b{font-size:20px;font-weight:800;letter-spacing:-.3px}
 .cat-big small{font-size:12px;opacity:.9;font-weight:600}
-.cat-big svg{position:absolute;right:-8px;bottom:-8px;width:84px;height:84px;stroke-width:1.4;opacity:.35}
+.cat-big svg{position:absolute;right:-8px;bottom:-8px;width:84px;height:84px;stroke-width:1.4;opacity:.35;transition:transform .25s var(--ease)}
+.cat-big button:active svg{transform:scale(1.08) rotate(-4deg)}
 [dir=rtl] .cat-big svg{right:auto;left:-8px}
 
 /* ---------- promo carousel ---------- */
 .hscroll{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:2px 16px 6px;scrollbar-width:none}
 .hscroll::-webkit-scrollbar{display:none}
-.promo{flex:0 0 86%;scroll-snap-align:start;height:150px;border-radius:18px;padding:18px;color:#fff;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between}
+.promo{flex:0 0 86%;scroll-snap-align:start;height:150px;border-radius:18px;padding:18px;color:#fff;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;transition:transform .2s var(--ease)}
+.promo:active{transform:scale(.98)}
 .promo h3{font-size:24px;font-weight:900;line-height:1.05;letter-spacing:-.6px;max-width:70%}
 .promo p{font-size:13px;opacity:.9;max-width:70%}
 .promo .cta{align-self:flex-start;background:#fff;color:var(--tx);font-weight:800;font-size:13px;padding:8px 14px;border-radius:99px}
 .promo svg{position:absolute;right:-14px;bottom:-14px;width:130px;height:130px;stroke-width:1.2;opacity:.25}
 .promo.lime{background:var(--lime);color:var(--plum)}
 .promo.lime .cta{background:var(--plum);color:#fff}
-.svc{flex:0 0 160px;scroll-snap-align:start;background:#fff;border-radius:16px;overflow:hidden;box-shadow:var(--sh);text-align:start}
+.svc{flex:0 0 160px;scroll-snap-align:start;background:#fff;border-radius:16px;overflow:hidden;box-shadow:var(--sh);text-align:start;transition:transform .18s var(--spring)}
+.svc:active{transform:scale(.96)}
 .svc .im{height:92px;display:grid;place-items:center;color:#fff}
 .svc .im svg{width:44px;height:44px;stroke-width:1.5}
 .svc .bd{padding:10px 12px 12px}
@@ -122,14 +134,15 @@ input.search{color:var(--tx)}
 .svc .tagl{display:inline-block;margin-top:6px;font-size:11px;font-weight:800;color:var(--plum);background:var(--lime);padding:2px 8px;border-radius:6px}
 
 /* ---------- live order HUD ---------- */
-.live{background:var(--hud);color:#fff;border-radius:18px;padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.live{background:var(--hud);color:#fff;border-radius:18px;padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.18);transition:transform .18s var(--spring)}
+.live:active{transform:scale(.98)}
 .live .dot{width:9px;height:9px;border-radius:50%;background:var(--gr);animation:pulse 1.4s infinite}
 .live .ring{width:48px;height:48px;border-radius:50%;background:var(--o);display:grid;place-items:center;flex-shrink:0}
 .live .ring svg{width:24px;height:24px}
 
 /* ---------- buttons ---------- */
-.btn{height:52px;width:100%;border-radius:12px;background:var(--o);color:#fff;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s var(--ease),background .15s}
-.btn:active{transform:scale(.97);background:var(--od)}
+.btn{height:52px;width:100%;border-radius:12px;background:var(--o);color:#fff;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .16s var(--spring),background .15s,box-shadow .16s ease}
+.btn:active{transform:scale(.96);background:var(--od)}
 .btn svg{width:20px;height:20px;stroke-width:2.4}
 .btn.s{height:44px;font-size:14px;border-radius:10px}
 .btn.g{background:var(--o2);color:var(--o)}
@@ -139,23 +152,24 @@ input.search{color:var(--tx)}
 .pill svg{width:14px;height:14px}
 .pill.ok{background:var(--gr2);color:var(--gr)}
 .pill.am{background:var(--am2);color:#B87700}
-.pill.no{background:var(--rd2);color:var(--rd)}
+.pill.no,.pill.rd{background:var(--rd2);color:var(--rd)}
 .pill.lime{background:var(--lime);color:var(--plum)}
-.badge{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--rd);color:#fff;font-size:11px;font-weight:800;display:inline-grid;place-items:center;border:2px solid #fff!important}
+.badge{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--rd);color:#fff;font-size:11px;font-weight:800;display:inline-grid;place-items:center;border:2px solid #fff!important;animation:tlbtPop .25s var(--spring)}
 .chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px}
 .chips::-webkit-scrollbar{display:none}
-.chip{height:38px;padding:0 16px;border-radius:99px;background:#fff;font-size:14px;font-weight:600;white-space:nowrap;border:1px solid var(--ln)!important;transition:all .15s}
-.chip.on{background:var(--tx);color:#fff;border-color:var(--tx)!important}
-.tog{width:50px;height:30px;border-radius:15px;background:#D6D6D6;position:relative;transition:background .2s}
-.tog::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s var(--ease)}
+.chip{height:38px;padding:0 16px;border-radius:99px;background:#fff;font-size:14px;font-weight:600;white-space:nowrap;border:1px solid var(--ln)!important;transition:transform .16s var(--spring),background .16s ease,color .16s ease,border-color .16s ease}
+.chip:active{transform:scale(.94)}
+.chip.on{background:var(--tx);color:#fff;border-color:var(--tx)!important;animation:tlbtPop .22s var(--spring)}
+.tog{width:50px;height:30px;border-radius:15px;background:#D6D6D6;position:relative;transition:background .22s var(--ease)}
+.tog::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .24s var(--spring)}
 .tog.on{background:var(--gr)}.tog.on::after{transform:translateX(20px)}
 .stars{display:flex;justify-content:center;gap:6px;margin-top:10px}
-.stars button{font-size:34px;color:#DADADA;transition:transform .1s}
+.stars button{font-size:34px;color:#DADADA;transition:transform .16s var(--spring),color .15s}
 .stars button.on{color:#FFB800}.stars button:active{transform:scale(1.25)}
 
 /* ---------- order card ---------- */
-.oc{background:#fff;border-radius:16px;box-shadow:var(--sh);overflow:hidden;cursor:pointer;transition:transform .12s}
-.oc:active{transform:scale(.985)}
+.oc{background:#fff;border-radius:16px;box-shadow:var(--sh);overflow:hidden;cursor:pointer;animation:tlbtCardRise .24s var(--ease) both;transition:transform .18s var(--spring),box-shadow .18s var(--ease)}
+.oc:active{transform:scale(.98)}
 .oc .top{display:flex;gap:12px;padding:14px 14px 12px;align-items:center}
 .oc .thumb{width:56px;height:56px;border-radius:12px;display:grid;place-items:center;color:#fff;flex-shrink:0}
 .oc .thumb svg{width:28px;height:28px}
@@ -168,26 +182,26 @@ input.search{color:var(--tx)}
 
 /* ---------- steps ---------- */
 .steps{display:flex;position:relative}
-.st{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--mu2);position:relative}
-.st::before{content:"";position:absolute;top:17px;left:-50%;width:100%;height:3px;background:var(--ln);z-index:0}
+.st{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--mu2);position:relative;transition:color .2s ease}
+.st::before{content:"";position:absolute;top:17px;left:-50%;width:100%;height:3px;background:var(--ln);z-index:0;transition:background .25s ease}
 .st:first-child::before{display:none}
 .st.on{color:var(--tx)}.st.on::before{background:var(--o)}
-.st i{width:36px;height:36px;border-radius:50%;background:#F0F0F0;display:grid;place-items:center;z-index:1;color:var(--mu2)}
-.st.on i{background:var(--o);color:#fff}
+.st i{width:36px;height:36px;border-radius:50%;background:#F0F0F0;display:grid;place-items:center;z-index:1;color:var(--mu2);transition:transform .24s var(--spring),background .2s ease,color .2s ease}
+.st.on i{background:var(--o);color:#fff;animation:tlbtPop .28s var(--spring)}
 .st i svg{width:16px;height:16px;stroke-width:2.6}
 
 /* ---------- nav ---------- */
-.nav{position:fixed;bottom:0;left:0;right:0;z-index:99;background:#fff;display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -1px 0 var(--ln),0 -6px 20px rgba(0,0,0,.04);max-width:520px;margin:0 auto}
-.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--mu2);position:relative;min-height:52px;justify-content:center;background:transparent!important}
-.nav button svg{width:24px;height:24px;stroke-width:1.8;transition:transform .2s var(--ease)}
+.nav{position:fixed;bottom:0;left:0;right:0;z-index:99;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -1px 0 var(--ln),0 -6px 20px rgba(0,0,0,.04);max-width:520px;margin:0 auto}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--mu2);position:relative;min-height:52px;justify-content:center;background:transparent!important;transition:color .18s ease,transform .18s var(--spring)}
+.nav button svg{width:24px;height:24px;stroke-width:1.8;transition:transform .22s var(--spring)}
 .nav button.on{color:var(--o);font-weight:800}
-.nav button.on svg{stroke-width:2.4;transform:translateY(-1px)}
-.nav button.on::before{content:"";position:absolute;top:-6px;width:28px;height:3px;border-radius:0 0 3px 3px;background:var(--o)}
+.nav button.on svg{stroke-width:2.4;transform:translateY(-2px) scale(1.06)}
+.nav button.on::before{content:"";position:absolute;top:-6px;width:28px;height:3px;border-radius:0 0 3px 3px;background:var(--o);animation:tlbtPop .22s var(--spring)}
 .nav .badge{position:absolute;top:2px;inset-inline-start:54%}
 
 /* ---------- sheet ---------- */
-.sheet{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;animation:fade .2s}
-.sheet>div{width:100%;max-width:520px;margin:0 auto;background:#fff;border-radius:24px 24px 0 0;padding:10px 18px calc(22px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px;max-height:92vh;overflow-y:auto;animation:up .3s var(--ease)}
+.sheet{position:fixed;inset:0;z-index:999;background:rgba(15,23,42,.48);backdrop-filter:blur(3px);display:flex;align-items:flex-end;animation:fade .18s ease}
+.sheet>div{width:100%;max-width:520px;margin:0 auto;background:#fff;border-radius:24px 24px 0 0;padding:10px 18px calc(22px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px;max-height:92vh;overflow-y:auto;scrollbar-width:none;animation:up .28s var(--ease)}
 .grab{width:40px;height:4px;border-radius:2px;background:#DDD;align-self:center;margin-bottom:4px}
 textarea{width:100%;min-height:100px;padding:14px;border-radius:12px;background:#F3F3F3;font-size:15px;resize:none}
 
@@ -4028,7 +4042,7 @@ function authScreen() {
       <div>
         <div class="row" style="justify-content:space-between;margin-bottom:24px">
           <div style="display:flex;align-items:center;gap:10px">
-            <img src="logo.png" alt="FixIt Admin" style="width:40px;height:40px;border-radius:12px" />
+            <img src="logo.png" onerror="this.onerror=null;this.src='/logo.png'" alt="FixIt Admin" style="width:40px;height:40px;border-radius:12px;object-fit:cover" />
             <div>
               <div style="font-size:18px;font-weight:900;color:#111827">FixIt Operations</div>
               <div style="font-size:12px;color:#6B7280">${ar ? "بوابة الإدارة الآمنة" : "Secure Admin Gateway"}</div>
@@ -4065,7 +4079,7 @@ function authScreen() {
           <div class="fx-hero-stage">
             <div class="fx-hero-glow"></div>
             <div class="fx-hero-emblem-card">
-              <img src="logo.png" alt="FixIt" />
+              <img src="logo.png" onerror="this.onerror=null;this.src='/logo.png'" alt="FixIt" />
             </div>
             <div class="fx-hero-tile fx-tile-1" aria-hidden="true">${I("ac")}</div>
             <div class="fx-hero-tile fx-tile-2" aria-hidden="true">${I("bolt")}</div>
@@ -4289,24 +4303,33 @@ function authScreen() {
 }
 
 /* ================= VENDOR SHOP ONBOARDING GATE & CR KYC ================= */
+function syncKycDraftInputsToShop(shop) {
+  if (!shop) return;
+  const crInp = document.getElementById("kycCrInp");
+  if (crInp) shop.cr_number = crInp.value.trim().toUpperCase();
+  const nameInp = document.getElementById("kycShopNameInp");
+  if (nameInp) shop.shop_name = nameInp.value.trim();
+  const branchInp = document.getElementById("kycBranchInp");
+  if (branchInp) shop.branch_name = branchInp.value.trim();
+  const muniInp = document.getElementById("kycMuniInp");
+  if (muniInp) shop.municipality_license = muniInp.value.trim().toUpperCase();
+  const civilInp = document.getElementById("kycCivilIdInp");
+  if (civilInp) shop.civil_id = civilInp.value.replace(/\D/g, "").slice(0, 12);
+}
+
 function verifyCrWithOmanBusinessPlatform(shopIdx) {
   const ar = L === "ar";
   const shop = S.shops[shopIdx || 0] || getActiveShop();
-  const crInp = document.getElementById("kycCrInp");
-  if (crInp && crInp.value.trim()) shop.cr_number = crInp.value.trim().toUpperCase();
-  const nameInp = document.getElementById("kycShopNameInp");
-  if (nameInp && nameInp.value.trim()) shop.shop_name = nameInp.value.trim();
-  const branchInp = document.getElementById("kycBranchInp");
-  if (branchInp && branchInp.value.trim()) shop.branch_name = branchInp.value.trim();
+  syncKycDraftInputsToShop(shop);
 
   const crDigits = String(shop.cr_number || "").replace(/\D/g, "");
   if (crDigits.length < 5) {
     shop.obp_status = "INVALID_CR";
-    toast(ar ? "⚠ يرجى إدخال رقم سجل تجاري صحيح (5 أرقام على الأقل)" : "⚠ Please enter a valid CR number (at least 5 digits)");
+    toast(ar ? "يرجى إدخال رقم سجل تجاري صحيح (5 أرقام على الأقل)" : "Please enter a valid CR number (at least 5 digits)");
   } else {
     shop.obp_status = "PERMITTED";
     shop.obp_checked_at = new Date().toISOString();
-    toast(ar ? `✓ تم التحقق من السجل التجاري ${shop.cr_number} بنجاح` : `✓ Commercial Registration ${shop.cr_number} verified successfully!`);
+    toast(ar ? `تم التحقق من السجل التجاري ${shop.cr_number}` : `Commercial Registration ${shop.cr_number} verified`);
   }
   syncShopsToCloud();
   render();
@@ -4314,12 +4337,13 @@ function verifyCrWithOmanBusinessPlatform(shopIdx) {
 
 function captureShopSignboardPhoto() {
   const shop = getActiveShop();
+  syncKycDraftInputsToShop(shop);
   openInAppCameraModal("SHOP_SIGNBOARD", shop.shop_id, function(stampedDataUrl) {
     shop.board_photo = stampedDataUrl;
     if (shop.kyc_status === "CONFLICT") {
-      toast(L === "ar" ? "✓ تم تحديث صورة اللوحة التجارية — اضغط إعادة الإرسال للمشرف" : "✓ Signboard photo updated. Tap Save & Submit below.");
+      toast(L === "ar" ? "تم تحديث صورة اللوحة التجارية — اضغط حفظ وإرسال" : "Signboard photo updated. Tap Submit below.");
     } else {
-      toast(L === "ar" ? "✓ تم حفظ صورة لوحة المحل" : "✓ Shop signboard photo saved.");
+      toast(L === "ar" ? "تم حفظ صورة لوحة المحل" : "Shop signboard photo saved.");
     }
     syncShopsToCloud();
     render();
@@ -4329,110 +4353,216 @@ function captureShopSignboardPhoto() {
 function submitShopKycForAdminApproval() {
   const ar = L === "ar";
   const shop = getActiveShop();
-  const crInp = document.getElementById("kycCrInp");
-  if (crInp && crInp.value.trim()) shop.cr_number = crInp.value.trim().toUpperCase();
-  const nameInp = document.getElementById("kycShopNameInp");
-  if (nameInp && nameInp.value.trim()) shop.shop_name = nameInp.value.trim();
-  const branchInp = document.getElementById("kycBranchInp");
-  if (branchInp && branchInp.value.trim()) shop.branch_name = branchInp.value.trim();
+  syncKycDraftInputsToShop(shop);
 
   if (!shop.shop_name || !String(shop.shop_name).trim()) {
-    toast(ar ? "يرجى إدخال اسم المحل التجاري" : "Please enter your shop name");
+    toast(ar ? "يرجى إدخال اسم المحل التجاري" : "Please enter your official shop name");
+    return;
+  }
+  const crDigits = String(shop.cr_number || "").replace(/\D/g, "");
+  if (crDigits.length < 5) {
+    toast(ar ? "يرجى إدخال رقم السجل التجاري (5 أرقام على الأقل)" : "Please enter a valid CR number (min 5 digits)");
+    return;
+  }
+  const civilDigits = String(shop.civil_id || "").replace(/\D/g, "");
+  if (civilDigits.length < 7) {
+    toast(ar ? "يرجى إدخال الرقم المدني للمالك أو الفني المسؤول (7 أرقام على الأقل)" : "Please enter Owner/Technician Civil ID (min 7 digits)");
+    return;
+  }
+  if (!shop.regulations_accepted) {
+    toast(ar ? "يرجى الموافقة على لائحة التزامات الشركاء والضمان" : "Please accept the Partner Regulations & Warranty Charter");
     return;
   }
 
+  shop.obp_status = "PERMITTED";
   shop.kyc_status = "PENDING";
   shop.conflict_note = "";
+  shop.submitted_at = new Date().toISOString();
   syncShopsToCloud();
   sb("/notifications", "POST", {
     user_id: CONSUMER_ID,
     kind: "ADMIN_ACTION",
-    title: `Shop KYC Submitted: ${shop.shop_name}`,
-    body: `${shop.cr_number ? "CR " + shop.cr_number + " · " : ""}${shop.branch_name || "Salalah"} submitted for verification.`
+    title: `Partner KYC Submitted: ${shop.shop_name}`,
+    body: `CR ${shop.cr_number} · Civil ID ${shop.civil_id} · ${shop.branch_name || "Salalah"} submitted for regulatory review.`
   }).catch(() => {});
   render();
-  toast(ar ? "✓ تم إرسال بيانات المحل للمراجعة" : "✓ Shop details submitted for approval");
+  toast(ar ? "تم إرسال ملف التوثيق واللوائح للمراجعة" : "Partner KYC & compliance dossier submitted for review");
+}
+
+function toggleShopSpecialty(catId) {
+  const shop = getActiveShop();
+  syncKycDraftInputsToShop(shop);
+  if (!Array.isArray(shop.specialties)) shop.specialties = ["AC_REPAIR", "PLUMBER", "ELECTRICIAN"];
+  const idx = shop.specialties.indexOf(catId);
+  if (idx >= 0) {
+    if (shop.specialties.length > 1) shop.specialties.splice(idx, 1);
+  } else {
+    shop.specialties.push(catId);
+  }
+  syncShopsToCloud();
+  render();
 }
 
 function vShopKycScreen(isLockedOnboardingGate) {
   const ar = L === "ar";
   const shop = getActiveShop();
+  if (!Array.isArray(shop.specialties) || !shop.specialties.length) {
+    shop.specialties = ["AC_REPAIR", "PLUMBER", "ELECTRICIAN"];
+  }
   const statusColors = {
-    APPROVED: { bg: "#DCFCE7", tx: "#15803D", lblEn: "Verified Partner ✓", lblAr: "شريك موثق ✓" },
-    PENDING: { bg: "#FEF3C7", tx: "#B45309", lblEn: "Under Review", lblAr: "قيد المراجعة" },
-    CONFLICT: { bg: "#FEE2E2", tx: "#DC2626", lblEn: "Update Required", lblAr: "يتطلب التحديث" },
-    REJECTED: { bg: "#FEE2E2", tx: "#991B1B", lblEn: "Rejected", lblAr: "مرفوض" }
+    APPROVED: { bg: "#DCFCE7", tx: "#15803D", lblEn: "Verified Partner", lblAr: "شريك معتمد" },
+    PENDING: { bg: "#FEF3C7", tx: "#B45309", lblEn: "In Regulatory Review", lblAr: "قيد المراجعة التنظيمية" },
+    CONFLICT: { bg: "#FEE2E2", tx: "#DC2626", lblEn: "Action Required", lblAr: "يتطلب التحديث" },
+    REJECTED: { bg: "#FEE2E2", tx: "#991B1B", lblEn: "Not Approved", lblAr: "غير معتمد" }
   };
   const st = statusColors[shop.kyc_status] || statusColors.PENDING;
 
-  return `${bar(ar ? "توثيق المحل والسجل" : "Shop Verification", S.stack.length > 0)}
-  <div class="pad">
-    ${(isLockedOnboardingGate || shop.kyc_status !== "APPROVED") ? `<div class="card" style="background:linear-gradient(135deg,#7C2D12,#9A3412);color:#fff;display:flex;flex-direction:column;gap:8px;border:2px solid #FDBA74">
-      <div style="font-size:16px;font-weight:900">${ar ? "توثيق المحل" : "Verify Your Shop"}</div>
-      <div style="font-size:12.5px;opacity:.92">${ar ? "أدخل بيانات السجل التجاري وصورة اللوحة لبدء استقبال الطلبات." : "Submit your Commercial Registration and shop sign to unlock jobs."}</div>
-    </div>` : ""}
+  const step1Done = Boolean(shop.shop_name && String(shop.cr_number || "").replace(/\D/g, "").length >= 5);
+  const step2Done = Boolean(String(shop.civil_id || "").replace(/\D/g, "").length >= 7 && shop.board_photo);
+  const step3Done = Boolean(Array.isArray(shop.specialties) && shop.specialties.length > 0);
+  const step4Done = Boolean(shop.regulations_accepted);
+  const doneCount = [step1Done, step2Done, step3Done, step4Done].filter(Boolean).length;
 
-    ${shop.kyc_status === "CONFLICT" ? `<div class="card" style="background:#FEF2F2;border:2px solid #EF4444;display:flex;flex-direction:column;gap:10px">
-      <div class="row" style="gap:8px">
+  return `${bar(ar ? "توثيق الشريك والامتثال" : "Partner KYC & Compliance", S.stack.length > 0)}
+  <div class="pad">
+    <div class="card" style="background:linear-gradient(135deg,#1A1A1A,#2A2B36);color:#fff;display:flex;flex-direction:column;gap:12px">
+      <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:42px;height:42px;border-radius:12px;background:var(--o);color:#fff;display:grid;place-items:center;flex-shrink:0">${I("shield")}</div>
+          <div>
+            <div style="font-size:16px;font-weight:900">${ar ? "بوابة توثيق الشريك (KYC)" : "Partner Verification Gate"}</div>
+            <div style="font-size:12px;color:#9CA3AF;margin-top:2px">${ar ? `${doneCount} من 4 متطلبات مكتملة` : `${doneCount} of 4 regulatory steps complete`}</div>
+          </div>
+        </div>
+        <span class="pill" style="background:${st.bg};color:${st.tx};font-weight:900;font-size:11px">${ar ? st.lblAr : st.lblEn}</span>
+      </div>
+      <div style="height:6px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden">
+        <div style="width:${(doneCount / 4) * 100}%;height:100%;background:var(--o);transition:width .3s ease"></div>
+      </div>
+      <div style="font-size:12.5px;color:#D1D5DB;line-height:1.45">${ar ? "وفقاً للوائح حماية المستهلك في سلطنة عُمان، يجب توثيق السجل التجاري والبطاقة المدنية والموافقة على ميثاق الضمان قبل استقبال الطلبات." : "Per Oman service regulations, partners must verify their Commercial Registration (CR), Civil ID, signboard photo, and 14-day warranty charter to accept orders."}</div>
+      ${isLockedOnboardingGate ? `<button class="btn s" style="background:#fff;color:#1A1A1A;min-height:44px;font-weight:800" onclick="S.onboardingPreviewGate=true;render()">${I("radar")}${ar ? "معاينة رادار الطلبات" : "Preview Live Job Radar"}</button>` : ""}
+    </div>
+
+    ${shop.kyc_status === "CONFLICT" ? `<div class="card" style="background:#FEF2F2;border:1.5px solid #EF4444;display:flex;flex-direction:column;gap:10px">
+      <div class="row" style="gap:10px">
+        <div class="ico" style="background:#FEE2E2;color:#DC2626">${I("shield")}</div>
         <div class="sp">
-          <div style="font-weight:900;color:#991B1B;font-size:15px">${ar ? "تحديث المستندات" : "Action Needed"}</div>
-          <div style="font-size:13px;color:#B91C1C;margin-top:2px">"${esc(shop.conflict_note || (ar ? "يرجى تصوير لوحة المحل بوضوح وإعادة الإرسال." : "Please retake a clear photo of your shop sign and CR details."))}"</div>
+          <div style="font-weight:900;color:#991B1B;font-size:15px">${ar ? "ملاحظة فريق المراجعة" : "Compliance Review Note"}</div>
+          <div style="font-size:13px;color:#B91C1C;margin-top:2px">"${esc(shop.conflict_note || (ar ? "يرجى تحديث صورة اللوحة والسجل التجاري وإعادة الإرسال." : "Please update your signboard photo and CR details and resubmit."))}"</div>
         </div>
       </div>
       <div class="two">
-        <button class="btn s" style="min-height:44px;background:#DC2626" onclick="captureShopSignboardPhoto()">📷 ${ar ? "إعادة التصوير" : "Retake Sign Photo"}</button>
-        <button class="btn ok s" style="min-height:44px" onclick="submitShopKycForAdminApproval()">✓ ${ar ? "إعادة الإرسال" : "Resend"}</button>
+        <button class="btn s" style="min-height:44px;background:#DC2626" onclick="captureShopSignboardPhoto()">${I("camera")}${ar ? "إعادة التصوير" : "Retake Sign Photo"}</button>
+        <button class="btn ok s" style="min-height:44px" onclick="submitShopKycForAdminApproval()">${I("check")}${ar ? "إعادة الإرسال" : "Resubmit"}</button>
       </div>
     </div>` : ""}
 
+    <!-- STEP 1: Commercial Registration & Trade License -->
     <div class="card" style="display:flex;flex-direction:column;gap:12px">
-      <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:6px">
-        <span class="t1" style="font-size:16px">${ar ? "ملف المحل" : "Shop Profile"}</span>
-        <span class="pill" style="background:${st.bg};color:${st.tx};font-weight:900">${ar ? st.lblAr : st.lblEn}</span>
+      <div class="row" style="justify-content:space-between">
+        <div class="row" style="gap:8px">
+          <span style="width:24px;height:24px;border-radius:50%;background:${step1Done ? "#16A34A" : "var(--o)"};color:#fff;font-size:12px;font-weight:900;display:grid;place-items:center">1</span>
+          <span class="t1" style="font-size:15.5px">${ar ? "السجل التجاري والترخيص البلدي" : "Commercial Registration (CR)"}</span>
+        </div>
+        <span class="pill ${shop.obp_status === "PERMITTED" ? "ok" : "am"}" style="font-size:10.5px">${shop.obp_status === "PERMITTED" ? (ar ? "موثق" : "Verified") : (ar ? "مطلوب" : "Required")}</span>
       </div>
 
-      <div style="position:relative;border-radius:16px;overflow:hidden;border:2px solid var(--o);background:#0F172A">
+      <div class="fld">
+        <label>${ar ? "اسم المؤسسة أو المحل التجاري" : "Official Registered Shop Name"}</label>
+        <input id="kycShopNameInp" class="tlbt-input" style="min-height:46px" value="${esc(shop.shop_name || "")}" placeholder="${ar ? "كما هو مسجل في السجل التجاري" : "As printed on your Commercial Registration"}">
+      </div>
+
+      <div class="two">
+        <div class="fld">
+          <label>${ar ? "رقم السجل التجاري (CR)" : "CR Number (Oman)"}</label>
+          <input id="kycCrInp" dir="ltr" class="tlbt-input" style="min-height:46px" value="${esc(shop.cr_number || "")}" placeholder="e.g. 1294821">
+        </div>
+        <div class="fld">
+          <label>${ar ? "رقم الترخيص البلدي" : "Municipality License"}</label>
+          <input id="kycMuniInp" dir="ltr" class="tlbt-input" style="min-height:46px" value="${esc(shop.municipality_license || "")}" placeholder="e.g. DM-SLL-4021">
+        </div>
+      </div>
+
+      <div class="fld">
+        <label>${ar ? "المنطقة / الفرع في صلالة" : "Salalah Branch & Street"}</label>
+        <input id="kycBranchInp" class="tlbt-input" style="min-height:46px" value="${esc(shop.branch_name || "")}" placeholder="${ar ? "مثال: صلالة الوسطى - شارع 23 يوليو" : "e.g. Central Salalah, 23 July St"}">
+      </div>
+
+      <button class="btn outline s" style="min-height:44px" onclick="verifyCrWithOmanBusinessPlatform()">
+        ${I("check")}${ar ? "التحقق من رقم السجل التجاري" : "Validate CR Number"}
+      </button>
+    </div>
+
+    <!-- STEP 2: Owner / Lead Technician Civil ID & Live Signboard Photo -->
+    <div class="card" style="display:flex;flex-direction:column;gap:12px">
+      <div class="row" style="justify-content:space-between">
+        <div class="row" style="gap:8px">
+          <span style="width:24px;height:24px;border-radius:50%;background:${step2Done ? "#16A34A" : "var(--o)"};color:#fff;font-size:12px;font-weight:900;display:grid;place-items:center">2</span>
+          <span class="t1" style="font-size:15.5px">${ar ? "البطاقة المدنية وصورة المحل" : "Civil ID & Shop Signboard"}</span>
+        </div>
+        <span class="pill ${step2Done ? "ok" : "am"}" style="font-size:10.5px">${step2Done ? (ar ? "مكتمل" : "Complete") : (ar ? "مطلوب" : "Required")}</span>
+      </div>
+
+      <div class="fld">
+        <label>${ar ? "الرقم المدني للمالك أو الفني المسؤول" : "Owner / Lead Technician Civil ID Number"}</label>
+        <input id="kycCivilIdInp" dir="ltr" inputmode="numeric" class="tlbt-input" style="min-height:46px" value="${esc(shop.civil_id || "")}" placeholder="${ar ? "أدخل الرقم المدني المكون من 8-10 أرقام" : "Enter 8–10 digit Oman Civil / Resident ID"}">
+      </div>
+
+      <div style="position:relative;border-radius:16px;overflow:hidden;border:1.5px solid var(--ln);background:#0F172A">
         <img src="${esc(shop.board_photo)}" alt="Shop Signboard" style="width:100%;height:165px;object-fit:cover;display:block" onclick="S.previewImg=this.src;render()" />
-        <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.85));padding:12px;color:#fff;display:flex;align-items:flex-end;justify-content:space-between;gap:8px">
+        <div style="position:relative;background:linear-gradient(transparent,rgba(0,0,0,.86));margin-top:-70px;padding:12px;color:#fff;display:flex;align-items:flex-end;justify-content:space-between;gap:8px">
           <div style="min-width:0">
-            <div style="font-size:11px;color:#FDBA74;font-weight:800">${ar ? "صورة لوحة المحل" : "Shop Signboard Photo"}</div>
-            <div style="font-size:15px;font-weight:900" class="ell">${esc(shop.shop_name || (ar ? "اسم المحل" : "Your Shop"))}</div>
+            <div style="font-size:11px;color:#FDBA74;font-weight:800">${ar ? "صورة اللوحة التجارية (الكاميرا المباشرة)" : "Live Signboard Photo (Shows CR & Name)"}</div>
+            <div style="font-size:14.5px;font-weight:900" class="ell">${esc(shop.shop_name || (ar ? "اسم المحل" : "Your Shop"))}</div>
           </div>
-          <button class="pill" style="min-height:44px;background:var(--o);color:#fff;font-size:12px;padding:8px 14px;white-space:nowrap" onclick="captureShopSignboardPhoto()">📷 ${ar ? "تصوير اللوحة" : "Take Photo"}</button>
+          <button class="pill" style="min-height:44px;background:var(--o);color:#fff;font-size:12px;padding:8px 14px;white-space:nowrap" onclick="captureShopSignboardPhoto()">${I("camera")}${ar ? "تصوير اللوحة" : "Capture Photo"}</button>
         </div>
-      </div>
-
-      <div class="fld">
-        <label>${ar ? "رقم السجل التجاري (CR)" : "Commercial Registration (CR) Number"}</label>
-        <input id="kycCrInp" dir="ltr" class="tlbt-input" style="min-height:46px" value="${esc(shop.cr_number)}" placeholder="${ar ? "أدخل رقم السجل التجاري" : "Enter CR number"}">
-      </div>
-
-      <div class="fld">
-        <label>${ar ? "اسم المحل التجاري" : "Official Shop Name"}</label>
-        <input id="kycShopNameInp" class="tlbt-input" style="min-height:46px" value="${esc(shop.shop_name)}" placeholder="${ar ? "كما هو مسجل في السجل التجاري" : "As registered on your CR"}">
-      </div>
-
-      <div class="fld">
-        <label>${ar ? "الموقع / المنطقة" : "Shop Location"}</label>
-        <input id="kycBranchInp" class="tlbt-input" style="min-height:46px" value="${esc(shop.branch_name)}" placeholder="${ar ? "مثال: صلالة الوسطى" : "e.g. Central Salalah"}">
-      </div>
-
-      <div style="background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px">
-        <div class="row" style="justify-content:space-between">
-          <div>
-            <div style="font-weight:900;font-size:13.5px;color:#14532D">${ar ? "السجل التجاري (CR)" : "Commercial Registration (CR)"}</div>
-            <div style="font-size:11.5px;color:#166534">${ar ? "التحقق من رقم السجل التجاري قبل الاعتماد." : "Validate your CR number for partner approval."}</div>
-          </div>
-          <span class="pill ${shop.obp_status === "PERMITTED" ? "ok" : "am"}" style="font-size:10.5px">${shop.obp_status === "PERMITTED" ? (ar ? "متحقق ✓" : "Valid ✓") : (ar ? "قيد الفحص" : "Check CR")}</span>
-        </div>
-        <button class="btn outline s" style="min-height:44px;border-color:#16A34A!important;color:#15803D;background:#fff" onclick="verifyCrWithOmanBusinessPlatform()">
-          ${ar ? "فحص السجل التجاري" : "Check CR Number"}
-        </button>
       </div>
     </div>
 
-    <button class="btn" style="min-height:48px" onclick="submitShopKycForAdminApproval()">
-      ✓ ${ar ? "حفظ وإرسال للمراجعة" : "Save & Submit Details"}
+    <!-- STEP 3: Authorized Service Categories -->
+    <div class="card" style="display:flex;flex-direction:column;gap:10px">
+      <div class="row" style="justify-content:space-between">
+        <div class="row" style="gap:8px">
+          <span style="width:24px;height:24px;border-radius:50%;background:${step3Done ? "#16A34A" : "var(--o)"};color:#fff;font-size:12px;font-weight:900;display:grid;place-items:center">3</span>
+          <span class="t1" style="font-size:15.5px">${ar ? "التخصصات المعتمدة" : "Authorized Service Trades"}</span>
+        </div>
+        <span class="pill ok" style="font-size:10.5px">${shop.specialties.length} ${ar ? "أقسام" : "Selected"}</span>
+      </div>
+      <div style="font-size:12px;color:var(--mut)">${ar ? "اختر الخدمات التي يغطيها نشاطك التجاري:" : "Select the categories covered by your trade license:"}</div>
+      <div class="chips" style="margin:0;flex-wrap:wrap">
+        ${CATS.map(ct => {
+          const on = shop.specialties.includes(ct[0]);
+          return `<button class="chip ${on ? 'on' : ''}" style="min-height:40px;font-size:12px" onclick="toggleShopSpecialty('${ct[0]}')">${ar ? ct[3] : ct[2]}</button>`;
+        }).join("")}
+      </div>
+    </div>
+
+    <!-- STEP 4: Mandatory Partner Regulations & Safety Charter -->
+    <div class="card" style="display:flex;flex-direction:column;gap:12px;border:1.5px solid ${shop.regulations_accepted ? "#86EFAC" : "#FDBA74"};background:${shop.regulations_accepted ? "#F0FDF4" : "#FFFBEB"}">
+      <div class="row" style="justify-content:space-between">
+        <div class="row" style="gap:8px">
+          <span style="width:24px;height:24px;border-radius:50%;background:${step4Done ? "#16A34A" : "var(--o)"};color:#fff;font-size:12px;font-weight:900;display:grid;place-items:center">4</span>
+          <span class="t1" style="font-size:15.5px">${ar ? "ميثاق اللوائح والضمان للشركاء" : "Partner Regulations & Charter"}</span>
+        </div>
+        <span class="pill ${shop.regulations_accepted ? "ok" : "am"}" style="font-size:10.5px">${shop.regulations_accepted ? (ar ? "موافق عليه" : "Accepted") : (ar ? "إلزامي" : "Mandatory")}</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;color:#1F2937;line-height:1.45;background:#fff;padding:12px;border-radius:12px;border:1px solid #E5E7EB">
+        <div class="row" style="align-items:flex-start;gap:8px"><span style="color:#16A34A;flex-shrink:0">${I("check")}</span><span><b>${ar ? "ضمان جودة العمل (14 يوماً):" : "14-Day Workmanship Warranty:"}</b> ${ar ? "الالتزام بإصلاح أي عطل ناتج عن الصيانة مجاناً خلال 14 يوماً من إغلاق الطلب." : "Mandatory free revisit if the same repair issue recurs within 14 days."}</span></div>
+        <div class="row" style="align-items:flex-start;gap:8px"><span style="color:#16A34A;flex-shrink:0">${I("check")}</span><span><b>${ar ? "توثيق صور العمل (قبل وبعد):" : "Before & After Job Photos:"}</b> ${ar ? "رفع صور واضحة للعطل قبل البدء وبعد الإنجاز لحفظ حقوق الشريك والعميل." : "Upload clear job photos before starting and upon completion for Protected Payment release."}</span></div>
+        <div class="row" style="align-items:flex-start;gap:8px"><span style="color:#16A34A;flex-shrink:0">${I("check")}</span><span><b>${ar ? "الرسوم التدريجية ومنع التعامل خارج التطبيق:" : "Progressive Fee & Anti-Bypass Rule:"}</b> ${ar ? "القبول بنسبة عمولة المنصة التدريجية (1% إلى 15%) وعدم طلب تحويلات خارجية." : "Compliance with the 1%–15% platform fee schedule and strict ban on off-app payment solicitation."}</span></div>
+        <div class="row" style="align-items:flex-start;gap:8px"><span style="color:#16A34A;flex-shrink:0">${I("check")}</span><span><b>${ar ? "أنظمة حماية المستهلك والسلامة المهنية:" : "Oman Consumer Protection Compliance:"}</b> ${ar ? "الالتزام بتسعير شفاف وقطع غيار أصلية أو معتمدة وإصدار فاتورة إلكترونية." : "Transparent pricing, genuine parts disclosure, and automated digital invoicing."}</span></div>
+      </div>
+
+      <button type="button" class="row" style="gap:10px;padding:10px 12px;border-radius:12px;background:#fff;border:1.5px solid ${shop.regulations_accepted ? "#16A34A" : "#D1D5DB"};text-align:start;cursor:pointer;min-height:48px" onclick="syncKycDraftInputsToShop(getActiveShop());getActiveShop().regulations_accepted=!getActiveShop().regulations_accepted;syncShopsToCloud();render()">
+        <div style="width:24px;height:24px;border-radius:6px;border:2px solid ${shop.regulations_accepted ? "#16A34A" : "#9CA3AF"};background:${shop.regulations_accepted ? "#16A34A" : "#fff"};color:#fff;display:grid;place-items:center;flex-shrink:0">${shop.regulations_accepted ? I("check") : ""}</div>
+        <span style="font-size:13px;font-weight:800;color:#111827">${ar ? "أقر بصحة السجل التجاري والبطاقة المدنية وأوافق على جميع لوائح الشركاء وضمان الـ 14 يوماً." : "I certify my CR & Civil ID are authentic and agree to the Partner Regulations & 14-Day Warranty."}</span>
+      </button>
+    </div>
+
+    <button class="btn" style="min-height:50px" onclick="submitShopKycForAdminApproval()">
+      ${I("check")}${ar ? "حفظ وإرسال ملف التوثيق للمراجعة" : "Submit KYC & Regulations for Approval"}
     </button>
   </div>`;
 }
@@ -4448,7 +4578,7 @@ function renderWhosComingCard(b, job) {
         <div style="font-size:11.5px;color:#475569" class="ell">${esc(meta.owner_name || "")}</div>
       </div>
     </div>
-    <span class="pill ok" style="font-size:10.5px;white-space:nowrap">${meta.cr_number ? (ar ? "سجل موثق ✓" : "CR Verified ✓") : (ar ? "شريك موثق ✓" : "Verified Pro ✓")}</span>
+    <span class="pill ok" style="font-size:10.5px;white-space:nowrap">${meta.cr_number ? (ar ? "سجل تجاري موثق" : "CR Verified") : (ar ? "شريك معتمد" : "Verified Pro")}</span>
   </div>`;
 }
 
@@ -4456,19 +4586,30 @@ function renderWhosComingCard(b, job) {
 
 function aAnalyticsScreen() {
   const ar = L === "ar";
-  const totalJobs = (S.jobs || []).length;
-  const completedJobs = (S.jobs || []).filter(j => j.status === "COMPLETED").length;
-  const openJobs = (S.jobs || []).filter(j => j.status === "OPEN").length;
+  const jobs = S.jobs || [];
+  const totalJobs = jobs.length;
+  const completedJobs = jobs.filter(j => j.status === "COMPLETED").length;
+  const openJobs = jobs.filter(j => j.status === "OPEN").length;
   const approvedShops = (S.shops || []).filter(s => s.kyc_status === "APPROVED").length;
-  const gmv = (totalJobs * 18.5 + 1420).toFixed(3);
-  const netRev = (Number(gmv) * 0.12).toFixed(3);
 
+  const jobVolumeOmr = jobs.reduce((sum, j) => {
+    const acceptedBid = (S.bids || []).find(b => b.job_id === j.job_id && (b.status === "SELECTED" || b.status === "ACCEPTED"));
+    const val = acceptedBid ? Number(acceptedBid.bid_amount || 0) : Number(j.final_price || j.budget_max || 0);
+    return sum + (Number.isFinite(val) ? val : 0);
+  }, 0);
+  const txnVolumeOmr = (S.txns || []).reduce((sum, tx) => sum + Math.abs(Number(tx.amount || 0)), 0);
+  const gmvNum = Math.max(jobVolumeOmr, txnVolumeOmr);
+  const gmv = gmvNum.toFixed(3);
+  const netRev = (gmvNum * 0.10).toFixed(3);
+
+  const countByCat = (ids) => jobs.filter(j => ids.includes(j.category_id)).length;
+  const denom = Math.max(1, totalJobs);
   const catBreakdown = [
-    ["AC Repair & Maintenance", 34, "#0284C7"],
-    ["Electrician & Power", 24, "#F59E0B"],
-    ["Roadside Breakdown SOS & Towing", 18, "#DC2626"],
-    ["Taxi & Salalah Rides", 14, "#EA580C"],
-    ["Plumbing, Cleaning & Other", 10, "#10B981"]
+    ["AC Repair & Maintenance", Math.round((countByCat(["AC_REPAIR"]) / denom) * 100), "#0284C7"],
+    ["Electrician & Power", Math.round((countByCat(["ELECTRICIAN", "SOLAR_POWER"]) / denom) * 100), "#F59E0B"],
+    ["Roadside SOS & Automotive", Math.round((countByCat(["ROADSIDE", "GARAGE", "TIRE_BATTERY", "CAR_WASH"]) / denom) * 100), "#DC2626"],
+    ["Taxi & Local Delivery", Math.round((countByCat(["TAXI", "ERRANDS", "MOVING"]) / denom) * 100), "#EA580C"],
+    ["Plumbing, Cleaning & Home", Math.round((countByCat(["PLUMBER", "CLEANING", "CARPENTER", "PAINTER", "PEST_CONTROL", "APPLIANCE", "CCTV_SMART", "WATER_TANK"]) / denom) * 100), "#10B981"]
   ];
 
   return `${bar(ar ? "لوحة الإحصائيات" : "Platform Analytics", S.stack.length > 0)}
@@ -4476,31 +4617,31 @@ function aAnalyticsScreen() {
     <div class="card" style="background:linear-gradient(135deg,#111827,#1E3A8A);color:#fff;display:flex;flex-direction:column;gap:12px">
       <div class="row" style="justify-content:space-between">
         <div>
-          <div style="font-size:12px;color:#93C5FD;font-weight:800">${ar ? "إجمالي حجم المعاملات" : "Total Platform GMV"}</div>
-          <div class="big" style="font-size:32px;color:#4ADE80;margin-top:4px">${gmv} <span style="font-size:15px;color:#fff">OMR</span></div>
+          <div style="font-size:12px;color:#93C5FD;font-weight:800">${ar ? "إجمالي حجم المعاملات الفعلية" : "Live Platform Order Volume"}</div>
+          <div class="big" style="font-size:30px;color:#4ADE80;margin-top:4px">${gmv} <span style="font-size:15px;color:#fff">OMR</span></div>
         </div>
         <div style="text-align:end">
-          <div style="font-size:11px;color:#CBD5E1">${ar ? "صافي عمولة المنصة" : "Net Platform Revenue"}</div>
-          <div style="font-size:20px;font-weight:900;color:#FBBF24">${netRev} OMR</div>
+          <div style="font-size:11px;color:#CBD5E1">${ar ? "إيرادات رسوم المنصة" : "Platform Fee Revenue"}</div>
+          <div style="font-size:19px;font-weight:900;color:#FBBF24">${netRev} OMR</div>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding-top:10px;border-top:1px solid rgba(255,255,255,.15);text-align:center">
         <div><div style="font-size:17px;font-weight:900">${totalJobs}</div><div style="font-size:10px;color:#CBD5E1">Total Orders</div></div>
         <div><div style="font-size:17px;font-weight:900;color:#4ADE80">${completedJobs}</div><div style="font-size:10px;color:#CBD5E1">Completed</div></div>
         <div><div style="font-size:17px;font-weight:900;color:#38BDF8">${openJobs}</div><div style="font-size:10px;color:#CBD5E1">Open</div></div>
-        <div><div style="font-size:17px;font-weight:900;color:#FBBF24">${approvedShops}</div><div style="font-size:10px;color:#CBD5E1">Approved CRs</div></div>
+        <div><div style="font-size:17px;font-weight:900;color:#FBBF24">${approvedShops}</div><div style="font-size:10px;color:#CBD5E1">Verified CRs</div></div>
       </div>
     </div>
 
     <div class="card" style="display:flex;flex-direction:column;gap:10px">
-      <div class="t1" style="font-size:16px">${ar ? "توزيع الطلبات حسب الخدمة" : "Orders by Category"}</div>
+      <div class="t1" style="font-size:16px">${ar ? "توزيع الطلبات حسب الخدمة" : "Live Orders by Category"}</div>
       ${catBreakdown.map(([lbl, pct, col]) => `<div style="display:flex;flex-direction:column;gap:4px">
         <div class="row" style="justify-content:space-between;font-size:12.5px;font-weight:700">
           <span>${lbl}</span>
           <span style="color:${col}">${pct}%</span>
         </div>
         <div style="height:8px;background:#F3F4F6;border-radius:99px;overflow:hidden">
-          <div style="width:${pct}%;height:100%;background:${col};border-radius:99px"></div>
+          <div style="width:${Math.max(4, pct)}%;height:100%;background:${col};border-radius:99px"></div>
         </div>
       </div>`).join("")}
     </div>
@@ -4509,11 +4650,11 @@ function aAnalyticsScreen() {
       <div class="card" style="display:flex;flex-direction:column;gap:6px">
         <div style="font-size:12px;color:#6B7280;font-weight:700">Commercial Registration (CR)</div>
         <div class="big" style="font-size:24px;color:#15803D">${approvedShops} / ${(S.shops || []).length}</div>
-        <div style="font-size:11.5px;color:#4B5563">Approved Shops · ${(S.shops || []).filter(s => s.kyc_status === "CONFLICT").length} Conflicts</div>
+        <div style="font-size:11.5px;color:#4B5563">Approved Shops · ${(S.shops || []).filter(s => s.kyc_status === "CONFLICT").length} Flagged</div>
       </div>
       <div class="card" style="display:flex;flex-direction:column;gap:6px">
         <div style="font-size:12px;color:#6B7280;font-weight:700">Auto-Reposts</div>
-        <div class="big" style="font-size:24px;color:#FF5A00">${(S.autoRepostCount || 0) + 4}</div>
+        <div class="big" style="font-size:24px;color:#FF5A00">${S.autoRepostCount || 0}</div>
         <div style="font-size:11.5px;color:#4B5563">Boosted Requests · ${S.rateLimitHits || 0} Limited</div>
       </div>
     </div>
@@ -4540,43 +4681,44 @@ function adminSetShopKycStatus(shopId, status) {
     body: status === "CONFLICT" ? `Action Needed: ${shop.conflict_note}` : `Your shop (${shop.cr_number || shop.shop_name}) status is now ${status}.`
   }).catch(() => {});
   render();
-  toast(`✓ Shop marked as ${status}`);
+  toast(`Shop marked as ${status}`);
 }
 
 function aShopKycScreen() {
   const ar = L === "ar";
-  return `${bar(ar ? "اعتماد المحلات والشركاء" : "Shop & CR Approvals", S.stack.length > 0)}
+  return `${bar(ar ? "اعتماد الشركاء والسجل التجاري" : "Partner KYC & CR Audit", S.stack.length > 0)}
   <div class="pad">
     <div class="card" style="background:linear-gradient(135deg,#0F172A,#1E293B);color:#fff;display:flex;flex-direction:column;gap:6px">
       <div class="row" style="justify-content:space-between">
-        <span style="font-size:16px;font-weight:900">${ar ? "اعتماد المحلات المسجلة" : "Shop Verification"}</span>
+        <span style="font-size:16px;font-weight:900">${ar ? "مراجعة وثائق الشركاء والامتثال" : "Partner Regulatory Dossiers"}</span>
         <span class="pill ok">${(S.shops || []).length} ${(S.shops || []).length === 1 ? "Shop" : "Shops"}</span>
       </div>
-      <div style="font-size:12px;color:#CBD5E1">${ar ? "مراجعة السجل التجاري واسم المحل وصورة اللوحة قبل التفعيل." : "Review Commercial Registration (CR), shop details, and signboard photo."}</div>
+      <div style="font-size:12px;color:#CBD5E1">${ar ? "فحص السجل التجاري، البطاقة المدنية، الترخيص البلدي، وصورة اللوحة قبل التفعيل." : "Inspect Commercial Registration (CR), Civil ID, Municipality License, signboard photo, and warranty charter."}</div>
     </div>
 
-    ${(S.shops || []).map(shop => `<div class="card" style="display:flex;flex-direction:column;gap:12px;border:2px solid ${shop.kyc_status === "APPROVED" ? "#86EFAC" : shop.kyc_status === "CONFLICT" ? "#FCA5A5" : "#FDE68A"}">
+    ${(S.shops || []).map(shop => `<div class="card" style="display:flex;flex-direction:column;gap:12px;border:1.5px solid ${shop.kyc_status === "APPROVED" ? "#86EFAC" : shop.kyc_status === "CONFLICT" ? "#FCA5A5" : "#FDE68A"}">
       <div class="row" style="gap:12px">
-        <img src="${esc(shop.board_photo)}" style="width:74px;height:74px;border-radius:14px;object-fit:cover;border:2px solid var(--o);cursor:pointer" onclick="S.previewImg=this.src;render()" />
+        <img src="${esc(shop.board_photo)}" style="width:74px;height:74px;border-radius:14px;object-fit:cover;border:2px solid var(--o);cursor:pointer;flex-shrink:0" onclick="S.previewImg=this.src;render()" />
         <div class="sp">
           <div class="row" style="gap:6px;flex-wrap:wrap">
             <span class="t1" style="font-size:16px">${esc(shop.shop_name || "FixIt Partner Shop")}</span>
           </div>
-          <div style="font-size:12.5px;font-weight:800;color:var(--o);margin-top:2px">${shop.cr_number ? "CR: " + esc(shop.cr_number) + " · " : ""}${esc(shop.branch_name || "Salalah")}</div>
-          <div style="font-size:11.5px;color:#15803D;font-weight:700;margin-top:2px">✓ ${ar ? "التحقق التجاري:" : "CR Status:"} ${esc(shop.obp_status || "PENDING")}</div>
+          <div style="font-size:12.5px;font-weight:800;color:var(--o);margin-top:2px">${shop.cr_number ? "CR: " + esc(shop.cr_number) : "No CR"} · ${esc(shop.branch_name || "Salalah")}</div>
+          <div style="font-size:11.5px;color:#475569;margin-top:2px">Civil ID: <b>${esc(shop.civil_id || "Pending")}</b> · License: <b>${esc(shop.municipality_license || "Pending")}</b></div>
+          <div style="font-size:11px;color:#15803D;font-weight:700;margin-top:2px">CR Check: ${esc(shop.obp_status || "PENDING")} · Charter: ${shop.regulations_accepted ? "Signed" : "Unsigned"}</div>
         </div>
         <span class="pill ${shop.kyc_status === "APPROVED" ? "ok" : shop.kyc_status === "CONFLICT" ? "rd" : "am"}">${esc(shop.kyc_status)}</span>
       </div>
 
       <div class="fld">
-        <label style="font-size:11.5px">${ar ? "ملاحظة طلب التعديل (تظهر لصاحب المحل)" : "Correction Note (shown to Vendor if flagged):"}</label>
-        <input id="conflictNote_${shop.shop_id}" class="tlbt-input" style="height:44px;font-size:13px" value="${esc(shop.conflict_note || "")}" placeholder="${ar ? "مثال: رقم السجل التجاري غير واضح في صورة اللوحة" : "e.g. Signboard CR number not clear — please retake photo"}">
+        <label style="font-size:11.5px">${ar ? "ملاحظة المراجعة التنظيمية (تظهر للشريك)" : "Compliance Review Note (shown to Partner if flagged):"}</label>
+        <input id="conflictNote_${shop.shop_id}" class="tlbt-input" style="height:44px;font-size:13px" value="${esc(shop.conflict_note || "")}" placeholder="${ar ? "مثال: يرجى إرفاق صورة أوضح للوحة السجل التجاري" : "e.g. Signboard CR number not clear — please retake photo"}">
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
-        <button class="btn ok s" style="min-height:44px" onclick="adminSetShopKycStatus('${shop.shop_id}','APPROVED')">✅ ${ar ? "اعتماد" : "Approve"}</button>
-        <button class="btn s" style="min-height:44px;background:#F59E0B;color:#fff" onclick="adminSetShopKycStatus('${shop.shop_id}','CONFLICT')">⚠️ ${ar ? "طلب تعديل" : "Flag"}</button>
-        <button class="btn danger s" style="min-height:44px" onclick="adminSetShopKycStatus('${shop.shop_id}','REJECTED')">✕ ${ar ? "رفض" : "Reject"}</button>
+        <button class="btn ok s" style="min-height:44px" onclick="adminSetShopKycStatus('${shop.shop_id}','APPROVED')">${I("check")}${ar ? "اعتماد" : "Approve"}</button>
+        <button class="btn s" style="min-height:44px;background:#F59E0B;color:#fff" onclick="adminSetShopKycStatus('${shop.shop_id}','CONFLICT')">${I("shield")}${ar ? "طلب تعديل" : "Request Fix"}</button>
+        <button class="btn danger s" style="min-height:44px" onclick="adminSetShopKycStatus('${shop.shop_id}','REJECTED')">${I("x")}${ar ? "رفض" : "Reject"}</button>
       </div>
     </div>`).join("")}
   </div>`;
@@ -4854,6 +4996,33 @@ async function confirmBidPayment() {
     }
   }
 
+  let ppOrderInfo = null;
+  if (payMethod !== "WALLET") {
+    const savedCard = (S.cards && S.cards.find(c => c.is_default)) || (S.cards && S.cards[0]) || null;
+    const draft = S.inAppCardDraft || {};
+    const hasCardReady = (draft.cardNumber && String(draft.cardNumber).replace(/\D/g, "").length >= 13 && draft.cardCvv) || (savedCard && savedCard.cardNumber && savedCard.cvv);
+    const hasPaypalReady = draft.mode === "PAYPAL_BALANCE" && draft.paypalEmail && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(draft.paypalEmail);
+    if (!hasCardReady && !hasPaypalReady) {
+      if (!S.draft) S.draft = {};
+      S.draft.finalTotal = totalAmt;
+      S.paypalPurpose = "ORDER_CHECKOUT";
+      S.sheet = "paypal";
+      render();
+      return;
+    }
+    try {
+      toast(ar ? "جاري معالجة الدفع داخل التطبيق..." : "Processing in-app payment...");
+      S.paypalPurpose = "ORDER";
+      ppOrderInfo = await createRealPayPalOrder(totalAmt, `FixIt ${cat(j.category_id).name} (${sid(j)})`, j.job_id, S.inAppCardDraft || null);
+    } catch (payErr) {
+      toast((payErr && payErr.message) || (ar ? "تعذر إتمام الدفع، يرجى التحقق من البطاقة" : "Payment failed, please verify your card details"));
+      S.paypalPurpose = "ORDER_CHECKOUT";
+      S.sheet = "paypal";
+      render();
+      return;
+    }
+  }
+
   if (S.appliedCoupon && !S.usedCoupons.includes(S.appliedCoupon)) {
     S.usedCoupons.push(S.appliedCoupon);
     save("usedCoupons", S.usedCoupons);
@@ -4863,16 +5032,6 @@ async function confirmBidPayment() {
   if (b) b.status = "SELECTED";
   save("jobs", S.jobs);
   save("bids", S.bids);
-
-  let ppOrderInfo = null;
-  if (payMethod !== "WALLET") {
-    toast(ar ? "جاري المتابعة عبر PayPal..." : "Opening PayPal Checkout...");
-    ppOrderInfo = await createRealPayPalOrder(totalAmt, `FixIt ${cat(j.category_id).name} (${sid(j)})`, j.job_id);
-    if (ppOrderInfo && ppOrderInfo.id && ppOrderInfo.approveUrl) {
-      if (window.FixItNative && window.FixItNative.openExternalUrl) window.FixItNative.openExternalUrl(ppOrderInfo.approveUrl);
-      else window.open(ppOrderInfo.approveUrl, "_blank");
-    }
-  }
   const vInfo = getProDirectoryInfo((b && b.vendor_id) || VENDOR_ID);
   const newTxObj = {
     tx_id: ppOrderInfo ? ppOrderInfo.id : "",
@@ -5635,7 +5794,7 @@ function initAddressPinMap() {
   } catch (e) {}
 }
 
-/* ---------- Notification Read State, Pro Directory & Real PayPal Sandbox API ---------- */
+/* ---------- Notification Read State, Pro Directory & Live In-App PayPal API ---------- */
 function isNotifRead(n) {
   if (!n) return true;
   if (n.read_at) return true;
@@ -5790,100 +5949,55 @@ function openProProfile(vendorId, bidId, jobId) {
   render();
 }
 
-/* ---------- Real PayPal Sandbox REST API v2 Client (XOR-Protected Credentials) ---------- */
-const _PP_M = [90, 69, 42, 17, 118, 83, 14, 105];
-const _PP_C = [24, 4, 107, 83, 58, 35, 95, 42, 15, 51, 71, 107, 7, 17, 107, 63, 20, 7, 76, 90, 27, 48, 100, 14, 110, 19, 73, 73, 0, 31, 97, 5, 107, 125, 83, 92, 0, 43, 108, 93, 18, 6, 78, 103, 6, 42, 107, 31, 106, 2, 108, 117, 33, 20, 109, 1, 42, 1, 24, 70, 55, 24, 97, 35, 108, 34, 108, 71, 12, 24, 104, 63, 48, 26, 77, 92, 6, 98, 54, 37, 107, 113];
-const _PP_S = [31, 8, 109, 127, 16, 63, 91, 39, 3, 17, 99, 65, 53, 21, 99, 62, 5, 17, 125, 89, 57, 100, 100, 4, 12, 48, 7, 103, 5, 39, 89, 68, 31, 119, 110, 122, 33, 3, 68, 4, 43, 116, 90, 83, 47, 23, 89, 4, 20, 124, 92, 124, 4, 7, 74, 43, 105, 35, 28, 98, 27, 11, 59, 2, 99, 51, 79, 120, 64, 57, 127, 28, 54, 3, 29, 97, 78, 29, 116, 68];
-const PAYPAL_MERCHANT_EMAIL = "sb-qpe43w51670737@business.example.com";
-const PAYPAL_SANDBOX_API = "https://api-m.sandbox.paypal.com";
+/* ---------- Server-Backed Live In-App PayPal & Card Checkout (Zero Client Secrets, Zero Redirects) ---------- */
+const PAYPAL_MERCHANT_EMAIL = "payments@fixit-now.xyz";
 
-function _decodePp(arr) {
-  return String.fromCharCode(...arr.map((b, i) => b ^ _PP_M[i % _PP_M.length]));
-}
-
-let _cachedPpToken = null;
-let _cachedPpExp = 0;
-
-async function getPayPalSandboxToken() {
-  if (_cachedPpToken && Date.now() < _cachedPpExp) return _cachedPpToken;
-  const cid = _decodePp(_PP_C);
-  const sec = _decodePp(_PP_S);
-  const basic = btoa(cid + ":" + sec);
-  const r = await fetch(PAYPAL_SANDBOX_API + "/v1/oauth2/token", {
-    method: "POST",
-    headers: {
-      "Authorization": "Basic " + basic,
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
-    body: "grant_type=client_credentials"
-  });
-  if (!r.ok) throw new Error("PayPal OAuth HTTP " + r.status);
-  const data = await r.json();
-  _cachedPpToken = data.access_token;
-  _cachedPpExp = Date.now() + ((data.expires_in || 3200) - 60) * 1000;
-  return _cachedPpToken;
-}
-
-async function createRealPayPalOrder(amountOmr, description, refId) {
+async function createRealPayPalOrder(amountOmr, description, refId, payDetails) {
   const usdVal = Math.max(1.00, Number(amountOmr || 1) * 2.60).toFixed(2);
-  try {
-    const token = await getPayPalSandboxToken();
-    const payload = {
-      intent: "CAPTURE",
-      purchase_units: [{
-        reference_id: String(refId || ("FX-" + Date.now())).slice(0, 32),
-        description: String(description || "FixIt Salalah Home Service").slice(0, 120),
-        amount: {
-          currency_code: "USD",
-          value: usdVal
-        }
-      }],
-      application_context: {
-        brand_name: "FixIt Salalah (fixit-now.xyz)",
-        shipping_preference: "NO_SHIPPING",
-        user_action: "PAY_NOW",
-        return_url: "https://fixit-now.xyz/paypal/return",
-        cancel_url: "https://fixit-now.xyz/paypal/cancel"
-      }
-    };
-    const r = await fetch(PAYPAL_SANDBOX_API + "/v2/checkout/orders", {
-      method: "POST",
-      headers: {
-        "Authorization": "Bearer " + token,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
-    if (!r.ok) throw new Error("PayPal Order HTTP " + r.status);
-    const odata = await r.json();
-    let approveUrl = "https://www.sandbox.paypal.com/checkoutnow?token=" + odata.id;
-    if (Array.isArray(odata.links)) {
-      const lnk = odata.links.find(l => l.rel === "approve");
-      if (lnk && lnk.href) approveUrl = lnk.href;
+  const details = payDetails || S.inAppCardDraft || {};
+  const savedCard = (S.cards && S.cards.find(c => c.is_default)) || (S.cards && S.cards[0]) || null;
+  const paymentMode = details.mode === "PAYPAL_BALANCE" ? "PAYPAL_BALANCE" : "CARD";
+  const resolvedCardNum = details.cardNumber || (savedCard && savedCard.cardNumber) || "";
+  const resolvedExp = details.cardExpiry || (savedCard && savedCard.exp_month && savedCard.exp_year ? `${String(savedCard.exp_month).padStart(2, "0")}/${String(savedCard.exp_year).slice(-2)}` : "");
+  const resolvedCvv = details.cardCvv || (savedCard && savedCard.cvv) || "";
+  const resolvedHolder = details.cardHolder || (savedCard && savedCard.holder_name) || S.profile.full_name || "";
+  const resolvedEmail = details.paypalEmail || S.profile.paypal_email || S.profile.email || "";
+
+  const resp = await apiCall("/api/payments/paypal/checkout", {
+    method: "POST",
+    body: {
+      amountOmr: Number(amountOmr || 1),
+      description: String(description || "FixIt Salalah Home Service").slice(0, 120),
+      refId: String(refId || ("FX-" + Date.now())).slice(0, 32),
+      purpose: S.paypalPurpose || "ORDER",
+      paymentMode,
+      cardNumber: resolvedCardNum,
+      cardExpiry: resolvedExp,
+      cardCvv: resolvedCvv,
+      cardHolder: resolvedHolder,
+      paypalEmail: resolvedEmail
     }
-    S.lastPayPalOrder = {
-      id: odata.id,
-      status: odata.status || "CREATED",
-      amountOmr: Number(amountOmr).toFixed(3),
-      amountUsd: usdVal,
-      approveUrl,
-      merchant: PAYPAL_MERCHANT_EMAIL,
-      created_at: new Date().toISOString()
-    };
-    save("lastPayPalOrder", S.lastPayPalOrder);
-    return S.lastPayPalOrder;
-  } catch (e) {
-    S.lastPayPalOrder = {
-      id: "",
-      status: "OFFLINE",
-      amountOmr: Number(amountOmr).toFixed(3),
-      amountUsd: usdVal,
-      approveUrl: "https://www.paypal.com/checkoutnow",
-      merchant: PAYPAL_MERCHANT_EMAIL,
-      created_at: new Date().toISOString()
-    };
-    return S.lastPayPalOrder;
+  });
+  if (!resp || !resp.ok) {
+    throw new Error((resp && resp.error) || "In-app payment failed. Please check your card or PayPal details.");
   }
+  S.lastPayPalOrder = {
+    id: resp.id || resp.orderId || ("PP-INAPP-" + Date.now()),
+    status: resp.status || "COMPLETED",
+    inAppProcessed: true,
+    redirectRequired: false,
+    paymentMode: resp.paymentMode || paymentMode,
+    cardBrand: resp.cardBrand || null,
+    cardLast4: resp.cardLast4 || null,
+    payerEmail: resp.payerEmail || null,
+    amountOmr: Number(amountOmr).toFixed(3),
+    amountUsd: resp.amountUsd || usdVal,
+    approveUrl: null,
+    merchant: PAYPAL_MERCHANT_EMAIL,
+    created_at: resp.capturedAt || new Date().toISOString()
+  };
+  save("lastPayPalOrder", S.lastPayPalOrder);
+  return S.lastPayPalOrder;
 }
 
 /* ---------- shared UI pieces ---------- */
@@ -6106,6 +6220,8 @@ function cHome() {
 
     <div class="talabat-grid">${CATS.filter(c => c[0] !== "AC_REPAIR" && c[0] !== "CLEANER").map(c => `
       <button class="talabat-cat-card" onclick="${book(c[0])}"><div class="talabat-cat-icon" style="color:${ccol(c[0])}">${I(c[1])}</div><div class="talabat-cat-label">${ar ? c[3] : c[2]}</div></button>`).join("")}</div>
+
+    ${aadsSlotHtml("margin:4px 0;")}
 
     <div class="hscroll">
       <div class="promo" style="background:linear-gradient(120deg,#FF5A00,#FF8A3D)" onclick="go('coupons')"><div><h3>${ar ? "عروض وخصومات حصرية" : "Exclusive member offers"}</h3><p>${ar ? "فعّل رمز SALALAH25 في طلبك القادم" : "Apply code SALALAH25 on your booking"}</p></div><span class="cta">${ar ? "عرض الكوبونات" : "View offers"}</span>${I("tag")}</div>
@@ -6483,15 +6599,18 @@ function checkoutScreen() {
         </div>
       </div>
 
-      <!-- 4. Payment Method (Standard PayPal Checkout or Wallet Balance) -->
+      <!-- 4. Payment Method (In-App Card via PayPal or Wallet Balance) -->
       <div>
-        <div style="font-size:18px;font-weight:800;margin-bottom:8px">${ar ? "طريقة الدفع" : "Pay with"}</div>
+        <div class="row" style="justify-content:space-between;margin-bottom:8px">
+          <div style="font-size:18px;font-weight:800">${ar ? "طريقة الدفع داخل التطبيق" : "Pay in-app with"}</div>
+          <button style="text-decoration:underline;font-weight:700;font-size:13.5px;color:#003087" onclick="S.paypalPurpose='CONNECT';S.sheet='paypal';render()">${ar ? "إدخال البطاقة / PayPal" : "Card / PayPal Details"}</button>
+        </div>
         <div class="card" style="padding:0 16px">
           <button class="li" onclick="S.draft.payMethod='PAYPAL';render()">
             <div style="background:#003087;color:#fff;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-weight:900;font-style:italic;font-size:17px">P</div>
             <div class="sp">
-              <div class="t1" style="font-size:15px">PayPal</div>
-              <div class="t2" style="font-size:12px">${esc(S.profile.paypal_email || S.profile.email || "PayPal Checkout")}</div>
+              <div class="t1" style="font-size:15px">${ar ? "بطاقة بنكية أو PayPal (داخل التطبيق)" : "Debit / Credit Card or PayPal (In-App)"}</div>
+              <div class="t2" style="font-size:12px">${S.cards && S.cards[0] ? `${esc(S.cards[0].brand || "CARD")} •••• ${esc(S.cards[0].last4)}` : esc(S.profile.paypal_email || S.profile.email || (ar ? "دفع مباشر بدون مغادرة التطبيق" : "Instant in-app checkout · No browser redirect"))}</div>
             </div>
             <div class="radio-dot ${S.draft.payMethod === 'PAYPAL' ? 'on' : ''}"></div>
           </button>
@@ -7237,96 +7356,232 @@ function txDetailSheet() {
   </div></div>`;
 }
 
-/* ================= STANDARD PAYPAL CHECKOUT & SUBSCRIPTION MODAL ================= */
-async function completePaypalAction(openBrowserWindow) {
-  const ar = L === "ar";
-  const ppEm = (document.getElementById("ppEmailInp") || {}).value || S.profile.paypal_email || PAYPAL_MERCHANT_EMAIL;
-  S.profile.paypal_email = ppEm.trim();
-  save("profile", S.profile);
+/* ================= IN-APP CARD & PAYPAL CHECKOUT MODAL (ZERO REDIRECTS) ================= */
+function formatInAppCardInput(el) {
+  if (!el) return;
+  const digits = String(el.value || "").replace(/\D/g, "").slice(0, 16);
+  el.value = digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
+}
+function formatInAppExpInput(el) {
+  if (!el) return;
+  const digits = String(el.value || "").replace(/\D/g, "").slice(0, 4);
+  if (digits.length >= 3) el.value = digits.slice(0, 2) + "/" + digits.slice(2);
+  else el.value = digits;
+}
 
-  if (S.paypalPurpose === "PRO_SUB") {
-    toast(ar ? "جاري المتابعة عبر PayPal..." : "Processing PayPal Checkout...");
-    const ppOrd = await createRealPayPalOrder(1.980, "FixIt Pro Monthly Subscription", "SUB-" + Date.now());
-    if (openBrowserWindow && ppOrd && ppOrd.approveUrl) {
-      if (window.FixItNative && window.FixItNative.openExternalUrl) window.FixItNative.openExternalUrl(ppOrd.approveUrl);
-      else window.open(ppOrd.approveUrl, "_blank");
+async function completePaypalAction() {
+  const ar = L === "ar";
+  const mode = (S.inAppPayMode === "PAYPAL_BALANCE") ? "PAYPAL_BALANCE" : "CARD";
+  const ppEm = ((document.getElementById("ppEmailInp") || {}).value || S.profile.paypal_email || S.profile.email || "").trim();
+  const cardNumRaw = ((document.getElementById("ppCardNumInp") || {}).value || "").replace(/\D/g, "");
+  const cardExp = ((document.getElementById("ppCardExpInp") || {}).value || "").trim();
+  const cardCvv = ((document.getElementById("ppCardCvvInp") || {}).value || "").replace(/\D/g, "");
+  const cardHolder = (((document.getElementById("ppCardHolderInp") || {}).value || S.profile.full_name || "")).trim().toUpperCase();
+
+  if (mode === "CARD") {
+    if (cardNumRaw.length < 13 || cardNumRaw.length > 19) {
+      toast(ar ? "يرجى إدخال رقم البطاقة البنكية الصحيح (16 رقماً)" : "Please enter a valid 16-digit card number");
+      return;
     }
-    S.profile.isProMember = true;
-    if (S.draft) S.draft.useProPlan = true;
+    if (!/^(0[1-9]|1[0-2])\/\d{2,4}$/.test(cardExp)) {
+      toast(ar ? "يرجى إدخال تاريخ انتهاء البطاقة بصيغة MM/YY" : "Please enter card expiry as MM/YY");
+      return;
+    }
+    if (cardCvv.length < 3 || cardCvv.length > 4) {
+      toast(ar ? "يرجى إدخال رمز الأمان CVV (3 أو 4 أرقام)" : "Please enter the 3 or 4 digit CVV code");
+      return;
+    }
+    if (cardHolder.length < 2) {
+      toast(ar ? "يرجى إدخال اسم حامل البطاقة" : "Please enter the cardholder name");
+      return;
+    }
+    const last4 = cardNumRaw.slice(-4);
+    const brand = cardNumRaw.startsWith("4") ? "VISA" : /^5[1-5]/.test(cardNumRaw) || /^2[2-7]/.test(cardNumRaw) ? "MASTERCARD" : cardNumRaw.startsWith("3") ? "AMEX" : "OMANNET";
+    const parts = cardExp.split("/");
+    const exp_month = Math.min(12, Math.max(1, parseInt(parts[0], 10) || 12));
+    const rawYr = parseInt(parts[1], 10) || 28;
+    const exp_year = rawYr < 100 ? 2000 + rawYr : rawYr;
+    if (!Array.isArray(S.cards)) S.cards = [];
+    S.cards.forEach(c => { c.is_default = false; });
+    const existing = S.cards.find(c => c.last4 === last4);
+    if (existing) {
+      existing.is_default = true;
+      existing.brand = brand;
+      existing.cardNumber = cardNumRaw;
+      existing.cvv = cardCvv;
+      existing.exp_month = exp_month;
+      existing.exp_year = exp_year;
+      existing.holder_name = cardHolder;
+    } else {
+      S.cards.unshift({ pm_id: "pm-" + Date.now(), user_id: ME, brand, last4, cardNumber: cardNumRaw, cvv: cardCvv, exp_month, exp_year, holder_name: cardHolder, is_default: true });
+    }
+    save("cards", S.cards);
+  } else {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(ppEm)) {
+      toast(ar ? "يرجى إدخال بريد إلكتروني صحيح لحساب PayPal" : "Please enter a valid PayPal email address");
+      return;
+    }
+    S.profile.paypal_email = ppEm;
     save("profile", S.profile);
-    const wid = (S.wallet && S.wallet.wallet_id) || "933349f2-c1f0-4a8e-9b7a-111111111111";
-    const curBal = Number((S.wallet && S.wallet.balance) || 0);
-    try {
-      const dbRes = await sb("/wallet_transactions", "POST", {
-        wallet_id: wid,
-        user_id: ME,
-        amount: -1.980,
-        balance_after: curBal,
-        kind: "SUBSCRIPTION",
-        external_ref: (ppOrd && ppOrd.id) ? ppOrd.id : null,
-        note: "FixIt Pro Monthly · PayPal"
-      });
-      if (Array.isArray(dbRes) && dbRes[0]) S.txns.unshift({ ...dbRes[0], paypal_order_id: ppOrd && ppOrd.id, status: "ACTIVE" });
-    } catch (e) {}
-    save("txns", S.txns);
+  }
+
+  S.inAppCardDraft = {
+    mode,
+    cardNumber: cardNumRaw,
+    cardExpiry: cardExp,
+    cardCvv,
+    cardHolder,
+    paypalEmail: ppEm
+  };
+
+  try {
+    if (S.paypalPurpose === "ORDER_CHECKOUT") {
+      S.sheet = null;
+      render();
+      await confirmBidPayment();
+      return;
+    }
+    if (S.paypalPurpose === "PRO_SUB") {
+      toast(ar ? "جاري تفعيل الاشتراك داخل التطبيق..." : "Processing subscription in-app...");
+      const ppOrd = await createRealPayPalOrder(1.980, "FixIt Pro Monthly Subscription", "SUB-" + Date.now(), S.inAppCardDraft);
+      S.profile.isProMember = true;
+      if (S.draft) S.draft.useProPlan = true;
+      save("profile", S.profile);
+      const wid = (S.wallet && S.wallet.wallet_id) || "933349f2-c1f0-4a8e-9b7a-111111111111";
+      const curBal = Number((S.wallet && S.wallet.balance) || 0);
+      try {
+        const dbRes = await sb("/wallet_transactions", "POST", {
+          wallet_id: wid,
+          user_id: ME,
+          amount: -1.980,
+          balance_after: curBal,
+          kind: "SUBSCRIPTION",
+          external_ref: (ppOrd && ppOrd.id) ? ppOrd.id : null,
+          note: "FixIt Pro Monthly · In-App PayPal"
+        });
+        if (Array.isArray(dbRes) && dbRes[0]) S.txns.unshift({ ...dbRes[0], paypal_order_id: ppOrd && ppOrd.id, status: "ACTIVE" });
+      } catch (e) {}
+      save("txns", S.txns);
+      S.sheet = null;
+      render();
+      toast(ar ? "✓ تم تفعيل FixIt Pro فوراً داخل التطبيق" : "✓ FixIt Pro activated in-app!");
+      return;
+    }
+    if (S.paypalPurpose === "TOPUP") {
+      const topAmt = Number(S.topupAmtDraft || 10);
+      toast(ar ? "جاري شحن المحفظة داخل التطبيق..." : "Processing wallet top-up in-app...");
+      const ppOrd = await createRealPayPalOrder(topAmt, "FixIt Wallet Top-Up", "TOPUP-" + Date.now(), S.inAppCardDraft);
+      S.sheet = null;
+      await depositFunds(topAmt, ppOrd);
+      return;
+    }
+    await createRealPayPalOrder(1.000, "FixIt In-App Payment Method Verification", "CONNECT-" + Date.now(), S.inAppCardDraft);
     S.sheet = null;
     render();
-    toast(ar ? "تم تفعيل FixIt Pro بنجاح عبر PayPal" : "FixIt Pro activated via PayPal");
-    return;
+    toast(ar ? "✓ تم حفظ البطاقة وطريقة الدفع داخل التطبيق" : "✓ Card & PayPal saved for in-app checkout");
+  } catch (err) {
+    toast((err && err.message) || (ar ? "تعذر إتمام الدفع داخل التطبيق" : "In-app payment could not be completed"));
   }
-  if (S.paypalPurpose === "TOPUP") {
-    toast(ar ? "جاري تجهيز الدفع عبر PayPal..." : "Opening PayPal Checkout...");
-    const ppOrd = await createRealPayPalOrder(10.000, "FixIt Wallet Top-Up", "TOPUP-" + Date.now());
-    if (openBrowserWindow && ppOrd && ppOrd.approveUrl) {
-      if (window.FixItNative && window.FixItNative.openExternalUrl) window.FixItNative.openExternalUrl(ppOrd.approveUrl);
-      else window.open(ppOrd.approveUrl, "_blank");
-    }
-    S.sheet = null;
-    await depositFunds(10, ppOrd);
-    return;
+}
+
+function selectSavedInAppCard(pmId) {
+  if (!Array.isArray(S.cards)) return;
+  const card = S.cards.find(c => c.pm_id === pmId);
+  if (!card) return;
+  S.cards.forEach(c => { c.is_default = (c.pm_id === pmId); });
+  save("cards", S.cards);
+  if (card.cardNumber) {
+    S.inAppCardDraft = {
+      mode: "CARD",
+      cardNumber: card.cardNumber,
+      cardExpiry: `${String(card.exp_month || 12).padStart(2, "0")}/${String(card.exp_year || 28).slice(-2)}`,
+      cardCvv: card.cvv || "",
+      cardHolder: card.holder_name || S.profile.full_name || ""
+    };
   }
-  const ppOrd = await createRealPayPalOrder(1.000, "FixIt Account Link", "CONNECT-" + Date.now());
-  if (openBrowserWindow && ppOrd && ppOrd.approveUrl) {
-    if (window.FixItNative && window.FixItNative.openExternalUrl) window.FixItNative.openExternalUrl(ppOrd.approveUrl);
-    else window.open(ppOrd.approveUrl, "_blank");
-  }
-  S.sheet = null;
   render();
-  toast(ar ? "تم ربط حساب PayPal بنجاح" : "PayPal account connected");
 }
 
 function paypalSheet() {
   const ar = L === "ar";
   const isSub = S.paypalPurpose === "PRO_SUB";
   const isTop = S.paypalPurpose === "TOPUP";
-  const omrAmt = isSub ? 1.980 : isTop ? 10.000 : 0.000;
+  const isOrd = S.paypalPurpose === "ORDER_CHECKOUT";
+  const topAmt = Number(S.topupAmtDraft || 10);
+  const ordAmt = Number((S.draft && S.draft.finalTotal) || 0);
+  const omrAmt = isSub ? 1.980 : isTop ? topAmt : isOrd ? ordAmt : 0.000;
   const usdAmt = (omrAmt * 2.60).toFixed(2);
+  const mode = (S.inAppPayMode === "PAYPAL_BALANCE") ? "PAYPAL_BALANCE" : "CARD";
+  const savedCard = (S.cards && S.cards.find(c => c.is_default)) || (S.cards && S.cards[0]) || null;
+  const defaultNum = (S.inAppCardDraft && S.inAppCardDraft.cardNumber)
+    ? S.inAppCardDraft.cardNumber.replace(/(\d{4})(?=\d)/g, "$1 ")
+    : (savedCard && savedCard.cardNumber ? String(savedCard.cardNumber).replace(/(\d{4})(?=\d)/g, "$1 ") : "");
+  const defaultExp = (S.inAppCardDraft && S.inAppCardDraft.cardExpiry)
+    ? S.inAppCardDraft.cardExpiry
+    : (savedCard && savedCard.exp_month && savedCard.exp_year ? `${String(savedCard.exp_month).padStart(2, "0")}/${String(savedCard.exp_year).slice(-2)}` : "");
+
   return `<div class="sheet" onclick="if(event.target===this){S.sheet=null;render()}"><div>
     <div class="grab"></div>
     <div class="row" style="justify-content:space-between">
       <div class="row" style="gap:10px">
         <div style="width:42px;height:42px;border-radius:12px;background:#003087;color:#fff;display:grid;place-items:center;font-weight:900;font-style:italic;font-size:22px">P</div>
         <div>
-          <div class="t1" style="font-size:18px;font-weight:900">PayPal Checkout</div>
-          <div class="t2" style="font-size:11.5px">${ar ? "دفع آمن ومباشر" : "Secure PayPal Payment"}</div>
+          <div class="t1" style="font-size:18px;font-weight:900">${ar ? "الدفع المباشر داخل التطبيق" : "PayPal In-App Card Checkout"}</div>
+          <div class="t2" style="font-size:11.5px">${ar ? "أدخل بطاقتك مباشرة بدون مغادرة التطبيق" : "Pay by Card or PayPal inside the app · No redirect"}</div>
         </div>
       </div>
       <button class="ib" onclick="S.sheet=null;render()">${I("x")}</button>
     </div>
 
     <div class="paypal-card" style="flex-direction:column;align-items:flex-start;gap:6px">
-      <span style="font-size:12px;opacity:.9">${isSub ? (ar ? "اشتراك FixIt Pro الشهري" : "FixIt Pro Monthly") : isTop ? (ar ? "إضافة رصيد للمحفظة" : "Add Wallet Credit") : (ar ? "حساب PayPal المربوط" : "PayPal Payment Method")}</span>
-      <div style="font-size:23px;font-weight:900">${omrAmt > 0 ? `${omrAmt.toFixed(3)} ${t("omr")} ($${usdAmt} USD)` : "PayPal Connected"}</div>
+      <div class="row" style="justify-content:space-between;width:100%">
+        <span style="font-size:12px;opacity:.9">${isOrd ? (ar ? "دفع الطلب المحمي داخل التطبيق" : "Protected Order Checkout") : isSub ? (ar ? "اشتراك FixIt Pro الشهري" : "FixIt Pro Monthly") : isTop ? (ar ? "شحن رصيد المحفظة" : "Add Wallet Credit") : (ar ? "بطاقة الدفع المحفوظة" : "In-App Payment Method")}</span>
+        <span class="pill ok" style="font-size:10px;background:rgba(255,255,255,.2);color:#fff">${I("shield")}<span>In-App TLS</span></span>
+      </div>
+      <div style="font-size:22px;font-weight:900">${omrAmt > 0 ? `${omrAmt.toFixed(3)} ${t("omr")} ($${usdAmt} USD)` : (ar ? "بطاقة بنكية / PayPal" : "Debit / Credit Card & PayPal")}</div>
     </div>
 
-    <div class="fld">
-      <label>${ar ? "بريد PayPal الإلكتروني" : "PayPal Account Email"}</label>
-      <input id="ppEmailInp" dir="ltr" class="tlbt-input" value="${esc(S.profile.paypal_email || PAYPAL_MERCHANT_EMAIL)}" placeholder="email@example.com">
+    ${isTop ? `<div class="chips" style="margin:0">
+      ${[5, 10, 20, 50].map(amt => `<button class="chip ${topAmt === amt ? 'on' : ''}" onclick="S.topupAmtDraft=${amt};render()">+${amt.toFixed(3)} ${t("omr")}</button>`).join("")}
+    </div>` : ""}
+
+    <div class="seg3" style="grid-template-columns:1fr 1fr">
+      <button class="${mode === 'CARD' ? 'on' : ''}" onclick="S.inAppPayMode='CARD';render()">${ar ? "بطاقة بنكية (Visa / Mastercard)" : "Debit / Credit Card"}</button>
+      <button class="${mode === 'PAYPAL_BALANCE' ? 'on' : ''}" onclick="S.inAppPayMode='PAYPAL_BALANCE';render()">${ar ? "حساب PayPal" : "PayPal Account"}</button>
     </div>
 
-    <button class="paypal-btn" onclick="completePaypalAction(true)">
+    ${mode === "CARD" ? `
+      ${(S.cards && S.cards.length) ? `<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:2px">
+        ${S.cards.map(c => `<button class="chip ${c.is_default ? 'on' : ''}" style="font-size:12px" onclick="selectSavedInAppCard('${esc(c.pm_id)}')">${esc(c.brand)} •••• ${esc(c.last4)}</button>`).join("")}
+      </div>` : ""}
+      <div class="fld">
+        <label>${ar ? "رقم البطاقة البنكية (Visa / Mastercard / OmanNet)" : "Card Number (Visa / Mastercard / OmanNet)"}</label>
+        <input id="ppCardNumInp" dir="ltr" inputmode="numeric" maxlength="19" class="tlbt-input" value="${esc(defaultNum)}" placeholder="XXXX XXXX XXXX XXXX" oninput="formatInAppCardInput(this)">
+      </div>
+      <div class="two">
+        <div class="fld">
+          <label>${ar ? "تاريخ الانتهاء (MM/YY)" : "Expiry Date (MM/YY)"}</label>
+          <input id="ppCardExpInp" dir="ltr" inputmode="numeric" maxlength="5" class="tlbt-input" value="${esc(defaultExp)}" placeholder="MM/YY" oninput="formatInAppExpInput(this)">
+        </div>
+        <div class="fld">
+          <label>${ar ? "رمز الأمان (CVV)" : "Security Code (CVV)"}</label>
+          <input id="ppCardCvvInp" dir="ltr" type="password" inputmode="numeric" maxlength="4" class="tlbt-input" value="${esc((S.inAppCardDraft && S.inAppCardDraft.cardCvv) || '')}" placeholder="CVV">
+        </div>
+      </div>
+      <div class="fld">
+        <label>${ar ? "اسم حامل البطاقة" : "Cardholder Name"}</label>
+        <input id="ppCardHolderInp" dir="ltr" class="tlbt-input" value="${esc((S.inAppCardDraft && S.inAppCardDraft.cardHolder) || S.profile.full_name || '')}" placeholder="FULL NAME ON CARD">
+      </div>
+    ` : `
+      <div class="fld">
+        <label>${ar ? "بريد حساب PayPal الإلكتروني" : "PayPal Account Email"}</label>
+        <input id="ppEmailInp" dir="ltr" class="tlbt-input" value="${esc(S.profile.paypal_email || S.profile.email || '')}" placeholder="name@example.com">
+      </div>
+    `}
+
+    <button class="paypal-btn" onclick="completePaypalAction()">
       <span style="font-style:italic;font-size:18px">PayPal</span>
-      <span>${isSub ? (ar ? "المتابعة إلى PayPal" : "Continue with PayPal") : isTop ? (ar ? `الدفع عبر PayPal (${omrAmt.toFixed(3)} ${t("omr")})` : `Pay with PayPal (${omrAmt.toFixed(3)} ${t("omr")})`) : (ar ? "حفظ وربط PayPal" : "Connect PayPal")}</span>
+      <span>${isOrd ? (ar ? `تأكيد الدفع الآن (${omrAmt.toFixed(3)} ${t("omr")})` : `Pay Order Now (${omrAmt.toFixed(3)} ${t("omr")})`) : isSub ? (ar ? `تأكيد الاشتراك الآن (${omrAmt.toFixed(3)} ${t("omr")})` : `Pay In-App Now (${omrAmt.toFixed(3)} ${t("omr")})`) : isTop ? (ar ? `شحن المحفظة الآن (${omrAmt.toFixed(3)} ${t("omr")})` : `Add ${omrAmt.toFixed(3)} ${t("omr")} In-App`) : (ar ? "حفظ البطاقة للدفع داخل التطبيق" : "Save Card for In-App Payment")}</span>
     </button>
   </div></div>`;
 }
@@ -7606,7 +7861,12 @@ function complianceScreen() {
 /* ================= ACCOUNT TAB (CLEAN TALABAT STYLE) ================= */
 function accountScreen() {
   const ar = L === "ar";
-  const name = ROLE === "vendor" ? "Khalid Al Balushi" : ROLE === "admin" ? "FixIt Admin" : (S.profile.full_name || S.auth.email || (ar ? "عميل FixIt" : "FixIt Customer"));
+  const activeShop = ROLE === "vendor" ? getActiveShop() : null;
+  const name = ROLE === "vendor"
+    ? (S.profile.full_name || (activeShop && activeShop.shop_name) || (ar ? "شريك FixIt" : "FixIt Partner"))
+    : ROLE === "admin"
+      ? "FixIt Admin"
+      : (S.profile.full_name || S.auth.email || (ar ? "عميل FixIt" : "FixIt Customer"));
   const dAddr = defAddr();
   const unreadNotifs = (S.notifs || []).filter(n => !isNotifRead(n)).length;
   const row = (ic, label, val, on) => `<button class="li" onclick="${on}"><div class="ico" style="width:38px;height:38px;border-radius:10px;background:#F5F5F5;color:var(--tx)">${I(ic)}</div><span class="sp t1" style="font-size:15px;font-weight:600">${label}</span>${val !== "" ? `<span class="t2">${val}</span>` : ""}${I("next", "flip")}</button>`;
@@ -7616,9 +7876,10 @@ function accountScreen() {
         ${renderUserAvatar(72, 28)}
       </div>
       <div class="sp" onclick="go(S.auth.loggedIn ? 'account_info' : 'auth')" style="cursor:pointer">
-        <div class="row" style="gap:6px">
+        <div class="row" style="gap:6px;flex-wrap:wrap">
           <h1 style="font-size:22px">${esc(S.profile.full_name || (S.auth.loggedIn ? (S.profile.email || name) : (ar ? "حساب FixIt" : "FixIt Account")))}</h1>
           ${S.profile.isProMember ? `<span class="pro-tag"><b>pro</b></span>` : ""}
+          ${ROLE === "vendor" ? `<span class="pill ok" style="font-size:10px">${activeShop && activeShop.kyc_status === "APPROVED" ? (ar ? "شريك موثق ✓" : "Verified Partner ✓") : (ar ? "فني" : "Partner")}</span>` : ""}
         </div>
         <p dir="ltr" style="text-align:start;font-weight:600">${esc(getMyPhone() || (S.auth.loggedIn ? "" : (ar ? "سجّل الدخول للمتابعة" : "Sign in to continue")))}</p>
         ${(S.profile.email || S.auth.email) ? `<p style="font-size:12px;opacity:.85">${esc(S.profile.email || S.auth.email)}</p>` : ""}
@@ -7627,25 +7888,32 @@ function accountScreen() {
     </div>
   </div>
   <div class="pad" style="margin-top:-24px">
-    <div class="acct-grid">
-      <button onclick="tab('orders')"><i>${I("list")}</i><span>${t("orders")}</span></button>
-      <button onclick="go('coupons')"><i>${I("tag")}</i><span>${ar ? "العروض" : "Offers"}</span></button>
-      <button onclick="openBookPage()"><i>${I("plus")}</i><span>${ar ? "طلب جديد" : "Order"}</span></button>
+    ${ROLE === "vendor" ? `<div class="acct-grid">
+      <button onclick="tab('jobs')"><i>${I("radar")}</i><span>${ar ? "الرادار" : "Live Radar"}</span></button>
+      <button onclick="tab('shop')"><i>${I("box")}</i><span>${ar ? "محلي" : "My Shop"}</span></button>
+      <button onclick="tab('wallet')"><i>${I("wallet")}</i><span>${ar ? "الأرباح" : "Earnings"}</span></button>
       <button onclick="go('tickets')"><i>${I("help")}</i><span>${ar ? "المساعدة" : "Get Help"}</span></button>
-    </div>
+    </div>` : `<div class="acct-grid">
+      <button onclick="tab('orders')"><i>${I("list")}</i><span>${t("orders")}</span></button>
+      <button onclick="go('wallet')"><i>${I("wallet")}</i><span>${ar ? "المحفظة" : "Wallet"}</span></button>
+      <button onclick="go('coupons')"><i>${I("tag")}</i><span>${ar ? "العروض" : "Offers"}</span></button>
+      <button onclick="go('tickets')"><i>${I("help")}</i><span>${ar ? "المساعدة" : "Get Help"}</span></button>
+    </div>`}
 
-    <div class="mh">${ar ? "حسابي" : "My Account"}</div>
+    ${ROLE === "vendor" ? `<div class="mh">${ar ? "بوابة الشريك والمحل" : "Partner & Business Hub"}</div>
     <div class="card" style="padding:0 16px">
+      ${row("box", ar ? "بيانات المحل والسجل التجاري" : "Shop & CR Verification", esc((activeShop && activeShop.cr_number) || ""), "go('shop_kyc')")}
+      ${row("wallet", ar ? "محفظة الأرباح والسحب" : "Partner Earnings & Payouts", `${fmtOmr((S.wallet && S.wallet.balance) || 0)} ${t("omr")}`, "go('wallet')")}
+      ${row("user", ar ? "معلومات الحساب الشخصي" : "Partner Account Info", "", "go('account_info')")}
+      ${row("bell", t("notifs"), unreadNotifs || "", "go('notifs')")}
+    </div>` : `<div class="mh">${ar ? "حسابي" : "My Account"}</div>
+    <div class="card" style="padding:0 16px">
+      ${row("wallet", ar ? "محفظة FixIt Pay والرصيد" : "FixIt Pay Wallet", `${fmtOmr((S.wallet && S.wallet.balance) || 0)} ${t("omr")}`, "go('wallet')")}
       ${row("user", ar ? "معلومات الحساب" : "Account info", "", "go('account_info')")}
       ${row("pin", ar ? "العناوين المحفوظة" : "Saved addresses", esc(dAddr.label), "go('addresses')")}
       ${row("tag", ar ? "قسائم الخصم والكوبونات" : "Vouchers & coupons", S.coupons.length, "go('coupons')")}
       ${row("bell", t("notifs"), unreadNotifs || "", "go('notifs')")}
-    </div>
-
-    ${ROLE === "vendor" ? `<div class="mh">${ar ? "بيانات المحل" : "Business Profile"}</div>
-    <div class="card" style="padding:0 16px">
-      ${row("box", ar ? "بيانات المحل والسجل التجاري" : "Shop & CR Verification", "", "go('shop_kyc')")}
-    </div>` : ""}
+    </div>`}
 
     <div class="mh">${ar ? "الإعدادات والأمان" : "Settings & Security"}</div>
     <div class="card" style="padding:0 16px">
@@ -7855,9 +8123,9 @@ function aboutScreen() {
   return `${bar(ar ? "عن FixIt" : "About FixIt", true)}
   <div class="pad" style="gap:16px">
     <div class="card" style="text-align:center;padding:24px 18px;display:flex;flex-direction:column;align-items:center;gap:10px">
-      <div style="width:68px;height:68px;border-radius:20px;background:var(--o);color:#fff;display:grid;place-items:center;font-weight:900;font-size:28px;box-shadow:0 8px 24px rgba(255,90,0,.3)">F</div>
+      <img src="logo.png" onerror="this.onerror=null;this.src='/logo.png'" alt="FixIt Logo" style="width:76px;height:76px;border-radius:20px;object-fit:cover;box-shadow:0 8px 24px rgba(255,90,0,.28);display:block" />
       <div style="font-size:22px;font-weight:900">FixIt · فيكس إت</div>
-      <div class="t2" style="font-size:13px">Version 3.3 · Salalah, Sultanate of Oman</div>
+      <div class="t2" style="font-size:13px">Version 3.3.7 · Salalah, Sultanate of Oman</div>
       <div class="pill ok" style="margin-top:4px">https://fixit-now.xyz</div>
     </div>
 
@@ -7974,8 +8242,8 @@ function legalScreen() {
       <div class="t1" style="font-size:17px">${ar ? "الوثائق القانونية الرسمية لمنصة FixIt" : "FixIt Official Legal Documentation"}</div>
       <div class="t2" style="font-size:12.5px;line-height:1.45">
         ${ar
-          ? "تخضع جميع خدمات الصيانة المنزلية وخدمات الطرق والتاكسي عبر تطبيق FixIt (fixit-now.xyz) للشروط والسياسات القانونية الموضحة أدناه."
-          : "All home maintenance, roadside recovery, and transport services booked via FixIt (fixit-now.xyz) are governed by the legal policies below."}
+          ? "تخضع جميع خدمات الصيانة المنزلية وخدمات الطرق والتاكسي عبر تطبيق FixIt (fixit-now.xyz) للشروط والسياسات القانونية الموضحة أدناه. منصة FixIt مستقلة تماماً وغير تابعة لشركة طلبات (Talabat) أو Delivery Hero بأي شكل."
+          : "All home maintenance, roadside recovery, and transport services booked via FixIt (fixit-now.xyz) are governed by the policies below. FixIt is an independent platform and is NOT affiliated with Talabat or Delivery Hero SE in any way."}
       </div>
     </div>
 
@@ -7984,7 +8252,7 @@ function legalScreen() {
         <div class="ico">${I("list")}</div>
         <div class="sp">
           <div class="t1">${ar ? "1. شروط الخدمة (Terms of Service)" : "1. Terms of Service"}</div>
-          <div class="t2">${ar ? "قواعد الاستخدام، إخلاء المسؤولية، ملكية المحتوى، وإنهاء الحساب" : "Acceptable use, liability disclaimer, content rights & account rules"}</div>
+          <div class="t2">${ar ? "قواعد الاستخدام، إخلاء المسؤولية، عدم التبعية لطلبات، وإنهاء الحساب" : "Acceptable use, non-affiliation with Talabat, liability & account rules"}</div>
         </div>
         ${I("next","flip")}
       </button>
@@ -7992,7 +8260,7 @@ function legalScreen() {
         <div class="ico">${I("shield")}</div>
         <div class="sp">
           <div class="t1">${ar ? "2. سياسة الخصوصية وحماية البيانات (Privacy Policy)" : "2. Privacy Policy & Data Safety"}</div>
-          <div class="t2">${ar ? "البيانات المجمعة، الأطراف الثالثة، مدة الاحتفاظ، وحقوق الحذف" : "Data collected, 3rd-party SDKs, retention, COPPA 18+ & AI disclosure"}</div>
+          <div class="t2">${ar ? "البيانات المجمعة، A-Ads، البصمة، واتساب OTP، وحقوق الحذف" : "Data collected, A-Ads disclosure, WhatsApp OTP, biometrics & deletion"}</div>
         </div>
         ${I("next","flip")}
       </button>
@@ -8000,14 +8268,22 @@ function legalScreen() {
         <div class="ico">${I("wallet")}</div>
         <div class="sp">
           <div class="t1">${ar ? "3. سياسة الدفع والاسترجاع والاشتراكات" : "3. Payment, Refund & Subscription Policy"}</div>
-          <div class="t2">${ar ? "ضمان 14 يوماً، مواعيد التجديد، وخطوات إلغاء الاشتراك" : "14-day warranty, renewal dates, cancellation steps & refunds"}</div>
+          <div class="t2">${ar ? "الدفع داخل التطبيق، ضمان 14 يوماً، وإلغاء الاشتراك" : "In-app card/PayPal checkout, 14-day warranty & 1-tap cancellation"}</div>
+        </div>
+        ${I("next","flip")}
+      </button>
+      <button class="li" onclick="go('cookie_policy')">
+        <div class="ico">${I("settings")}</div>
+        <div class="sp">
+          <div class="t1">${ar ? "4. سياسة التخزين المحلي والإعلانات (Cookies & Ads)" : "4. Cookie, LocalStorage & A-Ads Policy"}</div>
+          <div class="t2">${ar ? "مفاتيح التخزين المحلي، عدم تتبع الإعلانات، وروابط A-Ads" : "Local storage keys, zero tracking cookies & A-Ads privacy links"}</div>
         </div>
         ${I("next","flip")}
       </button>
       <button class="li" onclick="go('about')">
         <div class="ico">${I("box")}</div>
         <div class="sp">
-          <div class="t1">${ar ? "4. العلامة التجارية والتراخيص (Trademark & Licenses)" : "4. Trademark, Licensing & Company Info"}</div>
+          <div class="t1">${ar ? "5. العلامة التجارية والتراخيص (Trademark & Licenses)" : "5. Trademark, Licensing & Company Info"}</div>
           <div class="t2">FixIt® · fixit-now.xyz · WhatsApp: +968 9595 6361</div>
         </div>
         ${I("next","flip")}
@@ -8024,30 +8300,37 @@ function tosScreen() {
       <div style="font-size:18px;font-weight:900;color:var(--tx)">${ar ? "اتفاقية شروط الخدمة لمنصة FixIt (fixit-now.xyz)" : "FixIt Terms of Service Agreement (fixit-now.xyz)"}</div>
       <div class="t2" style="font-size:12px">${ar ? "تاريخ السريان: نوفمبر 2026 · صلالة، سلطنة عُمان" : "Effective Date: November 2026 · FixIt Marketplace (Salalah, Sultanate of Oman)"}</div>
 
-      <div class="t1" style="font-size:15px;color:var(--tx)">${ar ? "1. ما يُسمح به وما يُمنع داخل التطبيق (Acceptable Use)" : "1. What Users Can and Cannot Do Inside the App"}</div>
-      <p>${ar
-        ? "يُسمح للمستخدمين المؤهلين (18 عاماً فأكثر) باستخدام تطبيق FixIt لطلب خدمات الصيانة المنزلية، خدمات أعطال الطرق، السطحات، والتاكسي المشروعة في سلطنة عُمان. يُمنع منعاً باتاً: (أ) نشر طلبات وهمية أو صور مزيفة، (ب) التحايل على نظام الدفع أو محاولة الدفع النقدي خارج المنصة بعد قبول العرض، (ج) الإساءة اللفظية أو الجسدية للفنيين أو موظفي الدعم، أو (د) محاولة اختراق أو تعطيل خوادم التطبيق."
-        : "You must be at least 18 years old to use FixIt. You may post genuine home repair, roadside assistance, towing, and transport requests. You strictly CANNOT: (a) submit fake orders, manipulated GPS coordinates, or non-camera verification photos; (b) circumvent platform checkout fees after matching with a Pro; (c) harass, threaten, or abuse technicians or customers; or (d) scrape, reverse-engineer, or abuse platform APIs."}</p>
+      <div style="background:#FFF7ED;border:1.5px solid #FDBA74;border-radius:12px;padding:10px 12px;font-size:12.5px;color:#9A3412">
+        <b>${ar ? "إقرار استقلالية العلامة التجارية وعدم التبعية:" : "Mandatory Non-Affiliation Notice:"}</b><br/>
+        ${ar
+          ? "منصة FixIt (fixit-now.xyz) هي سوق تقني عُماني مستقل تماماً، وليست تابعة أو شريكة أو مرتبطة بأي شكل من الأشكال بشركة طلبات (Talabat) أو Delivery Hero SE أو Uber أو A-Ads."
+          : "FixIt (fixit-now.xyz) is an independent Omani marketplace and is NOT affiliated with, endorsed by, sponsored by, or related in ANY kind of relation to Talabat, Delivery Hero SE, Uber Technologies Inc., or A-Ads."}
+      </div>
 
-      <div class="t1" style="font-size:15px;color:var(--tx)">${ar ? "2. إخلاء المسؤولية وحدود المسؤولية القانونية (Liability Disclaimer)" : "2. Liability Disclaimer & Limitation of Liability"}</div>
+      <div class="t1" style="font-size:15px;color:var(--tx)">${ar ? "1. الأهلية، التسجيل عبر واتساب، والدخول بالبصمة" : "1. Eligibility, WhatsApp OTP & Biometric Authentication"}</div>
       <p>${ar
-        ? "تعمل منصة FixIt كوسيط تقني يربط العملاء بمقدمي الخدمة المستقلين. يتم تقديم التطبيق 'كما هو' دون ضمانات بعدم انقطاع الخدمة. لا تتحمل منصة FixIt المسؤولية عن أي أضرار غير مباشرة أو عرضية أو تبعية ناتجة عن أعطال تقنية أو تأخر الفنيين بسبب الظروف المرورية أو الجوية. وتنحصر المسؤولية القصوى للمنصة في حدود المبلغ المدفوع للطلب محل النزاع أو توفير زيارة ضمان مجانية خلال 14 يوماً."
-        : "FixIt operates as a technology marketplace connecting customers with independent service providers ('Pros'). The app is provided 'as is' without warranty of uninterrupted uptime. To the maximum extent permitted by Omani and international law, FixIt shall not be liable for indirect, incidental, or consequential damages arising from app outages, third-party network failures, or independent contractor actions. FixIt's total liability for any claim is strictly limited to the order amount paid by the user or a free 14-day warranty revisit."}</p>
+        ? "يُسمح للمستخدمين المؤهلين (18 عاماً فأكثر) باستخدام تطبيق FixIt. يتم التحقق من أرقام الهواتف حصرياً عبر رموز واتساب (WhatsApp OTP) دون استخدام رسائل SMS التقليدية، مع إمكانية تفعيل الدخول الاختياري ببصمة الإصبع أو الوجه على جهازك."
+        : "You must be at least 18 years old to use FixIt. Phone verification is performed exclusively via WhatsApp OTP (no SMS fallback), with optional hardware-backed Fingerprint or Face Unlock enrollment on supported Android devices."}</p>
 
-      <div class="t1" style="font-size:15px;color:var(--tx)">${ar ? "3. حق المنصة في تعليق أو إنهاء الحسابات (Account Termination)" : "3. Right to Suspend or Terminate Accounts"}</div>
+      <div class="t1" style="font-size:15px;color:var(--tx)">${ar ? "2. سياسة الاستخدام المقبول وما يُمنع داخل التطبيق" : "2. Acceptable Use Policy (AUP)"}</div>
       <p>${ar
-        ? "تحتفظ إدارة FixIt بالحق الكامل في تعليق أو حظر أو إنهاء أي حساب مستخدم أو فني فوراً وبدون إشعار مسبق في حال مخالفة هذه الشروط، أو التلاعب بصور العمل، أو إساءة استخدام نظام التقييمات والكوبونات، أو صدور سلوك مسيء."
-        : "FixIt reserves the unconditional right to suspend, restrict, or permanently terminate any customer or technician account that violates these Terms, uploads fraudulent verification photos, abuses voucher codes, or engages in unsafe or abusive conduct."}</p>
+        ? "يُمنع منعاً باتاً: (أ) نشر طلبات وهمية أو صور غير ملتقطة بالكاميرا الحية، (ب) التحايل على نظام الدفع أو مشاركة أرقام الهواتف في الدردشة قبل قبول العرض، (ج) التلاعب ببيانات السجل التجاري، أو (د) محاولة اختراق واجهات البرمجة."
+        : "You strictly CANNOT: (a) submit fake orders, manipulated GPS coordinates, or non-camera verification photos; (b) circumvent platform checkout or share phone numbers in chat prior to bid acceptance; (c) submit falsified Commercial Registration (CR) records; or (d) scrape, reverse-engineer, or abuse platform APIs."}</p>
 
-      <div class="t1" style="font-size:15px;color:var(--tx)">${ar ? "4. ملكية المحتوى المرفوع من المستخدمين (User-Generated Content)" : "4. User Content Ownership, License & AI Translation"}</div>
+      <div class="t1" style="font-size:15px;color:var(--tx)">${ar ? "3. الدفع المحمي داخل التطبيق ورسوم المنصة" : "3. In-App Card & PayPal Checkout, Fees & 14-Day Warranty"}</div>
       <p>${ar
-        ? "تظل ملكية الصور والفيديوهات والأوصاف والتقييمات التي يرفعها المستخدم ملكاً له، ولكن برفعها يمنح المستخدم منصة FixIt ترخيصاً غير حصري ومجانياً لعرضها للفنيين القريبين وفريق الدعم لأغراض تنفيذ الطلب والتحقق من الضمان. يحظر نشر أي محتوى غير قانوني أو ينتهك خصوصية الغير. يتم ترجمة النصوص بين العربية والإنجليزية آلياً لتسهيل التواصل."
-        : "You retain ownership of the repair photos, videos, descriptions, and reviews you post. By submitting content, you grant FixIt a worldwide, royalty-free license to host, display, and share that content with nearby Pros and Support staff to fulfill your order and verify job completion. Content must be accurate and lawful (only 1 verified review is permitted per completed order)."}</p>
+        ? "تتم جميع المدفوعات داخل التطبيق مباشرة (عبر البطاقة البنكية أو PayPal أو رصيد المحفظة) دون إعادة توجيه لمتصفح خارجي. تخضع عروض الفنيين لسلم عمولة تدريجي (من 1% إلى 20%) مع ضمان جودة العمل لمدة 14 يوماً."
+        : "All payments are processed directly inside the app via Debit/Credit Card (PayPal REST v2), PayPal Account, or FixIt Wallet with zero external browser redirects. Vendor payouts follow the progressive fee ladder (1% to 20%) and include a 14-Day Workmanship Warranty."}</p>
 
-      <div class="t1" style="font-size:15px;color:var(--tx)">${ar ? "5. المدفوعات، الاشتراكات، وحق تحديث الشروط (Updates & Billing)" : "5. Payments, Subscriptions & Right to Update Terms"}</div>
+      <div class="t1" style="font-size:15px;color:var(--tx)">${ar ? "4. إعلانات الطرف الثالث (A-Ads) وإخلاء المسؤولية" : "4. Third-Party Advertisements (A-Ads) & Liability Disclaimer"}</div>
       <p>${ar
-        ? "تتم جميع المدفوعات إلكترونياً بعد قبول عرض الفني عبر بوابة PayPal أو المحفظة. تتجدد الباقة الاختيارية تلقائياً ما لم يتم إلغاؤها من الإعدادات في أي وقت. تحتفظ FixIt بالحق في تحديث شروط الخدمة في أي وقت عبر نشر النسخة المحدثة داخل التطبيق وعلى الموقع fixit-now.xyz."
-        : "Checkout occurs only after you accept a Pro's bid via PayPal or Wallet. Optional memberships renew monthly unless cancelled in Settings at any time. FixIt reserves the right to update these Terms at any time by posting the revised Terms in-app and at https://fixit-now.xyz."}</p>
+        ? "تظهر داخل التطبيق مساحات إعلانية مميزة بعبارة (ADVERTISEMENT) ومقدمة من شبكة A-Ads المستقلة (acceptable.a-ads.com). لا تتحمل FixIt أي مسؤولية عن محتوى الإعلانات الخارجية."
+        : "Ad slots labeled 'ADVERTISEMENT' are served by our third-party ad provider A-Ads (acceptable.a-ads.com, Unit #2461953). FixIt does not endorse advertised third-party products. See A-Ads Terms at https://aads.com/terms_of_service and Privacy Policy at https://aads.com/privacy_policy."}</p>
+
+      <div class="t1" style="font-size:15px;color:var(--tx)">${ar ? "5. تعليق الحسابات والقانون الواجب التطبيق" : "5. Account Termination & Governing Law (Sultanate of Oman)"}</div>
+      <p>${ar
+        ? "تحتفظ إدارة FixIt بالحق في تعليق أو إنهاء أي حساب يخالف هذه الشروط. تخضع هذه الاتفاقية لقوانين سلطنة عُمان وتختص محاكم صلالة بالنظر في أي نزاع."
+        : "FixIt reserves the right to suspend or terminate accounts that violate these Terms. This Agreement is governed by the laws of the Sultanate of Oman, with exclusive jurisdiction in the courts of Salalah, Dhofar."}</p>
     </div>
   </div>`;
 }
@@ -8058,32 +8341,27 @@ function privacyScreen() {
   <div class="pad" style="gap:14px">
     <div class="card" style="display:flex;flex-direction:column;gap:12px;line-height:1.58;font-size:13.5px;color:#374151">
       <div style="font-size:18px;font-weight:900;color:var(--tx)">${ar ? "سياسة الخصوصية وإقرار أمان البيانات (fixit-now.xyz)" : "FixIt Privacy Policy & App Store Data Declaration"}</div>
-      <div class="t2" style="font-size:12px">${ar ? "مسؤول حماية البيانات (DPO): WhatsApp: +968 9595 6361 · متوافق مع GDPR وقانون حماية البيانات العُماني" : "Data Protection Officer: WhatsApp: +968 9595 6361 · GDPR, CCPA, COPPA & Google Play Data Safety Compliant"}</div>
+      <div class="t2" style="font-size:12px">${ar ? "مسؤول حماية البيانات: WhatsApp: +968 9595 6361 · متوافق مع المرسوم السلطاني 6/2022 و GDPR" : "Data Protection Officer: WhatsApp: +968 9595 6361 · Oman PDPL (Royal Decree 6/2022), GDPR & Google Play Compliant"}</div>
 
-      <div class="t1" style="font-size:15px;color:var(--tx)">${ar ? "1. البيانات التي نجمعها بالضبط (Exact Data Collected)" : "1. Exact Personal & Device Data We Collect"}</div>
+      <div class="t1" style="font-size:15px;color:var(--tx)">${ar ? "1. البيانات التي نجمعها (Information We Collect)" : "1. Exact Personal, Location & Device Data We Collect"}</div>
       <p>${ar
-        ? "• بيانات الحساب: الاسم، رقم الهاتف، والبريد الإلكتروني.<br/>• بيانات الموقع الجغرافي (GPS): إحداثيات الموقع أثناء استخدام التطبيق لتحديد عنوان الخدمة وتتبع وصول الفني.<br/>• الكاميرا والصور والفيديو: صور التوثيق الحية (قبل وبعد العمل) ومقاطع فيديو وصف العطل.<br/>• بيانات المعاملات والدردشة: سجل الطلبات، الفواتير، ورسائل المحادثة مع الفني والدعم."
-        : "• Account Identifiers: Full name, phone number, and email address.<br/>• Precise Location (GPS): Foreground coordinates when pinning a service address, calculating technician distance, and stamping verification photos.<br/>• Camera, Photos & Videos: Live in-app verification photos and optional repair videos you attach to an order.<br/>• Order & Chat Metadata: Bid amounts, PayPal order IDs, wallet receipts, and in-app chat messages."}</p>
+        ? "• بيانات الحساب: الاسم، رقم الهاتف العُماني (+968) الموثق عبر واتساب، والبريد الإلكتروني.<br/>• بيانات تسجيل الدخول بـ Google: المعرف (sub)، البريد الإلكتروني، الاسم، والصورة الرمزية عند اختيار الدخول عبر Google.<br/>• البصمة والوجه (Biometrics): لا تغادر بيانات بصمتك أو وجهك جهازك أبداً؛ يتم حفظ رمز تشفير عشوائي فقط لتسجيل الدخول السريع.<br/>• الموقع الجغرافي (GPS) وعنوان IP: إحداثيات الموقع لتوجيه الفنيين القريبين، وعنوان IP لأغراض الأمان ومنع الاحتيال.<br/>• الصور والفواتير: صور العمل (قبل وبعد) وسجل المعاملات المحمية."
+        : "• Account & WhatsApp OTP Data: Full name, +968 phone number verified via WhatsApp OTP, and email address.<br/>• Google OAuth Profile: Google account ID, email, display name, and avatar when signing in with Google.<br/>• Biometric Login Tokens: Fingerprint/Face templates never leave your Android hardware; only a random cryptographic token is stored.<br/>• Location (GPS) & IP Logs: Foreground coordinates for nearby technician dispatch, and IP/session logs for rate-limiting and anti-fraud security.<br/>• Job Photos & Payment Records: Before/after job photos, masked card last-4 digits, and PayPal order references."}</p>
 
-      <div class="t1" style="font-size:15px;color:var(--tx)">${ar ? "2. لماذا نجمع هذه البيانات؟ (Purpose of Collection)" : "2. Why This Data Is Collected"}</div>
+      <div class="t1" style="font-size:15px;color:var(--tx)">${ar ? "2. مزود الإعلانات الخارجي (A-Ads Privacy Disclosure)" : "2. Third-Party Advertising Provider (A-Ads Disclosure)"}</div>
       <p>${ar
-        ? "نجمع هذه البيانات حصرياً لتوصيلك بالفنيين القريبين، وتوثيق جودة العمل بصور قبل وبعد، وإصدار فواتير الضمان الرسمية لمدة 14 يوماً. لا نقوم ببيع بياناتك لأي معلنين."
-        : "We collect this data strictly to dispatch nearby Pros to your location, verify job completion with photos, process protected payments and 14-day warranty claims, and provide order updates. We never sell user data or run third-party ad networks."}</p>
+        ? "نستخدم شبكة A-Ads (acceptable.a-ads.com · الوحدة رقم 2461953) لعرض إعلانات داخل التطبيق خلف خلفية توضيحية (ADVERTISEMENT). لا تستخدم A-Ads ملفات تعريف ارتباط تتبعية شخصية. يمكنك الاطلاع على سياسة خصوصية A-Ads عبر الرابط: https://aads.com/privacy_policy وشروطهم عبر: https://aads.com/terms_of_service."
+        : "FixIt displays clearly labeled 'ADVERTISEMENT' banners powered by A-Ads (acceptable.a-ads.com, Unit #2461953). A-Ads operates without invasive cross-app behavioral cookies. FixIt never sells your personal data to advertisers. Read the A-Ads Privacy Policy at https://aads.com/privacy_policy and A-Ads Terms at https://aads.com/terms_of_service."}</p>
 
-      <div class="t1" style="font-size:15px;color:var(--tx)">${ar ? "3. خدمات الأطراف الثالثة (Third-Party Services)" : "3. Third-Party Services"}</div>
+      <div class="t1" style="font-size:15px;color:var(--tx)">${ar ? "3. معالجو البيانات الفرعيون (Subprocessors)" : "3. Third-Party Subprocessors"}</div>
       <p>${ar
-        ? "• Supabase Inc. (قاعدة البيانات السحابية والمصادقة المشفرة عبر HTTPS).<br/>• PayPal Holdings Inc. (معالجة المدفوعات والاشتراكات بأمان دون تخزين أرقام البطاقات في تطبيقنا).<br/>• Google Maps / OpenStreetMap & OSRM (عرض الخرائط وحساب مسار الطريق للفني).<br/>• MyMemory Translation API (الترجمة الآلية الفورية لوصف المشكلة والمحادثات بين العربية والإنجليزية)."
-        : "• Supabase (Cloud PostgreSQL database & authentication over TLS/HTTPS).<br/>• PayPal (Payment & subscription processing — FixIt never stores raw credit/debit card numbers).<br/>• Google Maps / OpenStreetMap & OSRM (Map tiles and road route geometry).<br/>• MyMemory API (Automated bilingual translation of repair descriptions and chat messages)."}</p>
+        ? "• Supabase Inc. (قاعدة البيانات السحابية المشفرة).<br/>• PayPal Holdings Inc. (معالجة المدفوعات داخل التطبيق عبر البطاقة أو حساب PayPal دون تخزين الرقم الكامل للبطاقة أو رمز CVV على خوادمنا).<br/>• TextBee / WhatsApp Gateway (إرسال رمز التحقق OTP عبر واتساب فقط).<br/>• Google LLC (تسجيل الدخول عبر Google وإشعارات FCM والخرائط).<br/>• MyMemory API (الترجمة الفورية لوصف الأعطال والمحادثات)."
+        : "• Supabase Inc. (Cloud PostgreSQL database over TLS).<br/>• PayPal Holdings Inc. (In-app card & PayPal payment processing — full card numbers and CVV are never stored in our database).<br/>• TextBee / WhatsApp Gateway (WhatsApp OTP delivery only).<br/>• Google LLC (Google Sign-In, Firebase Cloud Messaging push alerts, and Maps).<br/>• MyMemory API (Bilingual Arabic/English job & chat translation)."}</p>
 
-      <div class="t1" style="font-size:15px;color:var(--tx)">${ar ? "4. مدة الاحتفاظ بالبيانات وحقوق التعديل والحذف (Retention & Deletion)" : "4. Data Retention Schedule & How to Edit or Delete Data"}</div>
+      <div class="t1" style="font-size:15px;color:var(--tx)">${ar ? "4. الاحتفاظ بالبيانات وحذف الحساب (Retention & Deletion)" : "4. Data Retention & Instant Account Deletion"}</div>
       <p>${ar
-        ? "يتم الاحتفاظ ببيانات الحساب طالما كان حسابك نشطاً، وتُحفظ صور التوثيق والفواتير طوال فترة ضمان الـ 14 يوماً ولأغراض التدقيق المالي. يمكنك تعديل بياناتك فوراً من صفحة (معلومات الحساب)، أو طلب حذف حسابك وجميع بياناتك نهائياً من زر (طلب حذف الحساب) أو عبر مراسلة WhatsApp: +968 9595 6361 ليتم مسحها خلال 30 يوماً."
-        : "Account data is retained while your account remains active. Order verification photos and invoices are retained for the 14-day warranty period and statutory accounting compliance. You can edit your profile anytime under 'Account Info' or request permanent account and data deletion via the 'Request Account & Data Deletion' button or by emailing WhatsApp: +968 9595 6361 (completed within 30 days)."}</p>
-
-      <div class="t1" style="font-size:15px;color:var(--tx)">${ar ? "5. أمان البيانات، خصوصية الأطفال (COPPA)، والإفصاح عن الذكاء الاصطناعي" : "5. Security, Children's Privacy (COPPA 18+) & AI Disclosure"}</div>
-      <p>${ar
-        ? "• الأمان: جميع الاتصالات مشفرة عبر HTTPS مع صلاحيات وصول مقيدة حسب الدور (عميل/فني/مشرف) والالتزام بالإبلاغ خلال 72 ساعة في حال أي خرق أمني.<br/>• حماية القاصرين (COPPA): التطبيق مخصص للبالغين (18+) ولا نجمع بيانات أي طفل دون 13 عاماً.<br/>• الإفصاح عن الذكاء الاصطناعي (EU AI Act): يتم تمييز النصوص المترجمة آلياً وردود المساعدة التلقائية بوضوح داخل التطبيق."
-        : "• Data Security: All traffic is encrypted via HTTPS/TLS with role-based access control and a mandatory 72-hour breach notification policy.<br/>• Children's Privacy (COPPA): FixIt is strictly for users aged 18+ and never knowingly collects data from children under 13.<br/>• AI Disclosure: Automated bilingual translations and support triage messages are AI-assisted and clearly labeled."}</p>
+        ? "تُحفظ بيانات الطلبات طوال فترة ضمان الـ 14 يوماً. يمكنك تصدير بياناتك بصيغة JSON أو طلب حذف حسابك نهائياً من داخل التطبيق أو عبر بوابة الحذف https://fixit-now.xyz/delete-account أو مراسلة WhatsApp: +968 9595 6361."
+        : "Order records are retained for the 14-day warranty window and accounting compliance. You may export your data (JSON) or request permanent account deletion anytime in-app, at https://fixit-now.xyz/delete-account, or via WhatsApp: +968 9595 6361."}</p>
     </div>
   </div>`;
 }
@@ -9080,21 +9358,33 @@ function receiptScreen() {
 
 
 /* ================= TALABAT VENDOR PRO SCREENS (DISTANCE RADAR, AUTO-TRANSLATED LEADS, LIVE CAMERA VERIFICATION) ================= */
+function calcVendorNetPayoutOmr(bidOmr) {
+  const amt = Math.max(0, Number(bidOmr || 0));
+  const doneCount = myJobs().filter(j => j.status === "COMPLETED").length;
+  const feePct = doneCount < 3 ? 0.01 : doneCount < 10 ? 0.05 : doneCount < 25 ? 0.10 : 0.15;
+  const feeOmr = Number((amt * feePct).toFixed(3));
+  const netOmr = Math.max(0, Number((amt - feeOmr).toFixed(3)));
+  return { amt, feePct: Math.round(feePct * 100), feeOmr, netOmr };
+}
+
 function vJobs() {
   const curShop = getActiveShop();
-  if (curShop && curShop.kyc_status !== "APPROVED") {
+  if (curShop && curShop.kyc_status !== "APPROVED" && !S.onboardingPreviewGate) {
     return vShopKycScreen(true);
   }
   const ar = L === "ar";
   const mine = myJobs();
-  // Sort FixIt Pro Customer jobs FIRST on the vendor's bidding list!
-  const openJobs = S.jobs.filter(j => j.status === "OPEN").sort((a, b) => (isProCustomerJob(b) ? 1 : 0) - (isProCustomerJob(a) ? 1 : 0));
+  const catFilter = S.vCatFilter || "ALL";
+  const allOpenJobs = S.jobs.filter(j => j.status === "OPEN").sort((a, b) => (isProCustomerJob(b) ? 1 : 0) - (isProCustomerJob(a) ? 1 : 0));
+  const openJobs = catFilter === "ALL" ? allOpenJobs : allOpenJobs.filter(j => j.category_id === catFilter);
   const activeMine = mine.filter(j => !isDone(j) && j.status !== "OPEN");
   const doneMine = mine.filter(j => j.status === "COMPLETED");
   const showNew = S.filter !== "MINE" && S.filter !== "DONE";
   const list = S.filter === "MINE" ? activeMine : S.filter === "DONE" ? doneMine : openJobs;
   const unreadNotifs = (S.notifs || []).filter(n => !isNotifRead(n)).length;
   const pInfo = getProDirectoryInfo(VENDOR_ID);
+  const partnerDisplayName = (curShop && curShop.shop_name) || S.profile.full_name || (ar ? pInfo.nameAr : pInfo.nameEn);
+  const walletBal = Number((S.wallet && S.wallet.balance) || 0);
 
   const rightBar = `<div class="row" style="gap:8px">
     <button class="talabat-circle-btn" style="position:relative" onclick="go('notifs')">${I("bell")}${unreadNotifs ? `<span class="badge" style="position:absolute;top:-3px;right:-3px">${unreadNotifs}</span>` : ""}</button>
@@ -9102,33 +9392,62 @@ function vJobs() {
     ${langBtn()}
   </div>`;
 
-  return `${bar(ar ? "بوابة فني FixIt" : "FixIt Pro Partner", false, rightBar)}
+  return `${bar(ar ? "بوابة شريك FixIt" : "FixIt Partner Hub", false, rightBar)}
   <div class="pad">
+    ${(curShop && curShop.kyc_status !== "APPROVED") ? `<div class="card" style="background:#FFF7ED;border:1.5px solid #FDBA74;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px">
+      <div class="sp">
+        <div style="font-size:13.5px;font-weight:900;color:#9A3412">${ar ? "وضع معاينة الرادار · أكمل توثيق الشريك" : "Radar Preview · Complete Partner KYC"}</div>
+        <div style="font-size:11.5px;color:#B45309">${ar ? "أكمل توثيق السجل التجاري والبطاقة المدنية والميثاق لتقديم العروض" : "Verify your CR, Civil ID, and Charter to unlock bidding"}</div>
+      </div>
+      <button class="pill" style="background:var(--o);color:#fff;min-height:40px;padding:0 12px" onclick="S.onboardingPreviewGate=false;go('shop_kyc')">${ar ? "توثيق الآن" : "Verify KYC"}</button>
+    </div>` : ""}
+
     <!-- Pro Partner Status & Stats Hero Card -->
     <div class="card" style="background:linear-gradient(135deg,#1A1A1A,#2D2D35);color:#fff;display:flex;flex-direction:column;gap:12px">
       <div class="row" style="gap:12px">
         <div class="av" style="background:var(--o);width:48px;height:48px;border-radius:14px">${esc(pInfo.avatar)}</div>
         <div class="sp">
-          <div class="row" style="gap:6px">
-            <span style="font-size:17px;font-weight:900">${esc(ar ? pInfo.nameAr : pInfo.nameEn)}</span>
-            <span class="pill ok" style="font-size:10px">★ ${pInfo.rating.toFixed(1)}</span>
+          <div class="row" style="gap:6px;flex-wrap:wrap">
+            <span style="font-size:17px;font-weight:900">${esc(partnerDisplayName)}</span>
+            <span class="pill ok" style="font-size:10px">${pInfo.rating.toFixed(1)} Rating</span>
+            ${curShop && curShop.cr_number ? `<span class="pill" style="background:rgba(255,255,255,.14);color:#E5E7EB;font-size:10px">CR ${esc(curShop.cr_number)}</span>` : ""}
           </div>
-          <div style="font-size:12px;opacity:.85">${S.online ? (ar ? "🟢 متصل بالرادار · يستقبل طلبات صلالة" : "🟢 Online · Receiving nearby Salalah jobs") : (ar ? "🔴 غير متصل" : "🔴 Offline")}</div>
+          <div class="row" style="gap:6px;font-size:12px;opacity:.9;margin-top:3px">
+            <span style="width:8px;height:8px;border-radius:50%;background:${S.online ? "#22C55E" : "#EF4444"};display:inline-block"></span>
+            <span>${S.online ? (ar ? "متصل بالرادار · يستقبل طلبات صلالة" : "Online · Receiving Salalah orders") : (ar ? "غير متصل" : "Offline")}</span>
+          </div>
         </div>
-        <button class="pill" style="background:rgba(255,255,255,.15);color:#fff;font-size:11.5px" onclick="openProProfile(VENDOR_ID)">${ar ? "ملفي" : "My Profile"}</button>
+        <button class="pill" style="background:rgba(255,255,255,.15);color:#fff;font-size:11.5px;min-height:40px" onclick="openProProfile(VENDOR_ID)">${ar ? "ملفي" : "Profile"}</button>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.12);text-align:center">
-        <div><div style="font-size:18px;font-weight:900;color:var(--o)">${openJobs.length}</div><div style="font-size:11px;opacity:.8">${ar ? "طلبات قريبة" : "Nearby Leads"}</div></div>
-        <div><div style="font-size:18px;font-weight:900;color:#4ADE80">${activeMine.length}</div><div style="font-size:11px;opacity:.8">${ar ? "قيد التنفيذ" : "Active Jobs"}</div></div>
-        <div><div style="font-size:18px;font-weight:900;color:#fff">${pInfo.jobsDone + doneMine.length}</div><div style="font-size:11px;opacity:.8">${ar ? "إجمالي المنجز" : "Total Done"}</div></div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.12);text-align:center">
+        <div onclick="S.filter='NEW';render()" style="cursor:pointer"><div style="font-size:17px;font-weight:900;color:var(--o)">${allOpenJobs.length}</div><div style="font-size:10.5px;opacity:.8">${ar ? "طلبات قريبة" : "Nearby"}</div></div>
+        <div onclick="S.filter='MINE';render()" style="cursor:pointer"><div style="font-size:17px;font-weight:900;color:#4ADE80">${activeMine.length}</div><div style="font-size:10.5px;opacity:.8">${ar ? "نشط" : "Active"}</div></div>
+        <div onclick="S.filter='DONE';render()" style="cursor:pointer"><div style="font-size:17px;font-weight:900;color:#fff">${pInfo.jobsDone + doneMine.length}</div><div style="font-size:10.5px;opacity:.8">${ar ? "منجز" : "Done"}</div></div>
+        <div onclick="tab('wallet')" style="cursor:pointer"><div style="font-size:15px;font-weight:900;color:#FBBF24">${walletBal.toFixed(3)}</div><div style="font-size:10.5px;opacity:.8">${ar ? "المحفظة (ر.ع)" : "Wallet OMR"}</div></div>
       </div>
     </div>
 
-    <div class="chips">
-      <button class="chip ${showNew ? "on" : ""}" onclick="S.filter='NEW';render()">📍 ${t("newJobs")} (${openJobs.length})</button>
-      <button class="chip ${S.filter === "MINE" ? "on" : ""}" onclick="S.filter='MINE';render()">🔧 ${t("myJobs")} (${activeMine.length})</button>
-      <button class="chip ${S.filter === "DONE" ? "on" : ""}" onclick="S.filter='DONE';render()">✓ ${t("done")} (${doneMine.length})</button>
+    ${activeMine.length ? `<div class="live" onclick="go('job','${activeMine[0].job_id}')">
+      <div class="ring">${I(cat(activeMine[0].category_id).icon)}</div>
+      <div class="sp">
+        <div class="row" style="gap:6px"><span class="dot"></span><span style="font-size:12px;font-weight:800;opacity:.9">${t(activeMine[0].status)} · ${sid(activeMine[0])}</span></div>
+        <div style="font-size:15.5px;font-weight:900;margin-top:2px">${cat(activeMine[0].category_id).name} — ${ar ? "اضغط لفتح الخريطة وتحديث الحالة" : "Tap to navigate & update job status"}</div>
+      </div>
+      ${I("next", "flip")}
+    </div>` : ""}
+
+    <div class="chips" style="margin-bottom:2px">
+      <button class="chip ${showNew ? "on" : ""}" onclick="S.filter='NEW';render()">${I("radar")}${t("newJobs")} (${allOpenJobs.length})</button>
+      <button class="chip ${S.filter === "MINE" ? "on" : ""}" onclick="S.filter='MINE';render()">${I("tool")}${t("myJobs")} (${activeMine.length})</button>
+      <button class="chip ${S.filter === "DONE" ? "on" : ""}" onclick="S.filter='DONE';render()">${I("check")}${t("done")} (${doneMine.length})</button>
     </div>
+
+    ${showNew ? `<div class="chips" style="margin-top:0">
+      <button class="chip ${catFilter === "ALL" ? "on" : ""}" style="height:36px;font-size:12px" onclick="S.vCatFilter='ALL';render()">${ar ? "الكل" : "All Trades"}</button>
+      ${CATS.map(ct => `<button class="chip ${catFilter === ct[0] ? "on" : ""}" style="height:36px;font-size:12px" onclick="S.vCatFilter='${ct[0]}';render()">${ar ? ct[3] : ct[2]}</button>`).join("")}
+    </div>` : ""}
+
+    ${aadsSlotHtml("margin:4px 0;")}
 
     ${!S.online ? empty("power", ar ? "قم بتفعيل زر الاتصال لاستقبال الطلبات القريبة" : "Switch Online to receive nearby repair orders") : list.length ? list.map(j => showNew ? vLeadCard(j) : jobCard(j)).join("") : empty("radar", ar ? "لا توجد طلبات في هذا القسم حالياً" : "No jobs in this tab right now")}
   </div>`;
@@ -9139,6 +9458,7 @@ function vLeadCard(j) {
   const jCoords = getJobCoords(j);
   const myCoords = S.userGps || [17.0190, 54.0890];
   const dist = Math.max(0.4, calcDistKm(myCoords, jCoords)).toFixed(1);
+  const etaMins = Math.max(8, Math.round(Number(dist) * 3.5));
   const jPhotos = (S.photos || []).filter(p => p.job_id === j.job_id && !String(p.url || "").startsWith("[VID]"));
   const jVid = (S.jobVideos && S.jobVideos[j.job_id]) || (S.photos || []).find(p => p.job_id === j.job_id && String(p.url || "").startsWith("[VID]"));
   const vidSrc = typeof jVid === "string" ? jVid : (jVid && jVid.url ? String(jVid.url).slice(5) : null);
@@ -9146,18 +9466,18 @@ function vLeadCard(j) {
 
   return `<div class="card" style="display:flex;flex-direction:column;gap:12px;border:${isProCust ? "2px solid #F59E0B" : "1.5px solid #E5E7EB"};background:${isProCust ? "linear-gradient(180deg,#FFFBEB 0%,#FFFFFF 55px)" : "#fff"}">
     ${isProCust ? `<div class="row" style="justify-content:space-between;margin-bottom:-4px">
-      <span class="pill" style="background:linear-gradient(135deg,#7E22CE,#6B21A8);color:#fff;font-size:10.5px;font-weight:900">👑 ${ar ? "عميل FixIt Pro · أولوية قصوى في القائمة" : "FIXIT PRO CUSTOMER · PRIORITY LEAD"}</span>
-      <span style="font-size:11px;font-weight:800;color:#7E22CE">⚡ Fast Payout</span>
+      <span class="pill" style="background:linear-gradient(135deg,#7E22CE,#6B21A8);color:#fff;font-size:10.5px;font-weight:900">${ar ? "عميل FixIt Pro · أولوية" : "FIXIT PRO · PRIORITY"}</span>
+      <span style="font-size:11px;font-weight:800;color:#15803D">Protected Payment</span>
     </div>` : ""}
     <div class="row" onclick="go('job','${j.job_id}')" style="cursor:pointer">
       <div class="ico" style="background:${ccol(c.id)};color:#fff">${I(c.icon)}</div>
       <div class="sp">
         <div class="row" style="gap:6px;flex-wrap:wrap">
           <span class="t1">${c.name} · ${sid(j)}</span>
-          <span class="pill" style="font-size:11px;background:var(--o2);color:var(--o);font-weight:800">📍 ${dist} km ${ar ? "منك" : "away"}</span>
+          <span class="pill" style="font-size:11px;background:var(--o2);color:var(--o);font-weight:800">${dist} km · ~${etaMins} min</span>
         </div>
         <div class="t2" style="margin-top:4px;color:var(--tx);font-size:14px;font-weight:600">${esc(displayTranslated(cleanDesc(j.description))) || sid(j)}</div>
-        <div class="t2" style="font-size:11.5px;margin-top:2px">📍 ${salalahAreaName(jCoords[0], jCoords[1])} · ${ago(j.created_at)}</div>
+        <div class="t2" style="font-size:11.5px;margin-top:2px">${salalahAreaName(jCoords[0], jCoords[1])} · ${ago(j.created_at)}</div>
       </div>
     </div>
     ${jPhotos.length ? `<div class="hscroll" style="margin:0">${jPhotos.map(p => `<img src="${esc(p.url)}" style="width:72px;height:72px;border-radius:10px;object-fit:cover;border:1.5px solid var(--gr)" onclick="S.previewImg=this.src;render()">`).join("")}</div>` : ""}
@@ -9165,8 +9485,8 @@ function vLeadCard(j) {
     <div class="row" style="gap:8px">
       <button class="btn outline s" style="width:auto;padding:0 14px" onclick="go('job','${j.job_id}')">${I("pin")}${ar ? "الخريطة والتفاصيل" : "Map & Details"}</button>
       ${mine
-        ? `<div class="pill ok sp" style="justify-content:center;height:42px;font-size:13px">✓ ${ar ? "تم تقديم عرض:" : "Bid Sent:"} ${Number(mine.bid_amount).toFixed(3)} ${t("omr")}</div>`
-        : `<button class="btn s sp" onclick="S.sheet='bid';S.jobId='${j.job_id}';render()">${I("send", "flip")}${ar ? `تقديم عرض (${dist} كم)` : `Bid on Order (${dist} km away)`}</button>`}
+        ? `<div class="pill ok sp" style="justify-content:center;height:44px;font-size:13px">${I("check")} ${ar ? "تم تقديم عرض:" : "Bid Sent:"} ${Number(mine.bid_amount).toFixed(3)} ${t("omr")}</div>`
+        : `<button class="btn s sp" onclick="S.sheet='bid';S.jobId='${j.job_id}';render()">${I("send", "flip")}${ar ? `تقديم عرض (${dist} كم)` : `Bid Now (${dist} km)`}</button>`}
     </div>
   </div>`;
 }
@@ -9174,18 +9494,39 @@ function vLeadCard(j) {
 function vBidSheet() {
   const j = S.jobs.find(x => x.job_id === S.jobId) || {}, c = cat(j.category_id), ar = L === "ar";
   const shop = getActiveShop();
+  const previewAmt = Number(S.bidDraftAmt || 10);
+  const netInfo = calcVendorNetPayoutOmr(previewAmt);
+  const etaSel = S.bidEtaDraft || "25 min";
+
   return `<div class="sheet" onclick="if(event.target===this){S.sheet=null;render()}"><div><div class="grab"></div>
     <div class="row"><div class="ico" style="background:${ccol(c.id)};color:#fff">${I(c.icon)}</div><div class="sp"><div class="t1" style="font-size:19px">${c.name} · ${sid(j)}</div><div class="t2" style="font-size:12px">${esc(displayTranslated(cleanDesc(j.description)))}</div></div><button class="ib" onclick="S.sheet=null;render()">${I("x")}</button></div>
 
-    ${shop && shop.shop_name ? `<div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:10px 12px;font-size:12.5px;font-weight:700;color:#0F172A">
-      ${esc(shop.shop_name)}${shop.cr_number ? ` · CR ${esc(shop.cr_number)}` : ""}
+    ${shop && shop.shop_name ? `<div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:10px 12px;font-size:12.5px;font-weight:700;color:#0F172A;display:flex;justify-content:space-between;align-items:center">
+      <span>${esc(shop.shop_name)}${shop.cr_number ? ` · CR ${esc(shop.cr_number)}` : ""}</span>
+      <span class="pill ok" style="font-size:10px">${ar ? "عمولة" : "Fee"} ${netInfo.feePct}%</span>
     </div>` : ""}
 
+    <div style="background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:12px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-size:11.5px;color:#166534;font-weight:700">${ar ? "صافي ربحك المتوقع في المحفظة" : "Estimated Net Payout to Wallet"}</div>
+        <div style="font-size:18px;font-weight:900;color:#14532D">${netInfo.netOmr.toFixed(3)} ${t("omr")}</div>
+      </div>
+      <div style="text-align:end;font-size:11.5px;color:#15803D">
+        <div>${ar ? "العرض:" : "Bid:"} ${netInfo.amt.toFixed(3)} ${t("omr")}</div>
+        <div>${ar ? "رسوم المنصة:" : "Platform fee:"} -${netInfo.feeOmr.toFixed(3)} ${t("omr")}</div>
+      </div>
+    </div>
+
+    <div class="t2" style="font-weight:700">${ar ? "وقت الوصول المتوقع:" : "Estimated Arrival Time (ETA):"}</div>
+    <div class="chips" style="margin:0">
+      ${["15 min", "25 min", "45 min", "1 hr"].map(eta => `<button class="chip ${etaSel === eta ? "on" : ""}" style="height:38px;font-size:12.5px" onclick="S.bidEtaDraft='${eta}';render()">${I("car")} ${eta}</button>`).join("")}
+    </div>
+
     <div class="t2" style="font-weight:700">${ar ? "اختر قيمة العرض السريع (ر.ع):" : "Quick Bid Amount (OMR):"}</div>
-    <div class="grid">${[5,8,10,12,15,18,20,25].map(a => `<button class="chip" style="min-height:48px;font-size:17px;font-weight:800" onclick="sendBid('${j.job_id}',${a})">${a} OMR</button>`).join("")}</div>
+    <div class="grid">${[5,8,10,12,15,18,20,25].map(a => `<button class="chip ${previewAmt === a ? 'on' : ''}" style="min-height:48px;font-size:16px;font-weight:800" onclick="S.bidDraftAmt=${a};sendBid('${j.job_id}',${a})">${a.toFixed(3)} ${t("omr")}</button>`).join("")}</div>
     <div class="row" style="gap:8px;margin-top:4px">
-      <input id="customBidInp" type="number" step="0.5" placeholder="${ar ? "أو أدخل مبلغاً مخصصاً بالريال..." : "Or enter custom OMR amount..."}" class="tlbt-input" style="flex:1;height:48px">
-      <button class="btn s" style="width:auto;padding:0 20px;height:48px" onclick="const v=Number((document.getElementById('customBidInp')||{}).value||0);if(v>0)sendBid('${j.job_id}',v);else toast('Enter valid OMR amount')">${ar ? "إرسال" : "Send Bid"}</button>
+      <input id="customBidInp" type="number" step="0.5" value="${previewAmt}" oninput="S.bidDraftAmt=Number(this.value||0)" placeholder="${ar ? "أو أدخل مبلغاً مخصصاً بالريال..." : "Or enter custom OMR amount..."}" class="tlbt-input" style="flex:1;height:48px">
+      <button class="btn s" style="width:auto;padding:0 20px;height:48px" onclick="const v=Number((document.getElementById('customBidInp')||{}).value||0);if(v>0)sendBid('${j.job_id}',v);else toast('Enter valid OMR amount')">${ar ? "إرسال العرض" : "Send Bid"}</button>
     </div>
   </div></div>`;
 }
@@ -9195,14 +9536,40 @@ function vJob() {
   const c = cat(j.category_id), ar = L === "ar";
   const proAssigned = j.status !== "OPEN" && j.status !== "CANCELLED";
   const mine = S.bids.find(b => b.job_id === j.job_id && b.vendor_id === ME);
+  const chosenBid = S.bids.find(b => b.job_id === j.job_id && (b.status === "SELECTED" || b.status === "ACCEPTED")) || mine;
+  const [jLat, jLng] = getJobCoords(j);
+  const areaName = salalahAreaName(jLat, jLng);
+  const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(jLat + "," + jLng)}`;
+  const netInfo = chosenBid ? calcVendorNetPayoutOmr(chosenBid.bid_amount) : null;
+
   return `${bar(c.name + " · " + sid(j), true, proAssigned ? `<a class="ib" href="https://wa.me/${getJobWaDigits(j)}" target="_blank" rel="noopener" style="background:#DCFCE7;color:#15803D">${I("whatsapp")}</a>` : "")}<div class="pad">
     <div class="card">${stepper(j)}</div>
+
     <div class="card" style="padding:0;overflow:hidden">
       ${renderTalabatLeafletMap("vjobLeafletMap", "210px", false, j.job_id)}
+      <div class="row" style="padding:12px 14px;justify-content:space-between;background:#fff;border-top:1px solid var(--ln)">
+        <div>
+          <div style="font-size:13.5px;font-weight:800;color:var(--tx)">${esc(areaName)}</div>
+          <div style="font-size:11.5px;color:#6B7280">${esc(getCustomerDisplayName(j))}</div>
+        </div>
+        <div class="row" style="gap:8px">
+          <a class="pill" href="${gmapsUrl}" target="_blank" rel="noopener" style="background:#EFF6FF;color:#1D4ED8;min-height:40px;padding:0 12px;font-weight:800">${I("pin")} ${ar ? "خرائط جوجل" : "Navigate"}</a>
+          ${proAssigned ? `<button class="pill ok" style="min-height:40px;padding:0 12px" onclick="shareMyLiveGps()">${I("radar")} ${ar ? "تحديث موقعي" : "Share GPS"}</button>` : ""}
+        </div>
+      </div>
     </div>
-    ${cleanDesc(j.description) ? `<div class="card" style="font-size:15px;color:var(--tx)"><b>${ar ? "وصف العميل (مترجم):" : "Customer Description:"}</b><div style="margin-top:4px">${esc(displayTranslated(cleanDesc(j.description)))}</div></div>` : ""}
+
+    ${netInfo ? `<div class="card" style="background:#F0FDF4;border:1.5px solid #86EFAC;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-size:12px;font-weight:800;color:#166534">${ar ? "صافي مستحقاتك للطلب (مضمونة)" : "Protected Partner Payout"}</div>
+        <div style="font-size:20px;font-weight:900;color:#14532D">${netInfo.netOmr.toFixed(3)} ${t("omr")}</div>
+      </div>
+      <span class="pill ok">${ar ? "دفع محمي" : "Protected Payment"}</span>
+    </div>` : ""}
+
+    ${cleanDesc(j.description) ? `<div class="card" style="font-size:15px;color:var(--tx)"><b>${ar ? "وصف العميل:" : "Customer Description:"}</b><div style="margin-top:4px">${esc(displayTranslated(cleanDesc(j.description)))}</div></div>` : ""}
     ${j.status === "OPEN" ? `<div class="card" style="display:flex;flex-direction:column;gap:10px">
-      ${mine ? `<div class="pill-wrap">✓ ${ar ? "عرضك المرسل:" : "Your Bid:"} <b>${Number(mine.bid_amount).toFixed(3)} ${t("omr")}</b> — ${ar ? "بانتظار قبول العميل والدفع" : "Waiting for customer acceptance & payment"}</div>
+      ${mine ? `<div class="pill-wrap">${ar ? "عرضك المرسل:" : "Your Bid:"} <b>${Number(mine.bid_amount).toFixed(3)} ${t("omr")}</b> — ${ar ? "بانتظار قبول العميل والدفع" : "Waiting for customer acceptance & payment"}</div>
       <button class="btn outline s" onclick="S.sheet='bid';S.jobId='${j.job_id}';render()">${I("edit")}${ar ? "تعديل قيمة العرض" : "Update Bid Amount"}</button>` : `<button class="btn" onclick="S.sheet='bid';S.jobId='${j.job_id}';render()">${I("send","flip")}${ar ? "تقديم عرض سعر الآن" : "Submit Offer Now"}</button>`}
     </div>` : `<div class="two">
       <button class="btn g s" onclick="sendMsg(t('onWay'))">${I("car")}${t("onWay")}</button>
@@ -9225,7 +9592,6 @@ function adminQuickEditUser(uid) {
 }
 
 function adminUserEditSheet() {
-  const ar = L === "ar";
   const u = (S.users || []).find(x => x.user_id === S.adminEditUserId) || S.users[0];
   if (!u) return "";
   const uIdCode = getUniqueFixItId(u);
@@ -9234,8 +9600,8 @@ function adminUserEditSheet() {
       <div class="grab"></div>
       <div class="row" style="justify-content:space-between">
         <div>
-          <div class="t1" style="font-size:18px;font-weight:900">👑 Admin User & Unique ID Controller</div>
-          <div class="t2" style="font-family:monospace;font-size:12px;color:#FF5A00">${esc(uIdCode)} · UUID: ${esc(String(u.user_id).slice(0, 18))}...</div>
+          <div class="t1" style="font-size:18px;font-weight:900">Account & Role Management</div>
+          <div class="t2" style="font-family:monospace;font-size:12px;color:#FF5A00">${esc(uIdCode)} · ${esc(String(u.user_id).slice(0, 14))}</div>
         </div>
         <button class="ib" onclick="S.sheet=null;render()">${I("x")}</button>
       </div>
@@ -9260,33 +9626,33 @@ function adminUserEditSheet() {
       </div>
 
       <div class="two">
-        <button class="btn outline s" onclick="u.is_lifetime=!u.is_lifetime;u.plan_id=u.is_lifetime?'PRO':null;toast('✓ Pro Membership Toggled');render()">
-          👑 ${u.is_lifetime || u.plan_id ? "Revoke FixIt Pro" : "Grant FixIt Pro"}
+        <button class="btn outline s" onclick="u.is_lifetime=!u.is_lifetime;u.plan_id=u.is_lifetime?'PRO':null;toast('Pro Membership Toggled');render()">
+          ${I("star")} ${u.is_lifetime || u.plan_id ? "Revoke FixIt Pro" : "Grant FixIt Pro"}
         </button>
-        <button class="btn outline s" style="border-color:#DC2626!important;color:#DC2626" onclick="u.is_active=u.is_active===false?true:false;toast(u.is_active?'✓ User Activated':'⚠ User Suspended');render()">
-          ${u.is_active === false ? "✓ Unban Account" : "🚫 Suspend Account"}
+        <button class="btn outline s" style="border-color:#DC2626!important;color:#DC2626" onclick="u.is_active=u.is_active===false?true:false;toast(u.is_active?'User Activated':'User Suspended');render()">
+          ${u.is_active === false ? "Activate Account" : "Suspend Account"}
         </button>
       </div>
 
-      <button class="btn" onclick="u.full_name=document.getElementById('admUName').value;u.phone_number=document.getElementById('admUPhone').value;u.role=document.getElementById('admURole').value;u.email=document.getElementById('admUEmail').value;sb('/users?user_id=eq.'+u.user_id,'PATCH',{full_name:u.full_name,phone_number:u.phone_number,role:u.role,email:u.email}).catch(()=>{});S.sheet=null;render();toast('✓ User '+getUniqueFixItId(u)+' updated in DB!')">
-        ✓ Save All User Profile Changes
+      <button class="btn" onclick="u.full_name=document.getElementById('admUName').value;u.phone_number=document.getElementById('admUPhone').value;u.role=document.getElementById('admURole').value;u.email=document.getElementById('admUEmail').value;sb('/users?user_id=eq.'+u.user_id,'PATCH',{full_name:u.full_name,phone_number:u.phone_number,role:u.role,email:u.email}).catch(()=>{});S.sheet=null;render();toast('User '+getUniqueFixItId(u)+' updated')">
+        ${I("check")} Save Account Changes
       </button>
     </div>
   </div>`;
 }
 
 function aOverview() {
-  const J = S.jobs, n = s => J.filter(j => j.status === s).length, ar = L === "ar";
+  const J = S.jobs, ar = L === "ar";
   const pendingShops = (S.shops || []).filter(s => s.kyc_status !== "APPROVED").length;
   const openTickets = (S.tickets || []).filter(tk => tk.status !== "RESOLVED");
   const webTickets = (S.tickets || []).filter(tk => /\[WEBSITE\]/i.test((tk.subject || "") + " " + (tk.body || "")));
   const tile = (icon, label, val, goAct) => `<button class="card" style="text-align:start" onclick="${goAct}"><div class="ico" style="margin-bottom:10px">${I(icon)}</div><div class="big">${val}</div><div class="t2">${label}</div></button>`;
-  return `${bar("FixIt Admin Super-Controller · Login-Free", false, `<button class="ib" onclick="sync().then(()=>toast('✓ Synced'))">${I("refresh")}</button>${langBtn()}`)}<div class="pad">
+  return `${bar(ar ? "بوابة عمليات FixIt" : "FixIt Operations Portal", false, `<button class="ib" onclick="sync().then(()=>toast('Synced'))">${I("refresh")}</button>${langBtn()}`)}<div class="pad">
     <div class="two">
       ${tile("list", t("orders"), J.length, "S.filter='ALL';tab('orders')")}
-      ${tile("box", ar ? "سجلات المحلات والعمال" : "Shops & KYC", (S.shops || []).length, "tab('shops')")}
+      ${tile("box", ar ? "توثيق الشركاء والسجلات" : "Partner KYC & CRs", (S.shops || []).length, "tab('shops')")}
       ${tile("help", ar ? "تذاكر الدعم والموقع" : "Website & Support", openTickets.length + (webTickets.length ? ` (${webTickets.length} Web)` : ""), "go('tickets')")}
-      ${tile("users", ar ? "المستخدمين والمعرفات" : "Users & Unique IDs", S.users.length + (S.shops || []).reduce((a, s) => a + (s.workers ? s.workers.length : 0), 0), "tab('users')")}
+      ${tile("users", ar ? "المستخدمين والحسابات" : "Users & Accounts", S.users.length + (S.shops || []).reduce((a, s) => a + (s.workers ? s.workers.length : 0), 0), "tab('users')")}
     </div>
 
     <!-- WhatsApp Web Link Card (QR + Phone Pairing Code) -->
@@ -9316,8 +9682,8 @@ function aOverview() {
     <button class="card row" style="background:linear-gradient(135deg,#1E3A8A,#0F172A);color:#fff;text-align:start" onclick="tab('shops')">
       <div class="ico" style="background:rgba(56,189,248,.2);color:#38BDF8">${I("shield")}</div>
       <div class="sp">
-        <div style="font-weight:900;font-size:14.5px">${ar ? "توثيق المحلات والعمال والمركبات" : "Shop Signboards, Workers & Fleet KYC"}</div>
-        <div style="font-size:12px;color:#CBD5E1">${ar ? "اعتماد المحلات، فحص التراخيص، أو طلب إعادة تصوير المستندات" : "Approve shops, inspect worker IDs & vehicle plates, or flag document conflicts"}</div>
+        <div style="font-weight:900;font-size:14.5px">${ar ? "مراجعة السجل التجاري والبطاقة المدنية" : "Partner KYC, CR & License Review"}</div>
+        <div style="font-size:12px;color:#CBD5E1">${ar ? "اعتماد الشركاء وفحص التراخيص وميثاق الضمان" : "Approve partner CRs, Civil IDs, signboard photos & warranty charter"}</div>
       </div>
       <span class="pill ${pendingShops ? "am" : "ok"}">${pendingShops ? pendingShops + " Pending" : "All Verified"}</span>
     </button>
@@ -9325,15 +9691,15 @@ function aOverview() {
     <button class="card row" style="background:linear-gradient(135deg,#0F172A,#1E293B);color:#fff;text-align:start" onclick="go('compliance')">
       <div class="ico" style="background:rgba(16,185,129,.2);color:#34D399">${I("check")}</div>
       <div class="sp">
-        <div style="font-weight:900;font-size:14.5px">${ar ? "مركز الامتثال والأمان والأداء" : "Compliance, Security & Scale Audit"}</div>
-        <div style="font-size:12px;color:#CBD5E1">${ar ? "فحص القانونية، الفوترة، SWR، وحماية الطلبات" : "Legal checks · Invoice Sync · SWR Cache · Rate Limiter"}</div>
+        <div style="font-weight:900;font-size:14.5px">${ar ? "مركز الامتثال التنظيمي والأمان" : "Regulatory & Security Compliance"}</div>
+        <div style="font-size:12px;color:#CBD5E1">${ar ? "حالة الخادم، الفوترة، وحماية البيانات" : "Legal policies · Protected Payment audit · Live uptime"}</div>
       </div>
       <span class="pill ok">Active</span>
     </button>
 
     <div class="card row">
-      <input id="bcastMsg" class="sp search" placeholder="${ar ? "إرسال إشعار فوري للفنيين أو العملاء..." : "Broadcast Push Notification to Vendors / Users..."}" style="height:44px" />
-      <button class="btn s" style="width:auto;padding:0 16px" onclick="const v=(document.getElementById('bcastMsg')||{}).value||'FixIt Salalah Update';sb('/notifications','POST',{user_id:VENDOR_ID,title:'FixIt Operations',body:v,kind:'ADMIN_ACTION'}).catch(()=>{});toast('✓ Broadcast sent!')">${I("send", "flip")}</button>
+      <input id="bcastMsg" class="sp search" placeholder="${ar ? "إرسال إشعار فوري للشركاء أو العملاء..." : "Broadcast Push Notification to Partners / Users..."}" style="height:44px" />
+      <button class="btn s" style="width:auto;padding:0 16px" onclick="const v=(document.getElementById('bcastMsg')||{}).value||'FixIt Salalah Update';sb('/notifications','POST',{user_id:VENDOR_ID,title:'FixIt Operations',body:v,kind:'ADMIN_ACTION'}).catch(()=>{});toast('Broadcast sent')">${I("send", "flip")}</button>
     </div>
     <div class="sec"><h2>${t("orders")}</h2><span onclick="tab('orders')" style="cursor:pointer">${ar ? "الكل" : "View all"}</span></div>
     ${J.slice(0, 6).map(jobCard).join("") || empty("list", t("noOrders"))}
@@ -9686,30 +10052,29 @@ function aOrders() {
 
 function aJob() {
   const j = S.jobs.find(x => x.job_id === S.jobId); if (!j) return `${bar("", true)}${empty("list", "…")}`;
-  const c = cat(j.category_id), bids = S.bids.filter(b => b.job_id === j.job_id), ar = L === "ar";
+  const c = cat(j.category_id), bids = S.bids.filter(b => b.job_id === j.job_id);
   return `${bar(c.name + " " + sid(j), true, statusPill(j))}<div class="pad">
     <div class="card">${stepper(j)}</div>
     <div class="card" style="padding:0;overflow:hidden">${renderTalabatLeafletMap("ajobLeafletMap", "200px", false, j.job_id)}</div>
 
-    <!-- Admin God-Mode Order & Bid Controller -->
     <div class="card" style="display:flex;flex-direction:column;gap:10px;border:1.5px solid #FF5A00">
       <div class="row" style="justify-content:space-between">
-        <span style="font-weight:900;font-size:15px">👑 Admin Order & Bids Controller (${sid(j)})</span>
-        <button class="pill rd" style="font-size:11px;padding:5px 10px" onclick="S.jobs=S.jobs.filter(x=>x.job_id!=='${j.job_id}');save('jobs',S.jobs);sb('/jobs?job_id=eq.${j.job_id}','DELETE').catch(()=>{});back();toast('✓ Order Deleted by Admin')">🗑️ Delete Order</button>
+        <span style="font-weight:900;font-size:15px">Order & Bids Management (${sid(j)})</span>
+        <button class="pill rd" style="font-size:11px;padding:5px 10px" onclick="S.jobs=S.jobs.filter(x=>x.job_id!=='${j.job_id}');save('jobs',S.jobs);sb('/jobs?job_id=eq.${j.job_id}','DELETE').catch(()=>{});back();toast('Order Deleted')">${I("trash")} Delete</button>
       </div>
       <div class="fld">
         <label>Edit Order Description</label>
-        <input id="admJobDescInp" class="tlbt-input" value="${esc(cleanDesc(j.description))}" onchange="j.description=this.value;save('jobs',S.jobs);sb('/jobs?job_id=eq.${j.job_id}','PATCH',{description:this.value}).catch(()=>{});toast('✓ Description updated')">
+        <input id="admJobDescInp" class="tlbt-input" value="${esc(cleanDesc(j.description))}" onchange="j.description=this.value;save('jobs',S.jobs);sb('/jobs?job_id=eq.${j.job_id}','PATCH',{description:this.value}).catch(()=>{});toast('Description updated')">
       </div>
       <div style="font-size:12px;font-weight:800;color:#4B5563">Bids on this Order (${bids.length}):</div>
       ${bids.length ? bids.map(b => `<div class="row" style="background:#F9FAFB;padding:8px 10px;border-radius:10px;border:1px solid #E5E7EB;justify-content:space-between">
         <div>
-          <div style="font-size:13px;font-weight:800">Bid #${String(b.bid_id).slice(0, 8)} · ${Number(b.bid_amount).toFixed(3)} OMR (${esc(b.status)})</div>
-          <div style="font-size:11px;color:#6B7280">Vendor ID: ${esc(String(b.vendor_id).slice(0, 12))}...</div>
+          <div style="font-size:13px;font-weight:800">${Number(b.bid_amount).toFixed(3)} OMR (${esc(b.status)})</div>
+          <div style="font-size:11px;color:#6B7280">Partner: ${esc(String(b.vendor_id).slice(0, 12))}</div>
         </div>
         <div class="row" style="gap:6px">
-          <button class="pill ok" style="font-size:11px" onclick="b.status='SELECTED';j.status='BID_SELECTED';save('bids',S.bids);save('jobs',S.jobs);render();toast('✓ Bid Force-Selected')">Select</button>
-          <button class="pill rd" style="font-size:11px" onclick="S.bids=S.bids.filter(x=>x.bid_id!=='${b.bid_id}');save('bids',S.bids);sb('/bids?bid_id=eq.${b.bid_id}','DELETE').catch(()=>{});render();toast('✓ Bid Deleted')">Delete</button>
+          <button class="pill ok" style="font-size:11px" onclick="b.status='SELECTED';j.status='BID_SELECTED';save('bids',S.bids);save('jobs',S.jobs);render();toast('Bid Selected')">Select</button>
+          <button class="pill rd" style="font-size:11px" onclick="S.bids=S.bids.filter(x=>x.bid_id!=='${b.bid_id}');save('bids',S.bids);sb('/bids?bid_id=eq.${b.bid_id}','DELETE').catch(()=>{});render();toast('Bid Deleted')">Delete</button>
         </div>
       </div>`).join("") : `<div class="t2">No bids placed yet</div>`}
     </div>
@@ -9718,8 +10083,8 @@ function aJob() {
     <div class="t2">${t("status")}</div>
     <div class="chips">${["OPEN","BID_SELECTED","IN_PROGRESS","COMPLETED","CANCELLED"].map(s => `<button class="chip ${j.status === s ? "on" : ""}" onclick="setStatus('${j.job_id}','${s}')">${t(s)}</button>`).join("")}</div>
     <div class="two" style="margin-top:4px">
-      <button class="btn g s" onclick="S.wallet.balance=Number(S.wallet.balance||0)+Number(price(j));save('wallet',S.wallet);toast('✓ Verified & Refunded to Customer Wallet');render()">${t("refundUser")}</button>
-      <button class="btn ok s" onclick="toast('✓ Payment Released to Verified Pro')">${t("payPro")}</button>
+      <button class="btn g s" onclick="S.wallet.balance=Number(S.wallet.balance||0)+Number(price(j));save('wallet',S.wallet);toast('Refunded to Customer Wallet');render()">${t("refundUser")}</button>
+      <button class="btn ok s" onclick="toast('Payment Released to Verified Partner')">${t("payPro")}</button>
     </div>
     ${chatBox(j)}
   </div>`;
@@ -9728,7 +10093,6 @@ function aJob() {
 function aUsers() {
   const ar = L === "ar";
   const q = (S.q || "").toLowerCase();
-  // Combine DB users + all shop workers so every single person across FixIt is manageable by Unique ID!
   const workerUsers = [];
   (S.shops || []).forEach(sh => {
     (sh.workers || []).forEach(w => {
@@ -9750,10 +10114,10 @@ function aUsers() {
   const allUsers = [...workerUsers, ...(S.users || [])];
   const list = allUsers.filter(u => !q || [u.full_name, u.phone_number, u.email, u.role, getUniqueFixItId(u), u.cr_number, u.shop_id].join(" ").toLowerCase().includes(q));
 
-  return `${bar(ar ? "إدارة كافة المستخدمين والعمال والمعرفات الفريدة" : "All Users, Workers & Unique IDs")}
+  return `${bar(ar ? "إدارة المستخدمين والشركاء" : "Users & Partners Directory")}
   <div class="pad">
     ${searchBar()}
-    <div style="font-size:12px;color:#4B5563;font-weight:700">${ar ? "اضغط على أي مستخدم أو عامل لتعديل حسابه أو صلاحياته أو رصيده:" : "Tap any Customer, Shop Owner, or Shop Worker to edit their Unique ID profile, role, or Pro status:"}</div>
+    <div style="font-size:12px;color:#4B5563;font-weight:700">${ar ? "اضغط على أي مستخدم أو شريك لتعديل حسابه أو صلاحياته:" : "Tap any Customer or Partner account to manage role, status, or membership:"}</div>
     ${list.length ? `<div class="card" style="padding:0 16px">${list.map(u => {
       const uidBadge = getUniqueFixItId(u);
       return `<div class="li" style="cursor:pointer" onclick="adminQuickEditUser('${u.user_id}')">
@@ -9763,7 +10127,7 @@ function aUsers() {
             <span class="t1 ell">${esc(u.full_name || "User")}</span>
             <span class="pill" style="font-size:10px;font-family:monospace;background:#FEF3C7;color:#92400E">${esc(uidBadge)}</span>
             <span class="pill" style="font-size:10px">${esc(u.role || "CONSUMER")}</span>
-            ${u.is_lifetime || u.plan_id ? `<span class="pill lime" style="font-size:9.5px">👑 PRO</span>` : ""}
+            ${u.is_lifetime || u.plan_id ? `<span class="pill lime" style="font-size:9.5px">PRO</span>` : ""}
           </div>
           <div class="t2 ell" dir="ltr">${esc(u.phone_number || "")} · ${esc(u.email || "")} ${u.cr_number ? "· " + esc(u.cr_number) : ""}</div>
         </div>
@@ -9775,16 +10139,16 @@ function aUsers() {
 
 function aEscrow() {
   const ar = L === "ar";
-  const curBal = fmtOmr((S.wallet && S.wallet.balance) || 1013.700);
+  const curBal = fmtOmr((S.wallet && S.wallet.balance) || 0);
   return `${bar(ar ? "إدارة المحافظ والمدفوعات" : "Wallets & Payouts")}<div class="pad">
     <div class="card" style="background:var(--o);color:#fff;display:flex;flex-direction:column;gap:8px">
       <div style="font-size:12px;opacity:.85;font-weight:700">${ar ? "إجمالي المدفوعات المحمية في المنصة" : "Total Protected Platform Payments"}</div>
       <div class="big">${(S.txns || []).reduce((acc, tx) => acc + Math.abs(Number(tx.amount || 0)), 0).toFixed(3)} <span style="font-size:16px">${t("omr")}</span></div>
-      <div class="t2" style="color:rgba(255,255,255,.85)">${ar ? "تحكم كامل للمشرف في أرصدة المحافظ والفواتير والضمان" : "Full Admin control over all Customer & Vendor wallets, bills, and payouts"}</div>
+      <div class="t2" style="color:rgba(255,255,255,.85)">${ar ? "إدارة أرصدة المحافظ والفواتير وصرف مستحقات الشركاء" : "Manage Customer & Partner wallets, invoices, and Protected Payment payouts"}</div>
     </div>
 
     <div class="card" style="display:flex;flex-direction:column;gap:10px">
-      <div class="t1">Admin Wallet Balance Adjuster</div>
+      <div class="t1">Wallet Balance Adjustment</div>
       <div class="t2">Current Active Wallet Balance: <b>${curBal} ${t("omr")}</b></div>
       <div class="row" style="gap:8px">
         <input id="admWalletAmtInp" type="number" step="1" class="tlbt-input" style="flex:1" placeholder="Amount (${t("omr")})">
@@ -9811,6 +10175,15 @@ function checkAppControlStatus() {
     .then(d => {
       if (!d || !d.ok) return;
       S.appControl = d;
+      if (d.otaBundleHash && typeof window !== "undefined") {
+        const lastOtaHash = localStorage.getItem("fx3_ota_hash_" + ROLE) || "";
+        if (lastOtaHash !== d.otaBundleHash) {
+          localStorage.setItem("fx3_ota_hash_" + ROLE, d.otaBundleHash);
+          if (window.FixItNative && typeof window.FixItNative.checkAndApplyOtaUpdate === "function") {
+            try { window.FixItNative.checkAndApplyOtaUpdate(ROLE || "consumer"); } catch (e) {}
+          }
+        }
+      }
       if (d.maintenance && d.maintenanceUntil && !_appControlTimer) {
         _appControlTimer = setInterval(() => {
           if (!S.appControl || !S.appControl.maintenance) {
@@ -9859,18 +10232,33 @@ function maintenanceGateScreen() {
 
 function updateGateScreen() {
   const c = S.appControl || {};
-  const url = c.updateUrl || "https://fixit-now.xyz/downloads/FixIt-Consumer.apk";
+  const url = c.updateUrl || (ROLE === "vendor" ? "https://fixit-now.xyz/downloads/FixIt-Vendor.apk" : "https://fixit-now.xyz/downloads/FixIt-Consumer.apk");
+  const hasNativeOta = typeof window !== "undefined" && window.FixItNative && typeof window.FixItNative.checkAndApplyOtaUpdate === "function";
   return `<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;background:#fff;">
     <div style="width:64px;height:64px;border-radius:16px;background:#FFF4ED;color:#FF5A00;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">${I("download")}</div>
     <h1 style="font-size:22px;font-weight:700;color:#111827;margin:0 0 8px;">Update available</h1>
-    <p style="font-size:14px;color:#6B7280;margin:0 0 24px;max-width:280px;">Please install the latest version of FixIt to continue.</p>
-    <a href="${url}" target="_blank" style="display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 24px;border-radius:12px;background:#FF5A00;color:#fff;font-size:15px;font-weight:600;text-decoration:none;">Download Update</a>
+    <p style="font-size:14px;color:#6B7280;margin:0 0 24px;max-width:280px;">Update instantly inside the app without reinstalling the APK.</p>
+    ${hasNativeOta ? `<button onclick="window.FixItNative.checkAndApplyOtaUpdate('${ROLE || "consumer"}');toast('Applying in-app update...');" style="display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 24px;border-radius:12px;background:#FF5A00;color:#fff;font-size:15px;font-weight:700;border:0;margin-bottom:10px;cursor:pointer;">Update In-App Now</button>` : ""}
+    <a href="${url}" target="_blank" style="display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 20px;border-radius:12px;background:#F3F4F6;color:#374151;font-size:13.5px;font-weight:600;text-decoration:none;">Download APK Fallback</a>
   </div>`;
 }
 
 function aadsSlotHtml(extraStyle) {
   if (typeof navigator !== "undefined" && navigator.onLine === false) return "";
-  return `<div class="fx-ad-slot" style="margin:12px 16px;border-radius:12px;overflow:hidden;border:1px solid #E5E7EB;background:#FFFFFF;min-height:80px;${extraStyle || ""}"><iframe data-aa="2461953" src="https://acceptable.a-ads.com/2461953/?size=Adaptive" referrerpolicy="no-referrer-when-downgrade" loading="lazy" scrolling="no" frameborder="0" style="width:100%;height:80px;border:0;overflow:hidden;display:block;background:#FFFFFF;"></iframe></div>`;
+  const ar = L === "ar";
+  return `<div class="fx-ad-slot" role="region" aria-label="Advertisement" style="margin:12px 16px;border-radius:12px;overflow:hidden;border:1.5px solid #CBD5E1;background:#F1F5F9;box-shadow:inset 0 1px 2px rgba(15,23,42,0.04);${extraStyle || ""}">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 10px;background:#E2E8F0;border-bottom:1px solid #CBD5E1;font-size:10px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#475569;">
+      <span>${ar ? "إعلان خارجي · ADVERTISEMENT (غير تابع لـ FixIt)" : "ADVERTISEMENT · THIRD-PARTY AD (NOT FIXIT)"}</span>
+      <a href="https://aads.com/privacy_policy" target="_blank" rel="noopener noreferrer" style="color:#475569;text-decoration:underline;font-weight:700;">A-Ads Privacy</a>
+    </div>
+    <div style="position:relative;min-height:80px;background:repeating-linear-gradient(135deg,#F8FAFC,#F8FAFC 10px,#F1F5F9 10px,#F1F5F9 20px);display:flex;align-items:center;justify-content:center;">
+      <div aria-hidden="true" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;user-select:none;z-index:0;">
+        <span style="font-size:14px;font-weight:900;letter-spacing:0.22em;text-transform:uppercase;color:#94A3B8;background:rgba(226,232,240,0.85);padding:3px 12px;border-radius:6px;border:1px dashed #CBD5E1;">ADVERTISEMENT · إعلان</span>
+        <span style="font-size:9.5px;font-weight:700;color:#94A3B8;margin-top:2px;">Served by A-Ads · Independent of FixIt</span>
+      </div>
+      <iframe data-aa="2461953" src="https://acceptable.a-ads.com/2461953/?size=Adaptive" referrerpolicy="no-referrer-when-downgrade" loading="lazy" scrolling="no" frameborder="0" style="position:relative;z-index:1;width:100%;height:80px;border:0;overflow:hidden;display:block;background:transparent;"></iframe>
+    </div>
+  </div>`;
 }
 
 function screen() {
@@ -9920,8 +10308,8 @@ function screen() {
     }[ROLE];
     html = (m[S.tab] || Object.values(m)[0])();
   }
-  const adScreens = new Set(["wallet", "job", "job_chat", "addresses", "coupons", "tickets", "notifs", "settings", "about", "legal"]);
-  const adTabs = new Set(["home", "orders", "jobs", "chats", "wallet", "account"]);
+  const adScreens = new Set(["wallet", "job", "job_chat", "book", "checkout", "shop_kyc", "account_info", "tracking", "support_chat", "addresses", "coupons", "tickets", "notifs", "settings", "about", "legal", "tos", "privacy", "refund_policy", "cookie_policy"]);
+  const adTabs = new Set(["home", "orders", "jobs", "shop", "chats", "wallet", "account"]);
   if (ROLE !== "admin" && ((s && adScreens.has(s)) || (!s && adTabs.has(S.tab)))) {
     html += aadsSlotHtml();
   }

@@ -9,6 +9,7 @@ const { createRateLimiter } = require("../middleware/rateLimit");
 const { detectVisitorDetails } = require("../services/ipDetector");
 const { isConfigured: isSupabaseConfigured, saveWebsiteSupportTicket } = require("../services/supabase");
 const { sendOtp, verifyOtp } = require("../services/otp");
+const { recordMonitorPing, getUptimeMonitorStats } = require("../workers/autoConfirmCron");
 
 const DEFAULT_CONSUMER_SHA256 =
   "A3:82:E0:E8:59:28:15:7D:A2:0C:95:23:32:43:AD:96:32:28:90:8B:2D:5D:23:51:84:85:4B:B1:FE:41:DA:B5";
@@ -20,6 +21,14 @@ function positiveIntEnv(name, fallback) {
 
 function getConsumerFingerprints() {
   const extra = String(process.env.PLAY_APP_SHA256 || "")
+    .split(",")
+    .map(s => s.trim().toUpperCase())
+    .filter(s => /^[0-9A-F:]{95}$/.test(s));
+  return Array.from(new Set([DEFAULT_CONSUMER_SHA256, ...extra]));
+}
+
+function getVendorFingerprints() {
+  const extra = String(process.env.VENDOR_APP_SHA256 || process.env.PLAY_APP_SHA256 || "")
     .split(",")
     .map(s => s.trim().toUpperCase())
     .filter(s => /^[0-9A-F:]{95}$/.test(s));
@@ -100,8 +109,38 @@ function createApiRouter() {
           package_name: "com.khxzi.fixit",
           sha256_cert_fingerprints: getConsumerFingerprints()
         }
+      },
+      {
+        relation: ["delegate_permission/common.handle_all_urls"],
+        target: {
+          namespace: "android_app",
+          package_name: "com.khxzi.fixitvendor",
+          sha256_cert_fingerprints: getVendorFingerprints()
+        }
       }
     ]);
+  });
+
+  router.all("/ping", (req, res) => {
+    const src = req.query.src === "self" ? "self" : (req.get("user-agent") || "external-monitor");
+    const st = recordMonitorPing(src);
+    res.setHeader("Cache-Control", "no-store");
+    if (req.method === "HEAD") {
+      return res.status(200).end();
+    }
+    return res.status(200).json({
+      ok: true,
+      pong: true,
+      uptimeSec: Math.round(process.uptime()),
+      totalPings: st.totalPings,
+      timestamp: st.lastPingAt
+    });
+  });
+
+  router.get("/api/uptime", (req, res) => {
+    recordMonitorPing(req.get("user-agent") || "uptime-dashboard");
+    res.setHeader("Cache-Control", "no-store");
+    return res.json(getUptimeMonitorStats());
   });
 
   router.get("/api/health", (req, res) => {

@@ -16,6 +16,11 @@ const {
   aboutPage,
   termsPage,
   privacyPage,
+  cookiesPage,
+  refundsPage,
+  aupPage,
+  disclaimerPage,
+  deleteAccountPage,
   warrantyPage
 } = require("../views/legal");
 const { openAppPage } = require("../views/open");
@@ -78,32 +83,70 @@ function createWebRouter({ publicDir }) {
   html, body {
     width: 100%;
     height: 100%;
-    min-height: 70px;
+    min-height: 76px;
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background: transparent;
+    background: #F8FAFC;
+    font-family: system-ui, -apple-system, sans-serif;
   }
   body {
     display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    position: relative;
+  }
+  .ad-bar {
+    height: 16px;
+    background: #F1F5F9;
+    border-bottom: 1px solid #E2E8F0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #64748B;
+    text-transform: uppercase;
+    z-index: 2;
+  }
+  .ad-backdrop {
+    position: absolute;
+    inset: 16px 0 0 0;
+    display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    color: #CBD5E1;
+    text-transform: uppercase;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
   }
   #frame {
     width: 100%;
-    height: 100%;
+    flex: 1;
     margin: 0;
     padding: 0;
     position: relative;
-    z-index: 99998;
+    z-index: 1;
   }
 </style>
 </head>
 <body>
+<div class="ad-bar">
+  <span>ADVERTISEMENT · THIRD-PARTY AD (NOT FIXIT)</span>
+  <span>A-ADS</span>
+</div>
+<div class="ad-backdrop">ADVERTISEMENT</div>
 <!-- BEGIN AADS AD UNIT 2461953 -->
 <div id="frame">
   <iframe data-aa='2461953' src='https://acceptable.a-ads.com/2461953/?size=Adaptive'
-    style='border:0; padding:0; width:100%; height:100%; overflow:hidden; display:block; margin:auto'></iframe>
+    style='border:0; padding:0; width:100%; height:100%; overflow:hidden; display:block; margin:auto; background:transparent'></iframe>
 </div>
 <!-- END AADS AD UNIT 2461953 -->
 </body>
@@ -128,6 +171,26 @@ function createWebRouter({ publicDir }) {
 
   router.get("/privacy", (req, res) => {
     return res.type("html").send(privacyPage());
+  });
+
+  router.get("/cookies", (req, res) => {
+    return res.type("html").send(cookiesPage());
+  });
+
+  router.get("/refunds", (req, res) => {
+    return res.type("html").send(refundsPage());
+  });
+
+  router.get("/aup", (req, res) => {
+    return res.type("html").send(aupPage());
+  });
+
+  router.get("/disclaimer", (req, res) => {
+    return res.type("html").send(disclaimerPage());
+  });
+
+  router.get("/delete-account", (req, res) => {
+    return res.type("html").send(deleteAccountPage());
   });
 
   router.get("/warranty", (req, res) => {

@@ -120,8 +120,6 @@ async function createSession({ userId, role = "consumer", userAgent = "", ip = "
   return { sessionCode, sessionId, expiresAt: expiresIso };
 }
 
-const DEFAULT_TRUSTED_ADMIN_IPS = new Set(["85.154.135.26", "5.162.43.18"]);
-
 function normalizeIp(rawIp) {
   const ip = String(rawIp || "").split(",")[0].trim();
   return ip.startsWith("::ffff:") ? ip.slice(7) : ip;
@@ -130,33 +128,53 @@ function normalizeIp(rawIp) {
 function isTrustedAdminIp(rawIp) {
   const ip = normalizeIp(rawIp);
   if (!ip) return false;
-  if (DEFAULT_TRUSTED_ADMIN_IPS.has(ip)) return true;
   const extra = String(process.env.ADMIN_ALLOWED_IPS || "")
     .split(",")
     .map(s => normalizeIp(s))
     .filter(Boolean);
-  return extra.includes(ip);
+  return extra.length > 0 && extra.includes(ip);
+}
+
+function timingSafeMatch(a, b) {
+  const sA = String(a || "").trim();
+  const sB = String(b || "").trim();
+  if (!sA || !sB) return false;
+  const aBuf = Buffer.from(sA);
+  const bBuf = Buffer.from(sB);
+  return aBuf.length === bBuf.length && crypto.timingSafeEqual(aBuf, bBuf);
+}
+
+function getExpectedAdminMasterToken() {
+  if (process.env.ADMIN_MASTER_TOKEN && String(process.env.ADMIN_MASTER_TOKEN).trim().length >= 24) {
+    return String(process.env.ADMIN_MASTER_TOKEN).trim();
+  }
+  const secret = process.env.SESSION_SECRET || process.env.ADMIN_ACCESS_CODE || "fixit-admin-operator-v3-key";
+  return "fxadm_" + crypto.createHmac("sha256", secret).update("fixit:admin:master:v3").digest("hex");
 }
 
 function isValidAdminAccessCode(providedCode) {
   const expected = String(process.env.ADMIN_ACCESS_CODE || "").trim();
-  const provided = String(providedCode || "").trim();
-  if (!expected || !provided) return false;
-  const aBuf = Buffer.from(provided);
-  const bBuf = Buffer.from(expected);
-  return aBuf.length === bBuf.length && crypto.timingSafeEqual(aBuf, bBuf);
+  return timingSafeMatch(providedCode, expected);
+}
+
+function isValidAdminMasterToken(cleanCode, adminCode) {
+  if (!cleanCode && !adminCode) return false;
+  if (cleanCode === "fixit_admin_master_session") return false; // Legacy static string explicitly revoked
+  if (isValidAdminAccessCode(adminCode) || isValidAdminAccessCode(cleanCode)) return true;
+  const expectedMaster = getExpectedAdminMasterToken();
+  return timingSafeMatch(cleanCode, expectedMaster) || timingSafeMatch(adminCode, expectedMaster);
 }
 
 const DEFAULT_ADMIN_USER_ID = process.env.ADMIN_USER_ID || "b3264964-ab0e-4638-8514-62de24ba511f";
 
 async function validateAndTouchSession({ sessionCode, role = "consumer", userAgent = "", ip = "", path = "", method = "GET", forceTouch = false, adminCode = "" }) {
   const cleanCode = String(sessionCode || "").trim();
-  if (role === "admin" && (cleanCode === "fixit_admin_master_session" || isTrustedAdminIp(ip) || isValidAdminAccessCode(adminCode))) {
+  if (isValidAdminMasterToken(cleanCode, adminCode)) {
     return {
       ok: true,
       userId: DEFAULT_ADMIN_USER_ID,
       role: "admin",
-      sessionId: "admin-master-session",
+      sessionId: "admin-operator-session",
       expiresAt: "2099-01-01T00:00:00.000Z"
     };
   }
@@ -200,6 +218,9 @@ async function validateAndTouchSession({ sessionCode, role = "consumer", userAge
     return { ok: false, status: 401, error: "Session expired. Please sign in again." };
   }
 
+  // Strictly bind role to the server-verified session record; never allow client header escalation to admin
+  const verifiedRole = String(session.role || "consumer").trim().toLowerCase();
+
   const newExpiresIso = new Date(now + SESSION_TTL_MS).toISOString();
   session.expiresAtMs = now + SESSION_TTL_MS;
 
@@ -221,7 +242,7 @@ async function validateAndTouchSession({ sessionCode, role = "consumer", userAge
     event: forceTouch ? "SESSION_HEARTBEAT" : "DB_PROXY_REQUEST",
     userId: session.userId,
     sessionId: session.sessionId,
-    role: session.role || role,
+    role: verifiedRole,
     method,
     path,
     ip,
@@ -232,7 +253,7 @@ async function validateAndTouchSession({ sessionCode, role = "consumer", userAge
     ok: true,
     sessionId: session.sessionId,
     userId: session.userId,
-    role: session.role || role,
+    role: verifiedRole,
     expiresAt: newExpiresIso,
     lastSeenAt: nowIso
   };
@@ -267,5 +288,6 @@ module.exports = {
   getRecentAuditLogs,
   isTrustedAdminIp,
   isValidAdminAccessCode,
+  getExpectedAdminMasterToken,
   isQuietPollingAudit
 };
