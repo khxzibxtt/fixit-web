@@ -146,8 +146,9 @@ function supportPage({ visitor, mode = "support" }) {
   `;
 
   return renderPage({
-    title: isMail ? "Contact & Mail" : "Support",
-    activePath: "/support",
+    title: isMail ? "Contact & Official Mail · FixIt Oman" : "Customer Support & WhatsApp Care · FixIt Oman",
+    description: "Get immediate help from the FixIt team in Salalah. Official WhatsApp assistance, job dispute escalation, and customer service.",
+    activePath: isMail ? "/contact" : "/support",
     body,
     scripts
   });

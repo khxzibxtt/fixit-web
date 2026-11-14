@@ -54,7 +54,12 @@ function servicesPage() {
       </div>
     </section>
   `;
-  return renderPage({ title: "Services", activePath: "/services", body });
+  return renderPage({
+    title: "100+ On-Demand Services in Salalah & Dhofar",
+    description: "Browse 100+ verified home repair, Split AC servicing, electrical, plumbing, handyman, towing, and breakdown services with live pro quotes.",
+    activePath: "/services",
+    body
+  });
 }
 
 function partnerPage() {
@@ -91,7 +96,12 @@ function partnerPage() {
       </div>
     </section>
   `;
-  return renderPage({ title: "Become a Partner", activePath: "/partner", body });
+  return renderPage({
+    title: "Become a FixIt Pro Partner · Workshop & Technician Enrollment",
+    description: "Join FixIt Pro in Salalah. Receive live customer repair scopes, dispatch technicians with GPS radar, and receive guaranteed digital payouts.",
+    activePath: "/partner",
+    body
+  });
 }
 
 function aboutPage() {
@@ -124,7 +134,12 @@ function aboutPage() {
       </div>
     </section>
   `;
-  return renderPage({ title: "About", activePath: "/about", body });
+  return renderPage({
+    title: "About FixIt Oman · Marketplace Standards & Mission",
+    description: "Learn about FixIt (fixit-now.xyz), Oman's mobile-first maintenance marketplace connecting residents with licensed workshops in Salalah and Dhofar.",
+    activePath: "/about",
+    body
+  });
 }
 
 function legalNavPills(activePath) {
@@ -166,7 +181,8 @@ function legalDocPage({ title, path, badge, subtitle, sections }) {
       </div>
     </section>
   `;
-  return renderPage({ title, activePath: path, body });
+  const defaultDesc = subtitle || `Review the official ${title} for FixIt Oman (fixit-now.xyz) on-demand service marketplace.`;
+  return renderPage({ title, description: defaultDesc, activePath: path, body });
 }
 
 function termsPage() {

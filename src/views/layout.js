@@ -57,6 +57,9 @@ function renderPage({ title, description = "", activePath = "/", body = "", head
     return `<a href="${item.href}" class="talabat-drawer-link${isActive ? " is-active" : ""}">${item.label}</a>`;
   }).join("");
 
+  const currentUrl = `https://fixit-now.xyz${activePath}`;
+  const ogImageUrl = "https://fixit-now.xyz/og-image.png";
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -65,7 +68,32 @@ function renderPage({ title, description = "", activePath = "/", body = "", head
   <meta name="theme-color" content="#FF5A00" />
   <title>${safeTitle}</title>
   <meta name="description" content="${safeDesc}" />
+
+  <!-- OpenGraph / WhatsApp / Telegram / Social Preview -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="FixIt · فيكس إت" />
+  <meta property="og:url" content="${currentUrl}" />
+  <meta property="og:title" content="${safeTitle}" />
+  <meta property="og:description" content="${safeDesc}" />
+  <meta property="og:image" content="${ogImageUrl}" />
+  <meta property="og:image:secure_url" content="${ogImageUrl}" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="FixIt Oman" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="ar_OM" />
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@FixItOman" />
+  <meta name="twitter:url" content="${currentUrl}" />
+  <meta name="twitter:title" content="${safeTitle}" />
+  <meta name="twitter:description" content="${safeDesc}" />
+  <meta name="twitter:image" content="${ogImageUrl}" />
+
   <link rel="icon" type="image/png" href="/logo.png" />
+  <link rel="apple-touch-icon" href="/logo.png" />
   <link rel="manifest" href="/manifest.json" />
   ${headExtra}
   <style>

@@ -166,9 +166,15 @@ function openAppPage({ reqHost = "fixit-web.onrender.com", reqPath = "/open", qu
     </script>
   `;
 
+  const openTitle = isAuthCallback ? `Sign In to ${appDisplayName}` : cleanPromo ? `Claim Reward Code ${cleanPromo} · FixIt Oman` : `Open ${appDisplayName} App`;
+  const openDesc = cleanPromo
+    ? `Use code ${cleanPromo} for special discounts on repairs and maintenance across Salalah & Dhofar on FixIt.`
+    : `Launch ${appDisplayName} to book instant home repairs, split AC maintenance, plumbing, electrical, and breakdown service in Oman.`;
+
   return renderPage({
-    title: isAuthCallback ? `Sign In to ${appDisplayName}` : cleanPromo ? `Reward ${cleanPromo}` : `Open ${appDisplayName} App`,
-    activePath: "/reward",
+    title: openTitle,
+    description: openDesc,
+    activePath: reqPath,
     body,
     scripts
   });

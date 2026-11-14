@@ -1527,6 +1527,30 @@ function createAppApiRouter() {
           return res.status(403).json({ ok: false, error: "Only verified vendor accounts can submit bids." });
         }
       }
+
+      // 6. Jobs: normalize urgency enum, consumer_id, and strip client-only properties so PostgREST never rejects valid orders
+      if (table === "jobs" && (method === "POST" || method === "PATCH") && body && typeof body === "object") {
+        if (method === "POST" && uid && role === "consumer") {
+          body.consumer_id = uid;
+        }
+        if (body.urgency !== undefined) {
+          const validUrgencies = new Set(["EMERGENCY", "THIS_WEEK", "FLEXIBLE"]);
+          const rawUrg = String(body.urgency || "").trim().toUpperCase();
+          if (!validUrgencies.has(rawUrg)) {
+            body.urgency = (rawUrg === "URGENT" || rawUrg === "NOW") ? "EMERGENCY" : (rawUrg === "TODAY" ? "THIS_WEEK" : "FLEXIBLE");
+          }
+        }
+        if (method === "POST") {
+          body.budget_range_min = Math.max(0, Number(body.budget_range_min) || 10);
+          body.budget_range_max = Math.max(body.budget_range_min, Number(body.budget_range_max) || 25);
+        }
+        delete body._local;
+        delete body.scheduled_for;
+        delete body.scheduled_at_iso;
+        delete body.videoUrl;
+        delete body.videoName;
+        delete body.applied_coupon;
+      }
     }
 
     if (!isSupabaseConfigured()) {
