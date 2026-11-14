@@ -4,7 +4,8 @@
  */
 
 const SUPABASE_URL = (process.env.SUPABASE_URL || "https://fuavdydvadklatjnimal.supabase.co").replace(/\/+$/, "");
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || "";
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY ||
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1YXZkeWR2YWRrbGF0am5pbWFsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjIxNTg3MiwiZXhwIjoyMDk3NzkxODcyfQ.WxAjdxqkwRFj1yF10Y3kJ9UQit2XkLpQn65qX2lK5qY";
 const DEFAULT_SUPPORT_USER_ID = process.env.WEB_SUPPORT_USER_ID || process.env.CONSUMER_USER_ID || "bd5b7118-e852-4d66-8082-c0d768195007";
 const ADMIN_USER_ID = process.env.ADMIN_USER_ID || DEFAULT_SUPPORT_USER_ID;
 
