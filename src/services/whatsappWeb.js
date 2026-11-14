@@ -219,10 +219,12 @@ async function startSocket({ mode = "qr", phoneNumber = null, reset = false } = 
       logger,
       auth: state,
       printQRInTerminal: false,
-      browser: Browsers.ubuntu("Chrome"),
+      browser: Browsers.macOS("Desktop"),
       syncFullHistory: false,
-      markOnlineOnConnect: false,
-      connectTimeoutMs: 30000
+      markOnlineOnConnect: true,
+      keepAliveIntervalMs: 25000,
+      connectTimeoutMs: 60000,
+      defaultQueryTimeoutMs: 60000
     });
 
     const activeSock = sock;

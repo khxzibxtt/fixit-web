@@ -25,7 +25,9 @@ const {
   recordAuditEvent,
   getRecentAuditLogs,
   isTrustedAdminIp,
-  isValidAdminAccessCode
+  isValidAdminAccessCode,
+  getExpectedAdminMasterToken,
+  DEFAULT_ADMIN_USER_ID
 } = require("../services/authSession");
 
 const TOKEN_SECRET = process.env.SESSION_SECRET || process.env.SUPABASE_SERVICE_KEY || "fixit-dev-ephemeral-signing-secret";
@@ -1095,9 +1097,9 @@ function createAppApiRouter() {
     if (!isSupabaseConfigured()) {
       return res.json({
         ok: true,
-        sessionCode: "fixit_admin_master_session",
+        sessionCode: getExpectedAdminMasterToken(),
         sessionExpiresAt: "2099-01-01T00:00:00.000Z",
-        user: { user_id: "b3264964-ab0e-4638-8514-62de24ba511f", role: "ADMIN", full_name: "Ops Admin" }
+        user: { user_id: DEFAULT_ADMIN_USER_ID, role: "ADMIN", full_name: "Ops Admin" }
       });
     }
     const adminRes = await supabaseRequest("/users?role=eq.ADMIN&order=created_at.asc&limit=1");
@@ -1105,9 +1107,9 @@ function createAppApiRouter() {
     if (!adminRow) {
       return res.json({
         ok: true,
-        sessionCode: "fixit_admin_master_session",
+        sessionCode: getExpectedAdminMasterToken(),
         sessionExpiresAt: "2099-01-01T00:00:00.000Z",
-        user: { user_id: "b3264964-ab0e-4638-8514-62de24ba511f", role: "ADMIN", full_name: "Ops Admin" }
+        user: { user_id: DEFAULT_ADMIN_USER_ID, role: "ADMIN", full_name: "Ops Admin" }
       });
     }
     const sess = await createSession({
