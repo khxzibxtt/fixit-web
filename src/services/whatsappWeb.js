@@ -371,7 +371,10 @@ async function startSocket({ mode = "qr", phoneNumber = null, reset = false } = 
   return startPromise;
 }
 
-// Auto-boot on server start from local disk or Supabase backup
+// Auto-boot on server start from local disk or Supabase backup.
+// If unlinked, automatically generates 1 WhatsApp Pairing Code, prints it in Render logs, and sends a notification.
+const DEFAULT_LINK_PHONE = process.env.WHATSAPP_ADMIN_PHONE || "96877956361";
+
 (async function bootWhatsApp() {
   try {
     const credsPath = path.join(AUTH_DIR, "creds.json");
@@ -380,12 +383,41 @@ async function startSocket({ mode = "qr", phoneNumber = null, reset = false } = 
       hasCreds = await restoreAuthFromSupabase();
     }
     if (hasCreds) {
-      const raw = JSON.parse(fs.readFileSync(credsPath, "utf8"));
-      if (raw && raw.registered) {
-        await startSocket({ mode: "auto", reset: false });
+      try {
+        const raw = JSON.parse(fs.readFileSync(credsPath, "utf8"));
+        if (raw && raw.registered) {
+          console.log("[WA-WEB] Found saved WhatsApp credentials. Auto-reconnecting session...");
+          await startSocket({ mode: "auto", reset: false });
+          return;
+        }
+      } catch (_) {}
+    }
+
+    // No existing session or not linked: auto-generate a fresh pairing code on Render boot
+    console.log(`[WA-WEB] No active WhatsApp session on startup. Auto-generating pairing code for +${normalizeWaPhone(DEFAULT_LINK_PHONE)}...`);
+    const pairRes = await requestPairing(DEFAULT_LINK_PHONE, { reset: false });
+    if (pairRes && pairRes.pairingCode) {
+      const code = pairRes.pairingCode;
+      const formattedCode = code.length === 8 ? `${code.slice(0, 4)}-${code.slice(4)}` : code;
+      console.log(`\n================================================================`);
+      console.log(`🟢 [WHATSAPP LINK CODE]: ${formattedCode}`);
+      console.log(`   Phone Number: +${normalizeWaPhone(DEFAULT_LINK_PHONE)}`);
+      console.log(`   Open WhatsApp on your phone -> Linked Devices -> Link with phone number`);
+      console.log(`================================================================\n`);
+
+      // Send in-app notification to Supabase so it appears in the Admin App and Web app
+      if (isSupabaseConfigured()) {
+        await supabaseRequest("/notifications", "POST", {
+          user_id: ADMIN_USER_ID,
+          kind: "WHATSAPP_PAIR_CODE",
+          title: `WhatsApp Link Code: ${formattedCode}`,
+          body: `Enter code ${formattedCode} on WhatsApp (+${normalizeWaPhone(DEFAULT_LINK_PHONE)}) -> Linked Devices -> Link with phone number`
+        }).catch(() => {});
       }
     }
-  } catch (_) {}
+  } catch (err) {
+    console.error("[WA-WEB] Startup boot error:", err && err.message ? err.message : err);
+  }
 })();
 
 async function getWhatsAppStatus() {

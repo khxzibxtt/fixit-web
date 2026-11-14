@@ -8,34 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <meta name="apple-mobile-web-app-title" content="FixIt" />
-<title>FixIt App | On-Demand Repairs, Maintenance & Towing in Salalah, Oman</title>
-<meta name="description" content="Fix anything fast in Salalah & Oman. Request Split AC, Plumbing, Electrical, Mobile Mechanic & 100+ services. Instant pro bids & live updates." />
-
-<!-- OpenGraph / WhatsApp / Facebook / Telegram Meta -->
-<meta property="og:type" content="website" />
-<meta property="og:site_name" content="FixIt · فيكس إت" />
-<meta property="og:url" content="https://fixit-now.xyz/app" />
-<meta property="og:title" content="FixIt App · Fix Anything Fast in Salalah & Oman ⚡" />
-<meta property="og:description" content="Split AC, Plumbing, Electrical, Auto Repair, Towing & 100+ services. Direct quotes from verified pros with transparent pricing." />
-<meta property="og:image" content="https://fixit-now.xyz/og-image.png" />
-<meta property="og:image:secure_url" content="https://fixit-now.xyz/og-image.png" />
-<meta property="og:image:type" content="image/png" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
-<meta property="og:image:alt" content="FixIt Oman Instant Web App" />
-<meta property="og:locale" content="en_US" />
-<meta property="og:locale:alternate" content="ar_OM" />
-
-<!-- Twitter / X Card Meta -->
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:site" content="@FixItOman" />
-<meta name="twitter:url" content="https://fixit-now.xyz/app" />
-<meta name="twitter:title" content="FixIt App · Fix Anything Fast in Salalah & Oman ⚡" />
-<meta name="twitter:description" content="Split AC, Plumbing, Electrical, Auto Repair, Towing & 100+ services. Direct quotes from verified pros with transparent pricing." />
-<meta name="twitter:image" content="https://fixit-now.xyz/og-image.png" />
-
-<link rel="icon" type="image/png" href="/logo.png" />
-<link rel="apple-touch-icon" href="/logo.png" />
+<title>FixIt</title>
 <style>
 @font-face{font-family:'TT Commons Pro';src:url('fonts/TTCommonsPro-Normal.otf') format('opentype');font-weight:400;font-display:swap}
 @font-face{font-family:'TT Commons Pro';src:url('fonts/TTCommonsPro-DemiBold.otf') format('opentype');font-weight:600;font-display:swap}
@@ -75,15 +48,17 @@ svg.brand-svg{flex-shrink:0;display:block}
 @keyframes shimmer{to{background-position:-200% 0}}
 
 /* ---------- header ---------- */
-.talabat-top-bar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);padding:12px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--ln)}
-.hdr-home{background:var(--o);color:#fff;border:0;padding:14px 16px 12px}
-.hdr-home .talabat-loc-label{color:rgba(255,255,255,.85)}
+.talabat-top-bar{position:sticky;top:0;z-index:1100;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--ln)}
+.hdr-home{background:var(--o);color:#fff;border:0;padding:12px 16px}
+.hdr-home .talabat-loc-label{color:rgba(255,255,255,.88)}
 .hdr-home .talabat-loc-addr{color:#fff}
 .hdr-home .talabat-circle-btn{background:rgba(255,255,255,.18);color:#fff}
-.talabat-back-btn,.talabat-circle-btn,.ib{width:40px;height:40px;border-radius:50%;background:#F3F3F3;display:grid;place-items:center;position:relative;color:var(--tx);flex-shrink:0;transition:transform .16s var(--spring),background-color .16s ease}
+.hdr-gps-pill{height:34px;padding:0 11px;border-radius:99px;background:rgba(255,255,255,.2);color:#fff;font-size:12px;font-weight:800;display:inline-flex;align-items:center;gap:5px;flex-shrink:0;border:1px solid rgba(255,255,255,.32)!important}
+.hdr-gps-pill svg{width:15px;height:15px}
+.talabat-back-btn,.talabat-circle-btn,.ib{width:42px;height:42px;border-radius:50%;background:#F3F3F3;display:grid;place-items:center;position:relative;z-index:5;color:var(--tx);flex-shrink:0;transition:transform .16s var(--spring),background-color .16s ease}
 .talabat-back-btn:active,.talabat-circle-btn:active,.ib:active{transform:scale(.88)}
-.talabat-circle-btn svg,.ib svg,.talabat-back-btn svg{width:20px;height:20px}
-.talabat-loc-picker{display:flex;align-items:center;gap:8px;flex:1;min-width:0;cursor:pointer}
+.talabat-circle-btn svg,.ib svg,.talabat-back-btn svg{width:20px;height:20px;pointer-events:none}
+.talabat-loc-picker{display:flex;align-items:center;gap:8px;flex:1;min-width:0;cursor:pointer;padding:4px 0}
 .talabat-loc-icon svg{width:22px;height:22px}
 .talabat-loc-label{font-size:12px;font-weight:600;color:var(--mu)}
 .talabat-loc-addr{font-size:16px;font-weight:800;display:flex;align-items:center;gap:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -284,7 +259,7 @@ textarea{width:100%;min-height:100px;padding:14px;border-radius:12px;background:
 .when button svg{width:20px;height:20px}
 .when button.on{background:var(--o2);border-color:var(--o)!important;color:var(--o)}
 .bk-top{margin:-10px -18px 0;padding:22px 18px 18px;color:#fff;border-radius:24px 24px 0 0;position:relative;overflow:hidden}
-.bk-top svg.bg{position:absolute;right:-10px;bottom:-16px;width:110px;height:110px;opacity:.25;stroke-width:1.3}
+.bk-top svg.bg{position:absolute;right:-10px;bottom:-16px;width:110px;height:110px;opacity:.25;stroke-width:1.3;pointer-events:none}
 .bk-top h3{font-size:24px;font-weight:900;letter-spacing:-.5px}
 .lbl{font-size:15px;font-weight:800}
 .sumr{display:flex;justify-content:space-between;font-size:14px;color:var(--mu);padding:4px 0}
@@ -292,10 +267,26 @@ textarea{width:100%;min-height:100px;padding:14px;border-radius:12px;background:
 .pro{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;background:#FAFAFA}
 .pro .rt{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:700;color:#B87700}
 .jh{color:#fff;padding:16px 16px 34px;position:relative;overflow:hidden}
-.jh svg.bg{position:absolute;right:-16px;top:6px;width:130px;height:130px;opacity:.2;stroke-width:1.2}
-.jh h1{font-size:26px;font-weight:900;letter-spacing:-.6px}
-.jhb{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-.jhb button{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center;color:#fff}
+.jh svg.bg{position:absolute;right:-16px;top:6px;width:130px;height:130px;opacity:.2;stroke-width:1.2;pointer-events:none;z-index:0}
+[dir=rtl] .jh svg.bg{right:auto;left:-16px}
+.jh h1{font-size:26px;font-weight:900;letter-spacing:-.6px;position:relative;z-index:2}
+.jhb{display:flex;align-items:center;gap:10px;margin-bottom:14px;position:relative;z-index:10}
+.jhb button{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.22);display:grid;place-items:center;color:#fff;position:relative;z-index:10}
+.jhb button svg{pointer-events:none}
+.fx-cal-card{background:#fff;border:1.5px solid #E5E7EB;border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:12px;box-shadow:0 4px 16px rgba(15,23,42,.04)}
+.fx-cal-hdr{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.fx-cal-nav{width:38px;height:38px;border-radius:10px;background:#F3F4F6;color:var(--tx);display:grid;place-items:center;font-weight:900;font-size:18px}
+.fx-cal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;font-size:11.5px;font-weight:800;color:#6B7280;padding:2px 0}
+.fx-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.fx-cal-day{height:40px;border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:13.5px;font-weight:800;color:var(--tx);background:#F9FAFB;position:relative;transition:all .14s ease}
+.fx-cal-day.past{opacity:.32;pointer-events:none;background:transparent}
+.fx-cal-day.today{border:1.5px solid var(--o)!important;color:var(--o);background:#FFF7ED}
+.fx-cal-day.on{background:var(--o)!important;color:#fff!important;box-shadow:0 4px 12px rgba(255,90,0,.3)}
+.fx-slot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.fx-slot-btn{min-height:44px;border-radius:12px;border:1.5px solid #E5E7EB!important;background:#F9FAFB;padding:6px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:13px;font-weight:800;color:var(--tx);transition:all .14s ease}
+.fx-slot-btn.on{background:#FFF7ED;border-color:var(--o)!important;color:var(--o);box-shadow:0 2px 8px rgba(255,90,0,.14)}
+.fx-slot-btn small{font-size:10px;font-weight:700;color:#6B7280}
+.fx-slot-btn.on small{color:var(--o)}
 .cpn{display:flex;background:#fff;border-radius:16px;overflow:hidden;box-shadow:var(--sh)}
 .cpn .l{width:96px;background:var(--lime);color:var(--plum);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
 .cpn .l b{font-size:28px;font-weight:900;line-height:1}
@@ -1204,18 +1195,290 @@ const fmtOmr = v => {
 };
 const ago = d => { const m = Math.max(0, Math.round((Date.now() - new Date(d || Date.now())) / 60000)); return m < 1 ? (L === "ar" ? "الآن" : "now") : m < 60 ? m + (L === "ar" ? " د" : "m") : m < 1440 ? Math.round(m / 60) + (L === "ar" ? " س" : "h") : Math.round(m / 1440) + (L === "ar" ? " ي" : "d"); };
 const cleanDesc = d => String(d || "").replace(/\s*\[[^\]]*\]\s*/g, " ").trim();
+const getJobScheduleIso = j => {
+  if (!j) return "";
+  if (j.scheduled_at_iso) return String(j.scheduled_at_iso).trim();
+  const m = String(j.description || "").match(/\[ScheduleISO:\s*([^\]]+)\]/i);
+  return m && m[1] ? m[1].trim() : "";
+};
+const formatScheduleFromIso = (iso, langCode) => {
+  if (!iso) return "";
+  const dt = new Date(iso);
+  if (isNaN(dt.getTime())) return "";
+  try {
+    const loc = (langCode || L) === "ar" ? "ar-OM" : "en-US";
+    return new Intl.DateTimeFormat(loc, {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit"
+    }).format(dt);
+  } catch (e) {
+    return dt.toLocaleString();
+  }
+};
 const getJobScheduleLabel = j => {
   if (!j) return "";
+  const iso = getJobScheduleIso(j);
+  if (iso) {
+    const fmt = formatScheduleFromIso(iso, L);
+    if (fmt) return fmt;
+  }
   if (j.scheduled_for) return String(j.scheduled_for).trim();
   const m = String(j.description || "").match(/\[Schedule:\s*([^\]]+)\]/i);
   return m && m[1] ? m[1].trim() : "";
 };
 const isDone = j => j.status === "COMPLETED" || j.status === "CANCELLED";
-const myJobs = () => ROLE === "consumer" ? S.jobs.filter(j => ME && j.consumer_id === ME) : ROLE === "vendor" ? S.jobs.filter(j => j.status !== "OPEN" && (S.bids.some(b => b.job_id === j.job_id && b.vendor_id === ME && b.status === "SELECTED") || j.assigned_vendor_id === ME || j.vendor_id === ME)) : S.jobs;
+const myJobs = () => {
+  const myId = ME || (S.auth && S.auth.userId) || "";
+  if (ROLE === "consumer") {
+    return (S.jobs || []).filter(j => j && (j._local || !j.consumer_id || !myId || j.consumer_id === myId || String(j.job_id || "").startsWith("demo-")));
+  }
+  if (ROLE === "vendor") {
+    const vId = myId || VENDOR_ID;
+    return (S.jobs || []).filter(j => j && j.status !== "OPEN" && ((S.bids || []).some(b => b.job_id === j.job_id && b.vendor_id === vId && (b.status === "SELECTED" || b.status === "ACCEPTED")) || j.assigned_vendor_id === vId || j.vendor_id === vId));
+  }
+  return S.jobs || [];
+};
+const findActiveJob = () => {
+  if (!Array.isArray(S.jobs) || !S.jobs.length) return null;
+  if (S.jobId) {
+    const rawId = String(S.jobId);
+    const stripped = rawId.replace(/^demo-/, "");
+    const exact = S.jobs.find(x => x && (x.job_id === rawId || (x.short_id && (x.short_id === rawId || x.short_id === stripped || ("demo-" + x.short_id) === rawId))));
+    if (exact) {
+      if (S.jobId !== exact.job_id) S.jobId = exact.job_id;
+      return exact;
+    }
+  }
+  const mine = myJobs();
+  const fallback = (mine && mine[0]) || S.jobs[0] || null;
+  if (fallback && !S.jobId) S.jobId = fallback.job_id;
+  return fallback;
+};
 const jobMsgs = id => S.msgs.filter(m => m.job_id === id).sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 const unread = id => jobMsgs(id).filter(m => m.sender_id !== ME && new Date(m.created_at) > new Date(S.seen[id] || 0)).length;
 const totalUnread = () => myJobs().reduce((a, j) => a + unread(j.job_id), 0);
 const markSeen = id => { S.seen[id] = new Date().toISOString(); save("seen", S.seen); };
+
+// Multi-Language Auto Calendar & Time Slot Selector (Zero Typing) + Dual Reminder Engine
+const SCHEDULE_TIME_SLOTS = [
+  { hm: "09:00", en: "9:00 AM", ar: "٩:٠٠ ص", periodEn: "Morning", periodAr: "صباحاً" },
+  { hm: "11:00", en: "11:00 AM", ar: "١١:٠٠ ص", periodEn: "Late Morning", periodAr: "الضحى" },
+  { hm: "13:30", en: "1:30 PM", ar: "١:٣٠ م", periodEn: "Afternoon", periodAr: "ظهراً" },
+  { hm: "16:30", en: "4:30 PM", ar: "٤:٣٠ م", periodEn: "Afternoon", periodAr: "عصراً" },
+  { hm: "18:30", en: "6:30 PM", ar: "٦:٣٠ م", periodEn: "Evening", periodAr: "مساءً" },
+  { hm: "20:30", en: "8:30 PM", ar: "٨:٣٠ م", periodEn: "Night", periodAr: "ليلاً" }
+];
+
+function getDefaultScheduleDateYmd(daysAhead = 1) {
+  const d = new Date();
+  d.setDate(d.getDate() + daysAhead);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function syncDraftScheduleTimestamp(d) {
+  if (!d) return;
+  if (!d.schedDateYmd) d.schedDateYmd = getDefaultScheduleDateYmd(1);
+  if (!d.schedSlotHm) d.schedSlotHm = "11:00";
+  const [yy, mm, dd] = String(d.schedDateYmd).split("-").map(Number);
+  const [hh, min] = String(d.schedSlotHm).split(":").map(Number);
+  const dt = new Date(yy || 2026, (mm || 1) - 1, dd || 1, hh || 11, min || 0, 0);
+  if (!isNaN(dt.getTime())) {
+    d.schedAtIso = dt.toISOString();
+    d.schedTime = formatScheduleFromIso(d.schedAtIso, L);
+  }
+}
+
+function selectScheduleCalendarDate(ymd) {
+  if (!S.draft) S.draft = {};
+  S.draft.when = "scheduled";
+  S.draft.schedDateYmd = ymd;
+  syncDraftScheduleTimestamp(S.draft);
+  render();
+}
+
+function selectScheduleTimeSlot(hm) {
+  if (!S.draft) S.draft = {};
+  S.draft.when = "scheduled";
+  S.draft.schedSlotHm = hm;
+  syncDraftScheduleTimestamp(S.draft);
+  render();
+}
+
+function shiftScheduleCalMonth(delta) {
+  if (!S.draft) S.draft = {};
+  S.draft.calMonthOffset = Math.max(0, Math.min(3, (S.draft.calMonthOffset || 0) + delta));
+  render();
+}
+
+function renderMultiLangSchedulePicker(d) {
+  const ar = L === "ar";
+  syncDraftScheduleTimestamp(d);
+  const now = new Date();
+  const todayMid = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const todayYmd = getDefaultScheduleDateYmd(0);
+  const tomYmd = getDefaultScheduleDateYmd(1);
+  const plus2Ymd = getDefaultScheduleDateYmd(2);
+  // Find upcoming Friday/Saturday weekend date
+  let wkndOffset = (5 - now.getDay() + 7) % 7;
+  if (wkndOffset === 0) wkndOffset = 1;
+  const wkndYmd = getDefaultScheduleDateYmd(wkndOffset);
+
+  const monthOffset = Number(d.calMonthOffset || 0);
+  const viewMonthDate = new Date(now.getFullYear(), now.getMonth() + monthOffset, 1);
+  const viewYear = viewMonthDate.getFullYear();
+  const viewMonth = viewMonthDate.getMonth();
+  const monthTitle = new Intl.DateTimeFormat(ar ? "ar-OM" : "en-US", { month: "long", year: "numeric" }).format(viewMonthDate);
+
+  const firstDayDow = new Date(viewYear, viewMonth, 1).getDay();
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+  const dowLabels = ar
+    ? ["أحد", "إثن", "ثلا", "أرب", "خمي", "جمع", "سبت"]
+    : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  const numFmt = new Intl.NumberFormat(ar ? "ar-OM" : "en-US");
+  const cells = [];
+  for (let i = 0; i < firstDayDow; i++) {
+    cells.push(`<div></div>`);
+  }
+  for (let day = 1; day <= daysInMonth; day++) {
+    const cellDate = new Date(viewYear, viewMonth, day);
+    const ymd = `${viewYear}-${String(viewMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    const isPast = cellDate < todayMid;
+    const isToday = ymd === todayYmd;
+    const isSel = d.schedDateYmd === ymd;
+    cells.push(`<button type="button" class="fx-cal-day ${isPast ? "past" : ""} ${isToday ? "today" : ""} ${isSel ? "on" : ""}" onclick="selectScheduleCalendarDate('${ymd}')">${numFmt.format(day)}</button>`);
+  }
+
+  return `<div class="fx-cal-card" style="margin-top:10px">
+    <!-- Quick 1-Tap Day Presets (Zero Typing) -->
+    <div class="chips" style="margin:0;padding:0">
+      <button type="button" class="chip ${d.schedDateYmd === todayYmd ? "on" : ""}" style="height:34px;font-size:12px" onclick="S.draft.calMonthOffset=0;selectScheduleCalendarDate('${todayYmd}')">${ar ? "اليوم" : "Today"}</button>
+      <button type="button" class="chip ${d.schedDateYmd === tomYmd ? "on" : ""}" style="height:34px;font-size:12px" onclick="S.draft.calMonthOffset=0;selectScheduleCalendarDate('${tomYmd}')">${ar ? "غداً" : "Tomorrow"}</button>
+      <button type="button" class="chip ${d.schedDateYmd === plus2Ymd ? "on" : ""}" style="height:34px;font-size:12px" onclick="S.draft.calMonthOffset=0;selectScheduleCalendarDate('${plus2Ymd}')">${ar ? "بعد يومين" : "In 2 Days"}</button>
+      <button type="button" class="chip ${d.schedDateYmd === wkndYmd ? "on" : ""}" style="height:34px;font-size:12px" onclick="S.draft.calMonthOffset=0;selectScheduleCalendarDate('${wkndYmd}')">${ar ? "نهاية الأسبوع" : "This Weekend"}</button>
+    </div>
+
+    <!-- Month Navigation Header -->
+    <div class="fx-cal-hdr">
+      <button type="button" class="fx-cal-nav" onclick="shiftScheduleCalMonth(-1)" ${monthOffset <= 0 ? 'style="opacity:.35;pointer-events:none"' : ""}>${ar ? "›" : "‹"}</button>
+      <div style="font-size:15px;font-weight:900;color:var(--tx)">${esc(monthTitle)}</div>
+      <button type="button" class="fx-cal-nav" onclick="shiftScheduleCalMonth(1)">${ar ? "‹" : "›"}</button>
+    </div>
+
+    <!-- Day-of-Week Header & Interactive Calendar Grid -->
+    <div class="fx-cal-dow">${dowLabels.map(w => `<div>${w}</div>`).join("")}</div>
+    <div class="fx-cal-grid">${cells.join("")}</div>
+
+    <!-- Time Slot Selector (Zero Typing) -->
+    <div style="border-top:1px solid #F3F4F6;padding-top:10px">
+      <div style="font-size:13px;font-weight:800;color:var(--tx);margin-bottom:8px">${ar ? "اختر وقت الزيارة المناسب:" : "Select arrival time slot:"}</div>
+      <div class="fx-slot-grid">
+        ${SCHEDULE_TIME_SLOTS.map(sl => {
+          const isOn = d.schedSlotHm === sl.hm;
+          return `<button type="button" class="fx-slot-btn ${isOn ? "on" : ""}" onclick="selectScheduleTimeSlot('${sl.hm}')">
+            <span>${ar ? sl.ar : sl.en}</span>
+            <small>${ar ? sl.periodAr : sl.periodEn}</small>
+          </button>`;
+        }).join("")}
+      </div>
+    </div>
+
+    <!-- Selected Summary & Dual Reminder Notification Guarantee -->
+    <div style="background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:5px">
+      <div class="row" style="justify-content:space-between;gap:8px">
+        <span style="font-size:12.5px;font-weight:900;color:#1E3A8A">${ar ? "الموعد المحدد:" : "Selected Slot:"}</span>
+        <span class="pill" style="background:#1D4ED8;color:#fff;font-size:11.5px;font-weight:800">${esc(d.schedTime || "")}</span>
+      </div>
+      <div style="font-size:11.5px;color:#1D4ED8;line-height:1.4">
+        🔔 ${ar ? "تذكير تلقائي للطرفين: سيرسل التطبيق إشعاراً تذكيرياً لك وللفني قبل الموعد بـ 24 ساعة وقبل ساعة لتأكيد الجاهزية." : "Dual Auto-Reminder: Both you and your assigned Pro will receive automatic reminder notifications 24h and 1h before the visit."}
+      </div>
+    </div>
+  </div>`;
+}
+
+function sendDualScheduleReminderNotif(j, stageLabelEn, stageLabelAr, showToast) {
+  if (!j) return;
+  const ar = L === "ar";
+  const c = cat(j.category_id);
+  const schedEn = formatScheduleFromIso(getJobScheduleIso(j), "en") || getJobScheduleLabel(j);
+  const schedAr = formatScheduleFromIso(getJobScheduleIso(j), "ar") || getJobScheduleLabel(j);
+  const chosen = (S.bids || []).find(b => b.job_id === j.job_id && (b.status === "SELECTED" || b.status === "ACCEPTED"));
+  const vendorTarget = (chosen && chosen.vendor_id) || j.assigned_vendor_id || VENDOR_ID;
+  const consumerTarget = j.consumer_id || ME || CONSUMER_ID;
+
+  const custTitle = ar ? `🔔 تذكير بالموعد (${stageLabelAr}) · ${c.name}` : `🔔 Appointment Reminder (${stageLabelEn}) · ${c.name}`;
+  const custBody = ar
+    ? `طلبك ${sid(j)} مجدول في ${schedAr}. تم إرسال تذكير مماثل للفني لتأكيد الحضور في الموعد.`
+    : `Your order ${sid(j)} is scheduled for ${schedEn}. Your Pro has also been notified.`;
+
+  const vendTitle = `🔔 Scheduled Job Reminder (${stageLabelEn}) · ${sid(j)}`;
+  const vendBody = `${cat(j.category_id).name} visit scheduled for ${schedEn} (${schedAr}). Customer is expecting you at the scheduled slot.`;
+
+  // Notify Consumer
+  sb("/notifications", "POST", {
+    user_id: consumerTarget,
+    kind: "SCHEDULE_REMINDER",
+    title: custTitle,
+    body: custBody,
+    job_id: j.job_id
+  }).catch(() => {});
+
+  // Notify Vendor
+  sb("/notifications", "POST", {
+    user_id: vendorTarget,
+    kind: "SCHEDULE_REMINDER",
+    title: vendTitle,
+    body: vendBody,
+    job_id: j.job_id
+  }).catch(() => {});
+
+  // Show local push + native Android notification on current device
+  const localTitle = ROLE === "vendor" ? (ar ? `🔔 تذكير بموعد عمل مجدول · ${sid(j)}` : vendTitle) : custTitle;
+  const localBody = ROLE === "vendor" ? (ar ? `موعد زيارة العميل للطلب ${sid(j)}: ${schedAr}` : vendBody) : custBody;
+  triggerPushNotif(localTitle, localBody, j.job_id, "SCHEDULE_REMINDER");
+  if (showToast) {
+    toast(ar ? "✓ تم إرسال إشعار تذكيري بالموعد لك وللفني" : "✓ Appointment reminder sent to both you and the Pro!");
+  }
+}
+
+function checkScheduledJobReminders() {
+  if (!Array.isArray(S.jobs) || !S.jobs.length) return;
+  if (!S.sentSchedReminders) S.sentSchedReminders = load("sentSchedReminders", {});
+  const nowMs = Date.now();
+  let changed = false;
+  for (const j of S.jobs) {
+    if (!j || j.status === "COMPLETED" || j.status === "CANCELLED") continue;
+    const iso = getJobScheduleIso(j);
+    if (!iso) continue;
+    const targetMs = new Date(iso).getTime();
+    if (isNaN(targetMs)) continue;
+    const diffMin = (targetMs - nowMs) / 60000;
+    let stage = null;
+    if (diffMin <= 20 && diffMin >= -10) {
+      stage = ["15m", "Starts in 15 min", "يبدأ خلال 15 دقيقة"];
+    } else if (diffMin <= 70 && diffMin > 20) {
+      stage = ["1h", "In 1 Hour", "خلال ساعة واحدة"];
+    } else if (diffMin <= 1440 && diffMin > 120) {
+      stage = ["24h", "Upcoming Tomorrow", "موعد قادم"];
+    }
+    if (stage) {
+      const key = `${j.job_id}_${stage[0]}`;
+      if (!S.sentSchedReminders[key]) {
+        S.sentSchedReminders[key] = new Date().toISOString();
+        changed = true;
+        sendDualScheduleReminderNotif(j, stage[1], stage[2], false);
+      }
+    }
+  }
+  if (changed) save("sentSchedReminders", S.sentSchedReminders);
+}
+setInterval(checkScheduledJobReminders, 45000);
 
 // PostGIS EWKB Point(4326) encoder & decoder
 function toEWKB(lat, lng) {
@@ -2412,7 +2675,10 @@ async function sync() {
 
     if (data.user) {
       const u = data.user;
-      if (u.user_id) S.auth.userId = u.user_id;
+      if (u.user_id) {
+        S.auth.userId = u.user_id;
+        setActiveUserId(u.user_id, S.auth.sessionCode, ROLE);
+      }
       if (u.phone_number) { S.auth.phone = u.phone_number; S.profile.phone_number = u.phone_number; }
       if (u.email) { S.auth.email = u.email; S.profile.email = u.email; }
       if (u.full_name) S.profile.full_name = u.full_name;
@@ -2427,11 +2693,31 @@ async function sync() {
 
     if (Array.isArray(data.jobs)) {
       const localMap = {};
-      (S.jobs || []).forEach(lj => { localMap[lj.job_id] = lj; if (lj.short_id) localMap[lj.short_id] = lj; });
-      S.jobs = data.jobs.map(rj => {
-        const lj = localMap[rj.job_id] || localMap[rj.short_id] || {};
-        return { ...lj, ...rj, videoUrl: rj.videoUrl || lj.videoUrl, videoName: rj.videoName || lj.videoName, applied_coupon: rj.applied_coupon || lj.applied_coupon };
+      (S.jobs || []).forEach(lj => {
+        if (!lj) return;
+        if (lj.job_id) localMap[lj.job_id] = lj;
+        if (lj.short_id) localMap[lj.short_id] = lj;
       });
+      const mergedRemote = data.jobs.map(rj => {
+        const lj = localMap[rj.job_id] || localMap[rj.short_id] || {};
+        if (S.jobId && rj.job_id && (S.jobId === lj.job_id || (rj.short_id && (S.jobId === ("demo-" + rj.short_id) || S.jobId === rj.short_id)))) {
+          S.jobId = rj.job_id;
+        }
+        return {
+          ...lj,
+          ...rj,
+          _local: false,
+          videoUrl: rj.videoUrl || lj.videoUrl,
+          videoName: rj.videoName || lj.videoName,
+          applied_coupon: rj.applied_coupon || lj.applied_coupon,
+          scheduled_for: rj.scheduled_for || lj.scheduled_for,
+          scheduled_at_iso: rj.scheduled_at_iso || lj.scheduled_at_iso
+        };
+      });
+      const remoteIds = new Set(mergedRemote.map(rj => rj.job_id));
+      const remoteShorts = new Set(mergedRemote.map(rj => rj.short_id).filter(Boolean));
+      const unsyncedLocal = (S.jobs || []).filter(lj => lj && (lj._local || String(lj.job_id || "").startsWith("demo-")) && !remoteIds.has(lj.job_id) && (!lj.short_id || !remoteShorts.has(lj.short_id)));
+      S.jobs = [...unsyncedLocal, ...mergedRemote];
       save("jobs", S.jobs);
     }
     if (Array.isArray(data.messages)) { S.msgs = data.messages; save("msgs", data.messages); }
@@ -2510,6 +2796,7 @@ async function sync() {
       if (Array.isArray(data.supportMessages)) { S.supportMsgs = data.supportMessages; save("supportMsgs", data.supportMessages); }
     }
 
+    try { checkScheduledJobReminders(); } catch (e) {}
     if (S.jobId && (isOpenScreen("job") || isOpenScreen("job_chat"))) markSeen(S.jobId);
     if (totalUnread() > before) ping();
 
@@ -2534,7 +2821,7 @@ async function sync() {
     if (window._lastDataSig !== sig || wasOffline) {
       window._lastDataSig = sig;
       if (isOpenScreen("job") || isOpenScreen("tracking")) {
-        const curJob = S.jobs.find(x => x.job_id === S.jobId);
+        const curJob = findActiveJob();
         const bidCnt = S.bids.filter(b => b.job_id === S.jobId).length;
         const phCnt = S.photos.filter(p => p.job_id === S.jobId).length;
         const msgCnt = S.msgs.filter(m => m.job_id === S.jobId).length;
@@ -2562,7 +2849,9 @@ const busyTyping = () => { const a = document.activeElement; return Boolean(a &&
 /* ---------- navigation ---------- */
 function tab(n) { S.tab = n; S.stack = []; S.jobId = null; S._navChanged = true; scrollTo(0, 0); render(); }
 function go(screen, id) {
-  S.stack.push(screen);
+  if (S.stack[S.stack.length - 1] !== screen) {
+    S.stack.push(screen);
+  }
   S._navChanged = true;
   if (screen === "support_chat" && id) S.ticketId = id;
   else if (id) { S.jobId = id; markSeen(id); }
@@ -2607,7 +2896,16 @@ function back() {
     return false;
   }
   if (S.sheet) { S.sheet = null; render(); return true; }
-  if (S.stack.length) { S.stack.pop(); render(); return true; }
+  if (S.stack.length) {
+    const popped = S.stack.pop();
+    while (S.stack.length && S.stack[S.stack.length - 1] === popped) {
+      S.stack.pop();
+    }
+    S._navChanged = true;
+    scrollTo(0, 0);
+    render();
+    return true;
+  }
   const home = ROLE === "vendor" ? "jobs" : ROLE === "admin" ? "overview" : "home";
   if (S.tab !== home) { tab(home); return true; }
   return false;
@@ -4977,6 +5275,10 @@ async function postJob() {
     return;
   }
   if (!checkRateLimit("create_job", 3, 60000, "New Order Post", "نشر طلب جديد")) return;
+  if (d.when === "scheduled") {
+    syncDraftScheduleTimestamp(d);
+  }
+  const myUid = ME || (S.auth && S.auth.userId) || CONSUMER_ID;
   const c = cat(d.cat), sh = String(Math.floor(100000 + Math.random() * 900000));
   const addr = (S.addresses && S.addresses.find(a => a.address_id === d.address_id)) || defAddr();
   const [lat, lng] = addrCoords(addr);
@@ -4986,34 +5288,36 @@ async function postJob() {
   ]));
   const tagStr = tags.length ? `[${tags.join(", ")}] ` : "";
   const destStr = d.destination ? ` [Destination: ${d.destination}]` : "";
-  const schedStr = (d.when === "scheduled" && d.schedTime) ? ` [Schedule: ${d.schedTime}]` : "";
+  const schedStr = (d.when === "scheduled" && d.schedTime) ? ` [Schedule: ${d.schedTime}]${d.schedAtIso ? ` [ScheduleISO: ${d.schedAtIso}]` : ""}` : "";
   const instStr = Array.isArray(d.instructions) && d.instructions.length ? ` [Instructions: ${d.instructions.join(", ")}]` : "";
   const addrLabel = (addr && addr.label) ? addr.label : "Location";
   const addrTag = ` [${addrLabel}: ${addrText(addr)}]`;
   const desc = (tagStr + rawNote + destStr + schedStr + instStr + addrTag).trim();
-  const urg = d.when === "now" ? "EMERGENCY" : d.when === "urgent" ? "URGENT" : "NORMAL";
+  const urg = d.when === "now" ? "EMERGENCY" : d.when === "today" ? "THIS_WEEK" : "FLEXIBLE";
   const mediaList = [...(d.photos || [])];
   if (d.videoUrl) mediaList.push(d.videoUrl);
 
   const localJob = {
     job_id: "demo-" + sh,
-    consumer_id: ME,
+    consumer_id: myUid,
     category_id: c.id,
     sub_issue_tags: tags,
     urgency: urg,
     scheduled_for: (d.when === "scheduled" && d.schedTime) ? d.schedTime : null,
+    scheduled_at_iso: (d.when === "scheduled" && d.schedAtIso) ? d.schedAtIso : null,
     description: desc,
     original_description: rawNote,
     location_geom: toEWKB(lat, lng),
     status: "OPEN",
     posting_kind: "STANDARD",
-    budget_range_min: 0,
-    budget_range_max: 0,
+    budget_range_min: 10,
+    budget_range_max: 25,
     ai_rewritten: false,
     media_urls: mediaList,
     videoUrl: d.videoUrl || null,
     videoName: d.videoName || null,
     is_approved: true,
+    _local: true,
     short_id: sh,
     tracking_id: "FX-" + sh,
     created_at: new Date().toISOString(),
@@ -5021,14 +5325,19 @@ async function postJob() {
   };
 
   S.sheet = null;
+  if (!Array.isArray(S.jobs)) S.jobs = [];
   S.jobs.unshift(localJob);
   save("jobs", S.jobs);
-  if (S.stack[S.stack.length - 1] === "book") S.stack.pop();
-  render();
+  while (S.stack.length && ["last_check", "checkout", "book", "job"].includes(S.stack[S.stack.length - 1])) {
+    S.stack.pop();
+  }
+  S.jobId = localJob.job_id;
+  go("job", localJob.job_id);
+  toast(ar ? `✓ تم إرسال طلبك #${sh} للفنيين القريبين منك` : `✓ Request #${sh} sent! Pros near you are reviewing it.`);
 
   try {
     const payload = {
-      consumer_id: ME,
+      consumer_id: myUid,
       category_id: c.id,
       sub_issue_tags: tags,
       urgency: urg,
@@ -5037,8 +5346,8 @@ async function postJob() {
       location_geom: toEWKB(lat, lng),
       status: "OPEN",
       posting_kind: "STANDARD",
-      budget_range_min: 0,
-      budget_range_max: 0,
+      budget_range_min: 10,
+      budget_range_max: 25,
       ai_rewritten: false,
       media_urls: mediaList,
       is_approved: true,
@@ -5049,14 +5358,22 @@ async function postJob() {
     const realJob = Array.isArray(created) && created[0] ? created[0] : localJob;
     realJob.videoUrl = d.videoUrl || null;
     realJob.videoName = d.videoName || null;
+    realJob._local = !Boolean(Array.isArray(created) && created[0]);
     if (localJob.scheduled_for) realJob.scheduled_for = localJob.scheduled_for;
+    if (localJob.scheduled_at_iso) realJob.scheduled_at_iso = localJob.scheduled_at_iso;
+
+    const idx = (S.jobs || []).findIndex(x => x && (x.job_id === localJob.job_id || x.short_id === sh));
+    if (idx >= 0) S.jobs[idx] = { ...localJob, ...realJob };
+    else S.jobs.unshift({ ...localJob, ...realJob });
+    if (S.jobId === localJob.job_id) S.jobId = realJob.job_id;
+    save("jobs", S.jobs);
 
     // Save Customer Before verification photos into DB with valid phase='BEFORE'
     if (Array.isArray(d.photos) && d.photos.length) {
       for (const u of d.photos) {
-        const phObj = { job_id: realJob.job_id, uploaded_by_user_id: ME || CONSUMER_ID, phase: "BEFORE", url: u, captured_in_app: true, _local: true, created_at: new Date().toISOString() };
+        const phObj = { job_id: realJob.job_id, uploaded_by_user_id: myUid, phase: "BEFORE", url: u, captured_in_app: true, _local: true, created_at: new Date().toISOString() };
         S.photos.unshift(phObj);
-        try { await sb("/job_photos", "POST", { job_id: realJob.job_id, uploaded_by_user_id: ME || CONSUMER_ID, phase: "BEFORE", url: u, captured_in_app: true }); } catch (e) {}
+        try { await sb("/job_photos", "POST", { job_id: realJob.job_id, uploaded_by_user_id: myUid, phase: "BEFORE", url: u, captured_in_app: true }); } catch (e) {}
       }
       save("photos", S.photos);
     }
@@ -5072,12 +5389,14 @@ async function postJob() {
       job_id: realJob.job_id
     }).catch(() => {});
 
+    if (d.when === "scheduled" && d.schedTime) {
+      sendDualScheduleReminderNotif(realJob, "Booking Scheduled", "تأكيد جدولة الموعد", false);
+    }
+
+    render();
     await sync();
-    toast(L === "ar" ? `✓ تم إرسال طلبك #${sh} للفنيين القريبين منك` : `✓ Request #${sh} sent! Pros near you are reviewing it.`);
-    go("job", realJob.job_id);
   } catch (e) {
-    toast(L === "ar" ? `✓ تم حفظ وإرسال طلبك #${sh}` : `✓ Request #${sh} saved & broadcasted!`);
-    go("job", localJob.job_id);
+    render();
   }
 }
 
@@ -5340,6 +5659,9 @@ async function confirmBidPayment() {
         : `Customer accepted your offer on ${sid(j)} — head to the pinned location now!`,
       job_id: j.job_id
     }).catch(() => {});
+    if (schedLbl) {
+      sendDualScheduleReminderNotif(j, "Booking Confirmed", "تأكيد الموعد المجدول", false);
+    }
     toast(schedLbl
       ? (ar ? `✓ تم تأكيد الحجز المجدول (${schedLbl}) بنجاح!` : `✓ Scheduled booking (${schedLbl}) confirmed!`)
       : (ar ? "✓ تم الدفع وتأكيد الفني بنجاح! يمكنك الآن المحادثة وتتبع الفني" : "✓ Payment complete & Pro confirmed! Live tracking & chat unlocked."));
@@ -6256,23 +6578,68 @@ async function createRealPayPalOrder(amountOmr, description, refId, payDetails) 
 
 /* ---------- shared UI pieces ---------- */
 
+function quickDetectHomeGps() {
+  const ar = L === "ar";
+  toast(ar ? "📡 جاري تحديد موقعك الحالي عبر GPS..." : "📡 Detecting your live GPS location...");
+  getRealDeviceGps((lat, lng) => {
+    window.onNativeLocationUpdate(lat, lng);
+    const area = salalahAreaName(lat, lng);
+    S.userGpsAddress = area;
+    if (Array.isArray(S.addresses) && S.addresses.length) {
+      const def = S.addresses.find(x => x.is_default) || S.addresses[0];
+      if (def) {
+        def.lat = Number(lat.toFixed(5));
+        def.lng = Number(lng.toFixed(5));
+        def.area = area;
+        if (!def.details || def.is_empty) def.details = area;
+        save("addresses", S.addresses);
+      }
+    } else {
+      const autoAddr = {
+        address_id: "addr-gps-" + Date.now(),
+        user_id: ME || CONSUMER_ID,
+        label: ar ? "موقعي الحالي" : "Current Location",
+        area,
+        details: area,
+        address_line: area,
+        lat: Number(lat.toFixed(5)),
+        lng: Number(lng.toFixed(5)),
+        is_default: true
+      };
+      S.addresses = [autoAddr];
+      save("addresses", S.addresses);
+    }
+    render();
+    toast(ar ? `✓ تم تحديث الموقع إلى: ${area}` : `✓ Location updated: ${area}`);
+  });
+}
+
 const bar = (title, withBack, right) => {
   const ar = L === "ar";
-  if (!withBack && S.tab === "home") {
+  if (!withBack && S.stack.length === 0 && S.tab === "home") {
     const a = defAddr();
     const unreadNotifs = (S.notifs || []).filter(n => !isNotifRead(n)).length;
+    const activeJob = myJobs().find(j => j && j.status !== "COMPLETED" && j.status !== "CANCELLED");
     return `<div class="talabat-top-bar hdr-home">
       <div class="talabat-loc-picker" onclick="S.sheet='loc_picker';render()">
         <div class="talabat-loc-icon">${I("pin")}</div>
-        <div class="sp"><div class="talabat-loc-label">${ar ? "توصيل الخدمة إلى" : "Delivering service to"}</div>
-        <div class="talabat-loc-addr ell">${esc(a.label)} · ${esc(addrText(a))} <span style="font-size:10px">▼</span></div></div>
+        <div class="sp">
+          <div class="talabat-loc-label">${ar ? "توصيل الخدمة إلى" : "Delivering service to"}</div>
+          <div class="talabat-loc-addr ell">${esc(a.label)} · ${esc(addrText(a))} <span style="font-size:10px">▼</span></div>
+        </div>
       </div>
-      <button class="talabat-circle-btn" onclick="go('notifs')">${I("bell")}${unreadNotifs ? `<span class="badge" style="position:absolute;top:-3px;right:-3px">${unreadNotifs}</span>` : ""}</button>
+      <button type="button" class="hdr-gps-pill" onclick="event.stopPropagation();quickDetectHomeGps()" title="Auto-detect GPS">
+        ${I("radar")}<span>${ar ? "موقعي" : "GPS"}</span>
+      </button>
+      ${activeJob ? `<button type="button" class="hdr-gps-pill" style="background:rgba(0,0,0,.24)" onclick="go('job','${activeJob.job_id}')">
+        <span>#${esc(activeJob.short_id || String(activeJob.job_id).slice(0, 5))}</span>
+      </button>` : ""}
+      <button type="button" class="talabat-circle-btn" onclick="go('notifs')">${I("bell")}${unreadNotifs ? `<span class="badge" style="position:absolute;top:-3px;right:-3px">${unreadNotifs}</span>` : ""}</button>
     </div>`;
   }
   return `<div class="talabat-top-bar">
-    ${withBack ? `<button class="talabat-back-btn" onclick="back()">${I("back", "flip")}</button>` : ""}
-    <div class="sp ell hdr-title" style="${withBack ? "font-size:18px" : ""}">${title}</div>
+    ${withBack ? `<button type="button" class="talabat-back-btn" onclick="back()">${I("back", "flip")}</button>` : ""}
+    <div class="sp ell hdr-title" style="${withBack ? "font-size:18px" : ""}">${title || (ar ? "تفاصيل الطلب" : "FixIt")}</div>
     ${right ? `<div class="row" style="gap:8px">${right}</div>` : ""}
   </div>`;
 };
@@ -6783,21 +7150,13 @@ function bookScreen() {
           </div>
         </div>
 
-        <!-- Timing / Schedule -->
+        <!-- Timing / Schedule (Multi-Language Auto Calendar & Time Slot Selector — Zero Typing) -->
         <div>
           <div style="font-size:16.5px;font-weight:800;margin-bottom:8px">${ar ? "متى تحتاج الخدمة؟" : "When do you need this?"}</div>
           <div class="seg3">
-            ${timeSlots.map(ts => `<button class="${d.when === ts[0] ? "on" : ""}" onclick="S.draft.when='${ts[0]}';render()">${ts[1]}</button>`).join("")}
+            ${timeSlots.map(ts => `<button type="button" class="${d.when === ts[0] ? "on" : ""}" onclick="S.draft.when='${ts[0]}';if('${ts[0]}'==='scheduled')syncDraftScheduleTimestamp(S.draft);render()">${ts[1]}</button>`).join("")}
           </div>
-          ${d.when === "scheduled" ? `<div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
-            <div class="chips" style="margin:0">
-              ${quickSchedules.map(qs => `<button class="chip ${d.schedTime === qs[0] ? "on" : ""}" type="button" onclick="S.draft.schedTime='${qs[0]}';const inp=document.getElementById('schedTimeInp');if(inp)inp.value='${qs[0]}';render()">${ar ? qs[1] : qs[0]}</button>`).join("")}
-            </div>
-            <input id="schedTimeInp" class="tlbt-input" style="height:44px" value="${esc(d.schedTime || "Tomorrow, 10:00 AM")}" placeholder="${ar ? "مثال: غداً 10:00 صباحاً أو الخميس 4:00 مساءً" : "e.g. Tomorrow, 10:00 AM or Thursday 4:00 PM"}" oninput="S.draft.schedTime=this.value">
-            <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:12px;padding:10px 12px;font-size:12px;color:#1E3A8A;line-height:1.4">
-              ${ar ? "يمكن للفني قبول حجزك المجدول مسبقاً، ولن يتوجه إلى موقعك إلا في الموعد المحدد." : "A pro can confirm your scheduled booking in advance and will only head to your location at the scheduled time."}
-            </div>
-          </div>` : ""}
+          ${d.when === "scheduled" ? renderMultiLangSchedulePicker(d) : ""}
         </div>
 
         <!-- Arrival Instructions -->
@@ -6986,8 +7345,9 @@ function startLastCheckFlow() {
   const d = S.draft || {};
   const noteEl = document.getElementById("note");
   if (noteEl && noteEl.value) d.note = noteEl.value.trim();
-  const schedInp = document.getElementById("schedTimeInp");
-  if (schedInp && schedInp.value) d.schedTime = schedInp.value.trim();
+  if (d.when === "scheduled") {
+    syncDraftScheduleTimestamp(d);
+  }
 
   if (!d.cat || !CATS.some(x => x[0] === d.cat)) {
     d.step = 1;
@@ -7067,6 +7427,7 @@ function lastCheckScreen() {
             <div class="sp">
               <div style="font-size:15.5px;font-weight:800;color:var(--tx)">${c.name}</div>
               <div style="font-size:14.5px;color:#374151;margin-top:4px;line-height:1.45;background:#F9FAFB;padding:10px 12px;border-radius:12px;border:1px solid #E5E7EB">${esc(userText)}</div>
+              ${d.when === "scheduled" && d.schedTime ? `<div style="margin-top:6px"><span class="pill" style="background:#EFF6FF;color:#1D4ED8;font-size:11.5px;font-weight:800">📅 ${ar ? "الموعد:" : "Scheduled:"} ${esc(d.schedTime)}</span></div>` : ""}
               ${d.tags && d.tags.length ? `<div class="chips" style="margin-top:8px">${d.tags.map(tg => `<span class="pill" style="font-size:11px;background:#F3F4F6;color:var(--tx)">${esc(tg)}</span>`).join("")}</div>` : ""}
             </div>
           </div>
@@ -7088,7 +7449,7 @@ function lastCheckScreen() {
           <div style="width:44px;height:44px;border-radius:12px;background:#F3F4F6;display:grid;place-items:center;color:var(--o);flex-shrink:0">${I("wallet")}</div>
           <div class="sp">
             <div style="font-size:14.5px;font-weight:800">${ar ? "الدفع بعد قبول عرض الفني" : "Pay only after accepting a pro's offer"}</div>
-            <div style="font-size:12.5px;color:#6B7280">${ar ? "عبر PayPal Express أو محفظة FixIt Pay" : "PayPal Express or FixIt Pay Wallet at checkout"}</div>
+            <div style="font-size:12.5px;color:#6B7280">${ar ? "عبر البطاقة أو PayPal أو المحفظة" : "Card, PayPal, or Wallet at checkout"}</div>
           </div>
         </div>
       </div>
@@ -7251,8 +7612,23 @@ function proProfileSheet() {
 }
 
 function cJob() {
-  const j = S.jobs.find(x => x.job_id === S.jobId); if (!j) return `${bar("", true)}${empty("list", "…")}`;
-  const c = cat(j.category_id), bids = S.bids.filter(b => b.job_id === j.job_id), ar = L === "ar";
+  const ar = L === "ar";
+  const j = findActiveJob();
+  if (!j) {
+    return `${bar(ar ? "تفاصيل الطلب" : "Order Details", true)}
+    <div class="pad">
+      <div class="card" style="text-align:center;padding:32px 18px;display:flex;flex-direction:column;align-items:center;gap:12px">
+        <div class="ico" style="width:56px;height:56px;border-radius:50%">${I("list")}</div>
+        <div class="t1" style="font-size:18px">${ar ? "لا يوجد طلب محدد حالياً" : "No active order selected"}</div>
+        <div class="t2">${ar ? "يمكنك إنشاء طلب خدمة جديد في 3 خطوات سريعة أو العودة للرئيسية." : "Create a new service request in 3 quick steps or return to the home screen."}</div>
+        <div class="two" style="width:100%;margin-top:6px">
+          <button class="btn outline s" onclick="tab('home')">${ar ? "الرئيسية" : "Back to Home"}</button>
+          <button class="btn s" onclick="openBookPage()">${ar ? "+ طلب خدمة" : "+ New Order"}</button>
+        </div>
+      </div>
+    </div>`;
+  }
+  const c = cat(j.category_id), bids = S.bids.filter(b => b.job_id === j.job_id);
   const chosen = bids.find(b => b.status === "SELECTED" || b.status === "ACCEPTED");
   const live = j.status === "BID_SELECTED" || j.status === "IN_PROGRESS";
   const proAssigned = j.status !== "OPEN" && j.status !== "CANCELLED";
@@ -7274,16 +7650,34 @@ function cJob() {
   const schedLbl = getJobScheduleLabel(j);
 
   return `<div class="jh no-print" style="background:${ccol(c.id)}">
-    <div class="jhb"><button onclick="back()">${I("back", "flip")}</button><div class="sp"></div>${statusPill(j)}</div>
-    <div style="font-size:13px;font-weight:700;opacity:.88">#${sid(j)} · ${ago(j.created_at)}${schedLbl ? ` · ${ar ? "مجدول:" : "Scheduled:"} ${esc(schedLbl)}` : ""}</div>
+    <div class="jhb">
+      <button type="button" onclick="back()" aria-label="Back">${I("back", "flip")}</button>
+      <div class="sp"></div>
+      <button type="button" style="width:auto;height:34px;padding:0 12px;border-radius:99px;font-size:12px;font-weight:800;display:inline-flex;align-items:center;gap:5px" onclick="sync();toast(L==='ar'?'تم تحديث حالة الطلب':'Order refreshed')">${I("refresh")}<span>${ar ? "تحديث" : "Refresh"}</span></button>
+      ${statusPill(j)}
+    </div>
+    <div style="font-size:13px;font-weight:700;opacity:.92;position:relative;z-index:2">${sid(j)} · ${ago(j.created_at)}${schedLbl ? ` · 📅 ${esc(schedLbl)}` : ""}</div>
     <h1>${c.name}</h1>
-    ${cleanDesc(j.description) ? `<div style="font-size:14px;opacity:.95;margin-top:4px;max-width:90%">${esc(displayTranslated(cleanDesc(j.description)))}</div>` : ""}
+    ${cleanDesc(j.description) ? `<div style="font-size:14px;opacity:.95;margin-top:4px;max-width:90%;position:relative;z-index:2">${esc(displayTranslated(cleanDesc(j.description)))}</div>` : ""}
     ${I(c.icon, "bg")}
   </div>
 
   <div class="pad lift">
     <!-- 1. Progress Stepper -->
     <div class="card no-print">${stepper(j)}</div>
+
+    ${schedLbl ? `<div class="card no-print" style="background:#EFF6FF;border:1.5px solid #93C5FD;display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <div class="row" style="gap:10px;min-width:0;flex:1">
+        <div class="ico" style="background:#1D4ED8;color:#fff;width:40px;height:40px">${I("clock")}</div>
+        <div class="sp">
+          <div style="font-size:13.5px;font-weight:900;color:#1E3A8A">${ar ? "موعد الزيارة المجدول:" : "Scheduled Visit:"} ${esc(schedLbl)}</div>
+          <div style="font-size:11.5px;color:#1D4ED8;margin-top:2px">${ar ? "🔔 التذكير التلقائي مفعل لك وللفني قبل الموعد" : "🔔 Auto-reminders active for both you & your Pro"}</div>
+        </div>
+      </div>
+      <button type="button" class="pill" style="background:#1D4ED8;color:#fff;min-height:36px;padding:0 12px;font-weight:800;flex-shrink:0" onclick="sendDualScheduleReminderNotif(findActiveJob(),'Upcoming Visit','تذكير بالموعد',true)">
+        🔔 ${ar ? "تذكير الآن" : "Remind Both"}
+      </button>
+    </div>` : ""}
 
     <!-- 2. Live Interactive Location Map (Real Pro GPS & User Pin on Map) -->
     <div class="card no-print" style="padding:0;overflow:hidden">
@@ -9856,8 +10250,12 @@ function vBidSheet() {
 }
 
 function vJob() {
-  const j = S.jobs.find(x => x.job_id === S.jobId); if (!j) return `${bar("", true)}${empty("list", "…")}`;
-  const c = cat(j.category_id), ar = L === "ar";
+  const ar = L === "ar";
+  const j = findActiveJob();
+  if (!j) {
+    return `${bar(ar ? "تفاصيل المهمة" : "Job Details", true)}<div class="pad">${empty("list", ar ? "لا توجد مهام نشطة حالياً" : "No active job selected")}</div>`;
+  }
+  const c = cat(j.category_id);
   const proAssigned = j.status !== "OPEN" && j.status !== "CANCELLED";
   const mine = S.bids.find(b => b.job_id === j.job_id && b.vendor_id === ME);
   const chosenBid = S.bids.find(b => b.job_id === j.job_id && (b.status === "SELECTED" || b.status === "ACCEPTED")) || mine;
@@ -9875,6 +10273,9 @@ function vJob() {
         <div style="font-size:13.5px;font-weight:900;color:#1E3A8A">${ar ? "موعد مجدول:" : "Scheduled Booking:"} ${esc(schedLbl)}</div>
         <div style="font-size:12px;color:#1D4ED8;margin-top:2px">${ar ? "التوجه للعميل يكون في الموعد المحدد فقط — يمكنك استقبال وإنجاز طلبات أخرى في نفس اليوم بحرية." : "Only head to the customer at the scheduled time — you are free to accept and complete other jobs meanwhile."}</div>
       </div>
+      <button type="button" class="pill" style="background:#1D4ED8;color:#fff;min-height:36px;padding:0 12px;font-weight:800;flex-shrink:0" onclick="sendDualScheduleReminderNotif(findActiveJob(),'Upcoming Visit','تذكير بالموعد',true)">
+        🔔 ${ar ? "تذكير" : "Remind"}
+      </button>
     </div>` : ""}
 
     <div class="card" style="padding:0;overflow:hidden">
@@ -10383,7 +10784,8 @@ function aOrders() {
 }
 
 function aJob() {
-  const j = S.jobs.find(x => x.job_id === S.jobId); if (!j) return `${bar("", true)}${empty("list", "…")}`;
+  const j = findActiveJob();
+  if (!j) return `${bar("Order Details", true)}<div class="pad">${empty("list", "No active order selected")}</div>`;
   const c = cat(j.category_id), bids = S.bids.filter(b => b.job_id === j.job_id);
   return `${bar(c.name + " " + sid(j), true, statusPill(j))}<div class="pad">
     <div class="card">${stepper(j)}</div>
