@@ -219,7 +219,7 @@ async function startSocket({ mode = "qr", phoneNumber = null, reset = false } = 
       logger,
       auth: state,
       printQRInTerminal: false,
-      browser: Browsers.macOS("Desktop"),
+      browser: Browsers.macOS("Chrome"),
       syncFullHistory: false,
       markOnlineOnConnect: true,
       keepAliveIntervalMs: 25000,
@@ -295,6 +295,12 @@ async function startSocket({ mode = "qr", phoneNumber = null, reset = false } = 
           reconnectTimer = setTimeout(() => {
             startSocket({ mode: "auto", reset: false }).catch(() => {});
           }, 1500);
+        } else if (currentPairingCode && (statusCode === 408 || statusCode === 428 || statusCode === 515)) {
+          // Keep active socket / retry handshake so phone pairing completion isn't dropped mid-handshake
+          console.log(`[WA-WEB] Transient close during pairing (${statusCode}). Retrying connection...`);
+          reconnectTimer = setTimeout(() => {
+            startSocket({ mode: "pair", phoneNumber: boundPhoneNumber, reset: false }).catch(() => {});
+          }, 2000);
         } else if (statusCode) {
           connectionError = msg || `Connection closed (${statusCode})`;
         }

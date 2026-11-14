@@ -10443,7 +10443,7 @@ let _waPollTimer = null;
 let _lastWaCheckAt = 0;
 
 window._waState = window._waState || {
-  tab: "qr",
+  tab: "code",
   isConnected: false,
   isConnecting: false,
   qrDataUrl: null,
@@ -10473,8 +10473,8 @@ function formatWaCodeDisplay(code) {
 
 function getWaPillMeta(st, ar) {
   if (st.isConnected) return { text: ar ? "● متصل" : "● Connected", bg: "#DCFCE7", fg: "#15803D" };
-  if (st.tab === "qr" && st.qrDataUrl) return { text: ar ? "امسح QR" : "Scan QR", bg: "#FEF3C7", fg: "#B45309" };
   if (st.pairingCode) return { text: ar ? "الرمز جاهز" : "Code Ready", bg: "#FEF3C7", fg: "#B45309" };
+  if (st.tab === "qr" && st.qrDataUrl) return { text: ar ? "امسح QR" : "Scan QR", bg: "#FEF3C7", fg: "#B45309" };
   if (st.qrDataUrl) return { text: ar ? "امسح QR" : "Scan QR", bg: "#FEF3C7", fg: "#B45309" };
   if (st.busy || st.isConnecting) return { text: ar ? "جاري الاتصال..." : "Connecting...", bg: "#DBEAFE", fg: "#1D4ED8" };
   if (!st.loaded) return { text: ar ? "جاري الفحص..." : "Checking...", bg: "#F1F5F9", fg: "#64748B" };
@@ -10638,6 +10638,11 @@ function updateWaUiFromStatus(res) {
   if (res.phone !== undefined) st.phone = res.phone || "";
   if (res.me !== undefined) st.me = res.me || null;
   st.error = res.error ? String(res.error) : "";
+  if (st.pairingCode && !st.isConnected) {
+    st.tab = "code";
+  } else if (st.qrDataUrl && !st.pairingCode && !st.isConnected && !st.phoneInput) {
+    st.tab = "qr";
+  }
   if (st.isConnected && _waPollTimer) {
     clearInterval(_waPollTimer);
     _waPollTimer = null;
