@@ -24,6 +24,12 @@ const {
   warrantyPage
 } = require("../views/legal");
 const { openAppPage } = require("../views/open");
+const {
+  generateScanSvg,
+  generateScanPngBuffer,
+  installAppPage,
+  postersPage
+} = require("../views/install");
 const { renderPage } = require("../views/layout");
 
 const ALLOWED_APKS = new Set([
@@ -32,7 +38,21 @@ const ALLOWED_APKS = new Set([
 ]);
 
 function getRequestHost(req) {
-  return String(req.get("x-forwarded-host") || req.get("host") || "fixit-web.onrender.com").split(",")[0].trim();
+  return String(req.get("x-forwarded-host") || req.get("host") || "fixit-now.xyz").split(",")[0].trim();
+}
+
+function sendApkFile(req, res, downloadsDir, fileName) {
+  if (!ALLOWED_APKS.has(fileName)) {
+    return renderNotFoundPage(req, res);
+  }
+  const resolved = path.join(downloadsDir, fileName);
+  if (!fs.existsSync(resolved)) {
+    return renderNotFoundPage(req, res);
+  }
+  res.setHeader("Content-Type", "application/vnd.android.package-archive");
+  res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+  res.setHeader("Cache-Control", "no-cache, must-revalidate");
+  return res.sendFile(resolved);
 }
 
 function renderNotFoundPage(req, res) {
@@ -65,8 +85,18 @@ function createWebRouter({ publicDir }) {
   const router = express.Router();
   const downloadsDir = path.join(publicDir, "downloads");
 
-  router.get("/", (req, res) => {
-    return res.type("html").send(homePage({ reqHost: getRequestHost(req) }));
+  router.get("/", async (req, res, next) => {
+    try {
+      const host = getRequestHost(req);
+      const origin = `https://${host}`;
+      const [cScanSvg, vScanSvg] = await Promise.all([
+        generateScanSvg(`${origin}/install/consumer`, 148),
+        generateScanSvg(`${origin}/install/vendor`, 148)
+      ]);
+      return res.type("html").send(homePage({ reqHost: host, cScanSvg, vScanSvg }));
+    } catch (err) {
+      return next(err);
+    }
   });
 
   router.get("/ad.html", (_req, res) => {
@@ -83,11 +113,11 @@ function createWebRouter({ publicDir }) {
   html, body {
     width: 100%;
     height: 100%;
-    min-height: 76px;
+    min-height: 82px;
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background: #F8FAFC;
+    background: #FFFFFF;
     font-family: system-ui, -apple-system, sans-serif;
   }
   body {
@@ -98,8 +128,8 @@ function createWebRouter({ publicDir }) {
     position: relative;
   }
   .ad-bar {
-    height: 16px;
-    background: #F1F5F9;
+    height: 20px;
+    background: #F8FAFC;
     border-bottom: 1px solid #E2E8F0;
     display: flex;
     align-items: center;
@@ -107,25 +137,26 @@ function createWebRouter({ publicDir }) {
     padding: 0 10px;
     font-size: 9.5px;
     font-weight: 800;
-    letter-spacing: 1px;
+    letter-spacing: 0.6px;
     color: #64748B;
     text-transform: uppercase;
     z-index: 2;
   }
   .ad-backdrop {
     position: absolute;
-    inset: 16px 0 0 0;
+    inset: 20px 0 0 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
-    font-weight: 900;
-    letter-spacing: 4px;
-    color: #CBD5E1;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+    color: #9CA3AF;
     text-transform: uppercase;
     pointer-events: none;
     user-select: none;
     z-index: 0;
+    background: linear-gradient(135deg, #FAFAFA, #F3F4F6);
   }
   #frame {
     width: 100%;
@@ -139,10 +170,10 @@ function createWebRouter({ publicDir }) {
 </head>
 <body>
 <div class="ad-bar">
-  <span>ADVERTISEMENT · THIRD-PARTY AD (NOT FIXIT)</span>
-  <span>A-ADS</span>
+  <span>SPONSORED · A-ADS</span>
+  <a href="https://aads.com/privacy_policy" target="_blank" rel="noopener noreferrer" style="color:#64748B;text-decoration:none">A-ADS PRIVACY</a>
 </div>
-<div class="ad-backdrop">ADVERTISEMENT</div>
+<div class="ad-backdrop">SPONSORED BY A-ADS</div>
 <!-- BEGIN AADS AD UNIT 2461953 -->
 <div id="frame">
   <iframe data-aa='2461953' src='https://acceptable.a-ads.com/2461953/?size=Adaptive'
@@ -158,7 +189,7 @@ function createWebRouter({ publicDir }) {
   });
 
   router.get("/partner", (req, res) => {
-    return res.type("html").send(partnerPage());
+    return res.type("html").send(partnerPage({ reqHost: getRequestHost(req) }));
   });
 
   router.get("/about", (req, res) => {
@@ -230,25 +261,71 @@ function createWebRouter({ publicDir }) {
     }));
   });
 
+  router.get(["/install/:app", "/get/:app"], async (req, res, next) => {
+    try {
+      const key = String(req.params.app || "").trim().toLowerCase();
+      if (key !== "consumer" && key !== "vendor") {
+        return renderNotFoundPage(req, res);
+      }
+      const html = await installAppPage({
+        role: key,
+        reqHost: getRequestHost(req),
+        downloadsDir
+      });
+      return res.type("html").send(html);
+    } catch (err) {
+      return next(err);
+    }
+  });
+
+  router.get(["/posters", "/qr", "/qr-kit"], async (req, res, next) => {
+    try {
+      const html = await postersPage({
+        reqHost: getRequestHost(req),
+        downloadsDir
+      });
+      return res.type("html").send(html);
+    } catch (err) {
+      return next(err);
+    }
+  });
+
+  router.get("/qr/:asset", async (req, res, next) => {
+    try {
+      const raw = String(req.params.asset || "").trim().toLowerCase();
+      const host = getRequestHost(req);
+      const origin = `https://${host}`;
+      if (raw === "consumer.png" || raw === "vendor.png") {
+        const role = raw.startsWith("vendor") ? "vendor" : "consumer";
+        const buf = await generateScanPngBuffer(`${origin}/install/${role}`, 720);
+        res.setHeader("Content-Type", "image/png");
+        res.setHeader("Content-Disposition", `inline; filename="FixIt-${role}-install.png"`);
+        res.setHeader("Cache-Control", "public, max-age=300");
+        return res.send(buf);
+      }
+      if (raw === "consumer.svg" || raw === "vendor.svg") {
+        const role = raw.startsWith("vendor") ? "vendor" : "consumer";
+        const svg = await generateScanSvg(`${origin}/install/${role}`, 320);
+        res.setHeader("Content-Type", "image/svg+xml; charset=utf-8");
+        res.setHeader("Cache-Control", "public, max-age=300");
+        return res.send(svg);
+      }
+      return renderNotFoundPage(req, res);
+    } catch (err) {
+      return next(err);
+    }
+  });
+
   router.get("/download/:app", (req, res) => {
     const key = String(req.params.app || "").trim().toLowerCase();
-    if (key === "consumer") return res.redirect(302, "/downloads/FixIt-Consumer.apk");
-    if (key === "vendor") return res.redirect(302, "/downloads/FixIt-Vendor.apk");
+    if (key === "consumer") return sendApkFile(req, res, downloadsDir, "FixIt-Consumer.apk");
+    if (key === "vendor") return sendApkFile(req, res, downloadsDir, "FixIt-Vendor.apk");
     return renderNotFoundPage(req, res);
   });
 
   router.get("/downloads/:file", (req, res) => {
     const file = String(req.params.file || "");
-    if (!ALLOWED_APKS.has(file)) {
-      return renderNotFoundPage(req, res);
-    }
-    const resolved = path.join(downloadsDir, file);
-    if (!fs.existsSync(resolved)) {
-      return renderNotFoundPage(req, res);
-    }
-    res.setHeader("Content-Type", "application/vnd.android.package-archive");
-    res.setHeader("Content-Disposition", `attachment; filename="${file}"`);
-    return res.sendFile(resolved);
+    return sendApkFile(req, res, downloadsDir, file);
   });
 
   return router;

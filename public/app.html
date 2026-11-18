@@ -2847,10 +2847,33 @@ const isOpenScreen = n => S.stack.length && S.stack[S.stack.length - 1] === n;
 const busyTyping = () => { const a = document.activeElement; return Boolean(a && (a.tagName === "INPUT" || a.tagName === "TEXTAREA" || a.tagName === "SELECT")); };
 
 /* ---------- navigation ---------- */
-function tab(n) { S.tab = n; S.stack = []; S.jobId = null; S._navChanged = true; scrollTo(0, 0); render(); }
+function pushNavHistoryState() {
+  try {
+    if (typeof window !== "undefined" && !window.FixItNative && window.history && window.history.pushState) {
+      window.history.pushState({ fxDepth: (S.stack ? S.stack.length : 0), fxTab: S.tab }, "");
+    }
+  } catch (e) {}
+}
+function tab(n, isBackNav) {
+  if (!isBackNav && S.tab && S.tab !== n) {
+    if (!Array.isArray(S.tabHist)) S.tabHist = [];
+    if (S.tabHist[S.tabHist.length - 1] !== S.tab) {
+      S.tabHist.push(S.tab);
+      if (S.tabHist.length > 12) S.tabHist.shift();
+    }
+    pushNavHistoryState();
+  }
+  S.tab = n;
+  S.stack = [];
+  S.jobId = null;
+  S._navChanged = true;
+  scrollTo(0, 0);
+  render();
+}
 function go(screen, id) {
   if (S.stack[S.stack.length - 1] !== screen) {
     S.stack.push(screen);
+    pushNavHistoryState();
   }
   S._navChanged = true;
   if (screen === "support_chat" && id) S.ticketId = id;
@@ -2860,10 +2883,29 @@ function go(screen, id) {
   if (screen === "support_chat") setTimeout(() => { const c = document.getElementById("supportChat"); if (c) c.scrollTop = c.scrollHeight; }, 30);
 }
 function back() {
-  if (!S.auth || !S.auth.loggedIn || !S.auth.sessionCode || S.stack[S.stack.length - 1] === "auth") {
-    if (S.sheet) { S.sheet = null; render(); return true; }
-    if (S.auth && S.auth.channelSheetOpen) { S.auth.channelSheetOpen = false; render(); return true; }
-    if (S.auth && S.auth.mode === "otp_verify") {
+  const ar = L === "ar";
+  if (S.cameraModal && typeof closeInAppCameraModal === "function") {
+    closeInAppCameraModal();
+    return true;
+  }
+  if (S.previewImg) {
+    S.previewImg = null;
+    render();
+    return true;
+  }
+  if (S.sheet) {
+    S.sheet = null;
+    render();
+    return true;
+  }
+  const onAuth = !S.auth || !S.auth.loggedIn || !S.auth.sessionCode || S.auth.needsProfileCompletion || S.auth.mode === "complete_profile" || S.stack[S.stack.length - 1] === "auth";
+  if (onAuth) {
+    if (S.auth && S.auth.channelSheetOpen) {
+      S.auth.channelSheetOpen = false;
+      render();
+      return true;
+    }
+    if (S.auth && (S.auth.mode === "otp_verify" || S.auth.mode === "reset_pass")) {
       S.auth.mode = S.auth.linkGoogleMode ? "google_phone" : "phone";
       S.auth.channelSheetOpen = false;
       save("auth_state", S.auth);
@@ -2884,18 +2926,40 @@ function back() {
       render();
       return true;
     }
-    if (S.auth && S.auth.mode === "phone") {
+    if (S.auth && (S.auth.mode === "phone" || S.auth.mode === "signup" || S.auth.mode === "forgot_pass")) {
       S.auth.mode = ROLE === "admin" ? "admin" : "welcome";
       save("auth_state", S.auth);
       render();
       return true;
     }
+    if (S.stack.length && S.stack[S.stack.length - 1] === "auth") {
+      S.stack.pop();
+      S._navChanged = true;
+      render();
+      return true;
+    }
     if (S.auth && S.auth.mode === "complete_profile") {
-      return false;
+      toast(ar ? "يرجى إكمال اسمك أولاً للمتابعة" : "Please enter your name first to continue");
+      return true;
+    }
+    if (typeof window !== "undefined" && window.FixItNative) {
+      const now = Date.now();
+      if (!window._lastExitBackAt || (now - window._lastExitBackAt) > 2200) {
+        window._lastExitBackAt = now;
+        toast(ar ? "اضغط رجوع مرة أخرى للخروج" : "Press back again to exit");
+        return true;
+      }
     }
     return false;
   }
-  if (S.sheet) { S.sheet = null; render(); return true; }
+  const top = S.stack[S.stack.length - 1];
+  if (top === "book" && S.draft && S.draft.step > 1) {
+    S.draft.step -= 1;
+    S._navChanged = true;
+    scrollTo(0, 0);
+    render();
+    return true;
+  }
   if (S.stack.length) {
     const popped = S.stack.pop();
     while (S.stack.length && S.stack[S.stack.length - 1] === popped) {
@@ -2906,11 +2970,39 @@ function back() {
     render();
     return true;
   }
+  if (Array.isArray(S.tabHist) && S.tabHist.length) {
+    const prevTab = S.tabHist.pop();
+    if (prevTab && prevTab !== S.tab) {
+      tab(prevTab, true);
+      return true;
+    }
+  }
   const home = ROLE === "vendor" ? "jobs" : ROLE === "admin" ? "overview" : "home";
-  if (S.tab !== home) { tab(home); return true; }
+  if (S.tab !== home) {
+    tab(home, true);
+    return true;
+  }
+  if (typeof window !== "undefined" && window.FixItNative) {
+    const now = Date.now();
+    if (!window._lastExitBackAt || (now - window._lastExitBackAt) > 2200) {
+      window._lastExitBackAt = now;
+      toast(ar ? "اضغط رجوع مرة أخرى للخروج" : "Press back again to exit");
+      return true;
+    }
+  }
   return false;
 }
 window.handleAndroidBack = back;
+if (typeof window !== "undefined" && !window.FixItNative && window.history && window.history.replaceState) {
+  try {
+    window.history.replaceState({ fxAnchor: true }, "");
+    window.addEventListener("popstate", function () {
+      if (back()) {
+        try { window.history.pushState({ fxDepth: (S.stack ? S.stack.length : 0), fxTab: S.tab }, ""); } catch (e) {}
+      }
+    });
+  } catch (e) {}
+}
 window.onAppResume = () => { sendSessionHeartbeat(); sync(); };
 const scrollChat = () => setTimeout(() => { const c = document.getElementById("chat"); if (c) c.scrollTop = c.scrollHeight; }, 30);
 
@@ -4597,7 +4689,10 @@ function authScreen() {
     return `<div class="tlbt-auth-page">
       <div class="tlbt-auth-hero">
         <div class="row" style="justify-content:space-between;position:relative;z-index:2">
-          <button type="button" class="tlbt-circ-btn" aria-label="${ar ? "رجوع" : "Back"}" onclick="if(S.stack.length){S.stack.pop();}render()">${I("back", "flip")}</button>
+          ${isBackable
+            ? `<button type="button" class="tlbt-circ-btn" aria-label="${ar ? "رجوع" : "Back"}" onclick="back()">${I("back", "flip")}</button>`
+            : `<div style="min-height:44px;padding:0 12px;border-radius:999px;background:rgba(255,255,255,.78);border:1px solid rgba(65,21,23,.08);display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:#411517"><span style="width:16px;height:16px;display:inline-grid;place-items:center;color:#FF5A00">${I("pin")}</span><span>${ar ? "صلالة · عُمان" : "Salalah · Oman"}</span></div>`
+          }
           <button type="button" class="tlbt-lang-pill" onclick="setLang(L==='en'?'ar':'en')">${I("globe")}<span>${L === "en" ? "عربي" : "EN"}</span></button>
         </div>
 
@@ -4658,9 +4753,6 @@ function authScreen() {
             <span style="font-weight:800">${window._biometricBusy ? (ar ? "جاري التحقق..." : "Verifying...") : (ar ? "الدخول بالبصمة أو الوجه" : "Sign in with Fingerprint / Face")}</span>
             ${getBiometricSavedHint() ? `<span dir="ltr" style="font-size:12px;font-weight:600;color:rgba(255,255,255,.72);margin-inline-start:4px">${esc(getBiometricSavedHint())}</span>` : ""}
           </button>` : ""}
-          <button type="button" class="tlbt-pill-btn outline" style="height:48px;font-size:14.5px;color:#4B5563" onclick="if(S.stack.length){S.stack.pop();}render()">
-            <span>${ar ? "تصفح الخدمات أولاً" : "Browse services first"}</span>
-          </button>
         </div>
       </div>
     </div>`;
@@ -6570,7 +6662,6 @@ const bar = (title, withBack, right) => {
   if (!withBack && S.stack.length === 0 && S.tab === "home") {
     const a = defAddr();
     const unreadNotifs = (S.notifs || []).filter(n => !isNotifRead(n)).length;
-    const activeJob = myJobs().find(j => j && j.status !== "COMPLETED" && j.status !== "CANCELLED");
     return `<div class="fx-top-bar hdr-home">
       <div class="fx-loc-picker" onclick="S.sheet='loc_picker';render()">
         <div class="fx-loc-icon">${I("pin")}</div>
@@ -6579,12 +6670,6 @@ const bar = (title, withBack, right) => {
           <div class="fx-loc-addr ell">${esc(a.label)} · ${esc(addrText(a))} <span style="font-size:10px">▼</span></div>
         </div>
       </div>
-      <button type="button" class="hdr-gps-pill" onclick="event.stopPropagation();quickDetectHomeGps()" title="Auto-detect GPS">
-        ${I("radar")}<span>${ar ? "موقعي" : "GPS"}</span>
-      </button>
-      ${activeJob ? `<button type="button" class="hdr-gps-pill" style="background:rgba(0,0,0,.24)" onclick="go('job','${activeJob.job_id}')">
-        <span>#${esc(activeJob.short_id || String(activeJob.job_id).slice(0, 5))}</span>
-      </button>` : ""}
       <button type="button" class="fx-circle-btn" onclick="go('notifs')">${I("bell")}${unreadNotifs ? `<span class="badge" style="position:absolute;top:-3px;right:-3px">${unreadNotifs}</span>` : ""}</button>
     </div>`;
   }
@@ -6770,7 +6855,6 @@ function jobChatScreen() {
 function cHome() {
   const act = myJobs().filter(j => !isDone(j));
   const ar = L === "ar";
-  const isSignedIn = Boolean(S.auth && S.auth.loggedIn && S.auth.sessionCode && !S.auth.isGuest);
   const top = [["AC_REPAIR", ar ? "صيانة المكيفات" : "AC Services", ar ? "تبريد سريع وفوري" : "Fast cooling fix"], ["CLEANER", ar ? "تنظيف المنازل" : "Home Cleaning", ar ? "تنظيف شامل وعميق" : "Deep & sparkling"]];
   const pop = [
     ["AC_REPAIR", ar ? "فحص وتبريد وغاز" : "Cooling & gas service", ar ? "~30 دقيقة" : "~30 min"],
@@ -6783,14 +6867,6 @@ function cHome() {
   return `${bar("FixIt", false)}
   <div class="hero-search"><div class="fx-search" onclick="openBookPage()">${I("search")}<input readonly placeholder="${ar ? "ابحث أو اطلب: تكييف، سباكة، كهرباء، تنظيف…" : "Search or order AC, plumbing, electrical…"}"></div></div>
   <div class="pad">
-    ${!isSignedIn ? `<div class="card row" style="justify-content:space-between;gap:12px;border:1.5px solid var(--o3);background:var(--o2)">
-      <div class="sp">
-        <div class="t1" style="font-size:15px">${ar ? "سجّل دخولك لمتابعة طلباتك والمحفظة" : "Sign in for live order tracking & wallet"}</div>
-        <div class="t2" style="font-size:12.5px">${ar ? "برقم الهاتف أو Google أو البصمة" : "Phone number, Google, or Biometrics"}</div>
-      </div>
-      <button type="button" class="btn s" style="width:auto;padding:0 16px" onclick="openAuthScreen('welcome')">${ar ? "دخول" : "Sign In"}</button>
-    </div>` : ""}
-
     ${act.length ? `<div class="live" onclick="go('job','${act[0].job_id}')">
       <div class="ring">${I(cat(act[0].category_id).icon)}</div>
       <div class="sp"><div class="row" style="gap:6px"><span class="dot"></span><span style="font-size:12px;font-weight:700;opacity:.8">${t(act[0].status)} · ${sid(act[0])}</span></div>
@@ -6801,6 +6877,8 @@ function cHome() {
 
     <div class="fx-grid">${CATS.filter(c => c[0] !== "AC_REPAIR" && c[0] !== "CLEANER").map(c => `
       <button class="fx-cat-card" onclick="${book(c[0])}"><div class="fx-cat-icon" style="color:${ccol(c[0])}">${I(c[1])}</div><div class="fx-cat-label">${ar ? c[3] : c[2]}</div></button>`).join("")}</div>
+
+    ${aadsSlotHtml("margin:4px 0;")}
 
     <div class="hscroll">
       <div class="promo" style="background:linear-gradient(120deg,#FF5A00,#FF8A3D)" onclick="go('coupons')"><div><h3>${ar ? "عروض وخصومات حصرية" : "Exclusive member offers"}</h3><p>${ar ? "فعّل رمز SALALAH25 في طلبك القادم" : "Apply code SALALAH25 on your booking"}</p></div><span class="cta">${ar ? "عرض الكوبونات" : "View offers"}</span>${I("tag")}</div>
@@ -8797,7 +8875,7 @@ function aboutScreen() {
     <div class="card" style="text-align:center;padding:24px 18px;display:flex;flex-direction:column;align-items:center;gap:10px">
       <img src="logo.png" onerror="this.onerror=null;this.src='/logo.png'" alt="FixIt Logo" style="width:76px;height:76px;border-radius:20px;object-fit:cover;box-shadow:0 8px 24px rgba(255,90,0,.28);display:block" />
       <div style="font-size:22px;font-weight:900">FixIt · فيكس إت</div>
-      <div class="t2" style="font-size:13px">Version 3.3.7 · Salalah, Sultanate of Oman</div>
+      <div class="t2" style="font-size:13px">Version 3.4.1 · Salalah, Sultanate of Oman</div>
       <div class="pill ok" style="margin-top:4px">https://fixit-now.xyz</div>
     </div>
 
@@ -8808,10 +8886,19 @@ function aboutScreen() {
         : "FixIt (fixit-now.xyz) connects homeowners and businesses across Salalah and Dhofar with verified technicians for AC repair, plumbing, electrical work, deep cleaning, and pest control. Describe your repair need with live camera photos and video, compare competitive bids from nearby pros, and pay only after accepting an offer."}</p>
       <div style="border-top:1px solid var(--ln);padding-top:10px;display:flex;flex-direction:column;gap:6px;font-size:13px">
         <div><b>${ar ? "الموقع الرسمي:" : "Official Website:"}</b> <span dir="ltr">https://fixit-now.xyz</span></div>
+        <div><b>${ar ? "التثبيت المباشر (أندرويد):" : "Direct Android Download:"}</b> <span dir="ltr">https://fixit-now.xyz/install/consumer</span></div>
         <div><b>${ar ? "البريد الإلكتروني للدعم:" : "Support Email:"}</b> <span dir="ltr">${SUPPORT_EMAIL}</span></div>
         <div><b>${ar ? "دعم واتساب:" : "WhatsApp Support:"}</b> <span dir="ltr">${SUPPORT_PHONE_DISPLAY}</span></div>
         <div><b>${ar ? "مركز العمليات:" : "Operations Hub:"}</b> Salalah Central, Dhofar Governorate, Oman</div>
       </div>
+    </div>
+
+    <div class="card" style="display:flex;flex-direction:column;gap:8px;line-height:1.5;font-size:13px;color:#374151">
+      <div class="t1" style="font-size:15.5px">${ar ? "التقدير والاعتمادات للأطراف الثالثة والمصادر المفتوحة" : "Third-Party Credits & Open Source Attributions"}</div>
+      <div>• <b>Talabat / Delivery Hero SE:</b> ${ar ? "استلهام أنماط تجربة المستخدم الحديثة وشبكة الفئات (مع بقاء FixIt منصة عُمانية مستقلة تماماً)." : "UI/UX layout patterns and navigation inspiration (FixIt remains a completely independent Omani platform)."}</div>
+      <div>• <b>A-Ads (aads.com):</b> ${ar ? "مزود مساحات الإعلانات المستقلة داخل التطبيق." : "Independent sponsored advertisement placement network."}</div>
+      <div>• <b>OpenStreetMap &amp; Leaflet.js:</b> ${ar ? "خرائط تفاعلية مفتوحة المصدر وتحديد المواقع الجغرافية." : "Interactive OpenStreetMap map tiles and Leaflet vector routing."}</div>
+      <div>• <b>Lucide, Material Icons &amp; Noto / TT Commons Fonts:</b> ${ar ? "الأيقونات المتجهة والخطوط العربية والإنجليزية." : "Open-source iconography and Arabic/Latin typography."}</div>
     </div>
 
     <div class="card" style="padding:0 16px">
@@ -8914,8 +9001,8 @@ function legalScreen() {
       <div class="t1" style="font-size:17px">${ar ? "الوثائق القانونية الرسمية لمنصة FixIt" : "FixIt Official Legal Documentation"}</div>
       <div class="t2" style="font-size:12.5px;line-height:1.45">
         ${ar
-          ? "تخضع جميع خدمات الصيانة المنزلية وخدمات الطرق والتاكسي عبر تطبيق FixIt (fixit-now.xyz) للشروط والسياسات القانونية الموضحة أدناه. منصة FixIt مستقلة تماماً وغير تابعة لشركة طلبات (FixIt) أو Delivery Hero بأي شكل."
-          : "All home maintenance, roadside recovery, and transport services booked via FixIt (fixit-now.xyz) are governed by the policies below. FixIt is an independent platform and is NOT affiliated with FixIt or Delivery Hero SE in any way."}
+          ? "تخضع جميع خدمات الصيانة المنزلية وخدمات الطرق والتاكسي عبر تطبيق FixIt (fixit-now.xyz) للشروط والسياسات القانونية الموضحة أدناه. منصة FixIt مستقلة تماماً وغير تابعة لشركة طلبات (Talabat) أو Delivery Hero بأي شكل، مع التقدير للأنماط التصميمية والمكتبات المفتوحة المستخدمة."
+          : "All home maintenance, roadside recovery, and transport services booked via FixIt (fixit-now.xyz) are governed by the policies below. FixIt is an independent platform and is NOT affiliated with Talabat or Delivery Hero SE in any way, while crediting UI/UX design inspirations and open-source libraries."}
       </div>
     </div>
 
@@ -8924,7 +9011,7 @@ function legalScreen() {
         <div class="ico">${I("list")}</div>
         <div class="sp">
           <div class="t1">${ar ? "1. شروط الخدمة (Terms of Service)" : "1. Terms of Service"}</div>
-          <div class="t2">${ar ? "قواعد الاستخدام، إخلاء المسؤولية، استقلالية المنصة، وإنهاء الحساب" : "Acceptable use, non-affiliation with FixIt, liability & account rules"}</div>
+          <div class="t2">${ar ? "قواعد الاستخدام، إخلاء المسؤولية، استقلالية المنصة، وإنهاء الحساب" : "Acceptable use, non-affiliation with Talabat, liability & account rules"}</div>
         </div>
         ${I("next","flip")}
       </button>
@@ -8955,8 +9042,8 @@ function legalScreen() {
       <button class="li" onclick="go('about')">
         <div class="ico">${I("box")}</div>
         <div class="sp">
-          <div class="t1">${ar ? "5. العلامة التجارية والتراخيص (Trademark & Licenses)" : "5. Trademark, Licensing & Company Info"}</div>
-          <div class="t2">FixIt® · fixit-now.xyz · WhatsApp: +968 9595 6361</div>
+          <div class="t1">${ar ? "5. العلامة التجارية والتراخيص والشكر (Credits & Licenses)" : "5. Trademark, Credits & Licensing Info"}</div>
+          <div class="t2">FixIt® · fixit-now.xyz · Third-Party Attributions</div>
         </div>
         ${I("next","flip")}
       </button>
@@ -8973,10 +9060,10 @@ function tosScreen() {
       <div class="t2" style="font-size:12px">${ar ? "تاريخ السريان: نوفمبر 2026 · صلالة، سلطنة عُمان" : "Effective Date: November 2026 · FixIt Marketplace (Salalah, Sultanate of Oman)"}</div>
 
       <div style="background:#FFF7ED;border:1.5px solid #FDBA74;border-radius:12px;padding:10px 12px;font-size:12.5px;color:#9A3412">
-        <b>${ar ? "إقرار استقلالية العلامة التجارية وعدم التبعية:" : "Mandatory Non-Affiliation Notice:"}</b><br/>
+        <b>${ar ? "إقرار استقلالية العلامة التجارية والتقدير:" : "Mandatory Non-Affiliation & Attribution Notice:"}</b><br/>
         ${ar
-          ? "منصة FixIt (fixit-now.xyz) هي سوق تقني عُماني مستقل تماماً، وليست تابعة أو شريكة أو مرتبطة بأي شكل من الأشكال بشركة طلبات (FixIt) أو Delivery Hero SE أو Uber أو A-Ads."
-          : "FixIt (fixit-now.xyz) is an independent Omani marketplace and is NOT affiliated with, endorsed by, sponsored by, or related in ANY kind of relation to FixIt, Delivery Hero SE, Uber Technologies Inc., or A-Ads."}
+          ? "منصة FixIt (fixit-now.xyz) هي سوق تقني عُماني مستقل تماماً، وليست تابعة أو شريكة أو مرتبطة بأي شكل من الأشكال بشركة طلبات (Talabat) أو Delivery Hero SE أو Uber أو A-Ads، مع حفظ جميع الحقوق لأصحابها."
+          : "FixIt (fixit-now.xyz) is an independent Omani marketplace and is NOT affiliated with, endorsed by, sponsored by, or related in ANY kind of relation to Talabat, Delivery Hero SE, Uber Technologies Inc., or A-Ads. All trademarks and credits belong to their respective owners."}
       </div>
 
       <div class="t1" style="font-size:15px;color:var(--tx)">${ar ? "1. الأهلية، التسجيل عبر واتساب، والدخول بالبصمة" : "1. Eligibility, WhatsApp OTP & Biometric Authentication"}</div>
@@ -10061,7 +10148,6 @@ function vJobs() {
   const unreadNotifs = (S.notifs || []).filter(n => !isNotifRead(n)).length;
   const walletBal = Number((S.wallet && S.wallet.balance) || 0);
   const a = defAddr();
-  const isSignedIn = Boolean(S.auth && S.auth.loggedIn && S.auth.sessionCode && !S.auth.isGuest);
 
   return `<div class="fx-top-bar hdr-home">
     <div class="fx-loc-picker" onclick="S.sheet='loc_picker';render()">
@@ -10071,9 +10157,6 @@ function vJobs() {
         <div class="fx-loc-addr ell">${esc(a.label)} · ${esc(addrText(a))} <span style="font-size:10px">▼</span></div>
       </div>
     </div>
-    <button type="button" class="hdr-gps-pill" onclick="event.stopPropagation();quickDetectHomeGps()">
-      ${I("radar")}<span>${ar ? "موقعي" : "GPS"}</span>
-    </button>
     <button type="button" class="hdr-gps-pill" style="background:${S.online ? "rgba(0,168,98,.92)" : "rgba(0,0,0,.28)"}" onclick="S.online=!S.online;save('online',S.online);render()">
       <span>● ${S.online ? (ar ? "متصل" : "Online") : (ar ? "متوقف" : "Offline")}</span>
     </button>
@@ -10088,14 +10171,6 @@ function vJobs() {
   </div>
 
   <div class="pad">
-    ${!isSignedIn ? `<div class="card row" style="justify-content:space-between;gap:12px;border:1.5px solid var(--o3);background:var(--o2)">
-      <div class="sp">
-        <div class="t1" style="font-size:15px">${ar ? "سجّل دخولك كشريك معتمد" : "Sign in to your Partner Account"}</div>
-        <div class="t2" style="font-size:12.5px">${ar ? "لتقديم عروض الأسعار واستلام الأرباح في محفظتك" : "Submit price offers and receive instant payouts"}</div>
-      </div>
-      <button type="button" class="btn s" style="width:auto;padding:0 16px" onclick="openAuthScreen('welcome')">${ar ? "دخول" : "Sign In"}</button>
-    </div>` : ""}
-
     ${activeMine.length ? `<div class="live" onclick="go('job','${activeMine[0].job_id}')">
       <div class="ring">${I(cat(activeMine[0].category_id).icon)}</div>
       <div class="sp">
@@ -10132,6 +10207,8 @@ function vJobs() {
       <button type="button" class="chip ${catFilter === "ALL" ? "on" : ""}" style="height:36px;font-size:12.5px" onclick="S.vCatFilter='ALL';render()">${ar ? "الكل" : "All"}</button>
       ${CATS.map(ct => `<button type="button" class="chip ${catFilter === ct[0] ? "on" : ""}" style="height:36px;font-size:12.5px" onclick="S.vCatFilter='${ct[0]}';render()">${ar ? ct[3] : ct[2]}</button>`).join("")}
     </div>` : ""}
+
+    ${aadsSlotHtml("margin:4px 0;")}
 
     ${!S.online
       ? empty("power", ar ? "اضغط على زر (متصل) في الأعلى لاستقبال الطلبات القريبة" : "Tap Online in the top bar to receive nearby requests")
@@ -10884,7 +10961,7 @@ const NAV = {
   vendor: [["jobs","home","jobs"],["shop","box","Shop"],["chats","chat","chats"],["wallet","wallet","wallet"],["account","user","account"]],
   admin: [["overview","grid","overview"],["shops","box","Shops"],["analytics","star","Analytics"],["orders","list","orders"],["users","users","users"],["escrow","wallet","escrow"]]
 };
-const APP_VERSION_CODE = 168;
+const APP_VERSION_CODE = 169;
 let _appControlTimer = null;
 function checkAppControlStatus() {
   fetch(`https://fixit-now.xyz/api/app/status?role=${encodeURIComponent(ROLE || "consumer")}`)
@@ -10954,14 +11031,27 @@ function updateGateScreen() {
   return `<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;background:#fff;">
     <div style="width:64px;height:64px;border-radius:16px;background:#FFF4ED;color:#FF5A00;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">${I("download")}</div>
     <h1 style="font-size:22px;font-weight:700;color:#111827;margin:0 0 8px;">Update available</h1>
-    <p style="font-size:14px;color:#6B7280;margin:0 0 24px;max-width:280px;">Update instantly inside the app without reinstalling the APK.</p>
+    <p style="font-size:14px;color:#6B7280;margin:0 0 24px;max-width:280px;">Update instantly inside the app or download the latest APK directly.</p>
     ${hasNativeOta ? `<button onclick="window.FixItNative.checkAndApplyOtaUpdate('${ROLE || "consumer"}');toast('Applying in-app update...');" style="display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 24px;border-radius:12px;background:#FF5A00;color:#fff;font-size:15px;font-weight:700;border:0;margin-bottom:10px;cursor:pointer;">Update In-App Now</button>` : ""}
     <a href="${url}" target="_blank" style="display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 20px;border-radius:12px;background:#F3F4F6;color:#374151;font-size:13.5px;font-weight:600;text-decoration:none;">Download APK Fallback</a>
   </div>`;
 }
 
-function aadsSlotHtml() {
-  return "";
+function aadsSlotHtml(extraStyle) {
+  if (typeof navigator !== "undefined" && navigator.onLine === false) return "";
+  const ar = L === "ar";
+  return `<div class="fx-ad-slot no-print" role="region" aria-label="Sponsored Advertisement" style="margin:10px 0;border-radius:16px;overflow:hidden;border:1px solid var(--ln);background:#FFFFFF;box-shadow:var(--sh);${extraStyle || ""}">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:#F8FAFC;border-bottom:1px solid var(--ln);font-size:10.5px;font-weight:800;letter-spacing:.04em;color:#64748B;">
+      <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:var(--o)"></span>${ar ? "مساحة دعائية · A-Ads" : "SPONSORED · A-ADS"}</span>
+      <a href="https://aads.com/privacy_policy" target="_blank" rel="noopener noreferrer" style="color:#64748B;text-decoration:none;font-weight:700;">${ar ? "إعلان طرف ثالث" : "Ad · A-Ads Privacy"}</a>
+    </div>
+    <div style="position:relative;min-height:84px;background:linear-gradient(135deg,#FAFAFA,#F3F4F6);display:flex;align-items:center;justify-content:center;">
+      <div aria-hidden="true" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;user-select:none;z-index:0;">
+        <span style="font-size:11px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:#9CA3AF;">SPONSORED BY A-ADS</span>
+      </div>
+      <iframe data-aa="2461953" src="https://acceptable.a-ads.com/2461953/?size=Adaptive" referrerpolicy="no-referrer-when-downgrade" loading="lazy" scrolling="no" frameborder="0" style="position:relative;z-index:1;width:100%;height:84px;border:0;overflow:hidden;display:block;background:transparent;"></iframe>
+    </div>
+  </div>`;
 }
 
 function screen() {
@@ -10971,10 +11061,7 @@ function screen() {
   if (ROLE !== "admin" && S.appControl && (S.appControl.forceUpdate || (S.appControl.minVersionCode && APP_VERSION_CODE < S.appControl.minVersionCode))) {
     return updateGateScreen();
   }
-  if (ROLE === "admin" && (!S.auth || !S.auth.loggedIn || !S.auth.sessionCode)) {
-    return authScreen();
-  }
-  if (S.auth && (S.auth.needsProfileCompletion || S.auth.mode === "complete_profile")) {
+  if (!S.auth || !S.auth.loggedIn || !S.auth.sessionCode || S.auth.needsProfileCompletion || S.auth.mode === "complete_profile") {
     return authScreen();
   }
   const s = S.stack[S.stack.length - 1];
@@ -11014,6 +11101,11 @@ function screen() {
     }[ROLE];
     html = (m[S.tab] || Object.values(m)[0])();
   }
+  const adScreens = new Set(["wallet", "job", "job_chat", "book", "checkout", "shop_kyc", "account_info", "tracking", "support_chat", "addresses", "coupons", "tickets", "notifs", "settings", "about", "legal", "tos", "privacy", "refund_policy", "cookie_policy"]);
+  const adTabs = new Set(["orders", "shop", "chats", "wallet", "account"]);
+  if (ROLE !== "admin" && ((s && adScreens.has(s)) || (!s && adTabs.has(S.tab)))) {
+    html += `<div style="padding:0 16px 8px">${aadsSlotHtml()}</div>`;
+  }
   return html;
 }
 // Update existing Leaflet map markers & polyline in-place without recreating the map!
@@ -11034,8 +11126,8 @@ function updateFixItMapInPlace(containerId, jobId) {
 
 function render() {
   const u = totalUnread();
-  const isLockedAuth = (ROLE === "admin" && (!S.auth || !S.auth.loggedIn || !S.auth.sessionCode)) || Boolean(S.auth && (S.auth.needsProfileCompletion || S.auth.mode === "complete_profile"));
-  const isAuthScreen = isLockedAuth || (S.stack.length > 0 && S.stack[S.stack.length - 1] === "auth");
+  const isLoggedOut = (!S.auth || !S.auth.loggedIn || !S.auth.sessionCode || S.auth.needsProfileCompletion || S.auth.mode === "complete_profile");
+  const isAuthScreen = isLoggedOut || (S.stack.length > 0 && S.stack[S.stack.length - 1] === "auth");
   const nav = (S.stack.length > 0 || isAuthScreen) ? "" : `<nav class="nav">${NAV[ROLE].map(n => n[0] === "__post__"
     ? `<button class="nav-plus" onclick="openBookPage()" aria-label="Order Service"><span class="nav-plus-ic">+</span><span>${L === "ar" ? "طلب" : "Order"}</span></button>`
     : `<button class="${S.tab === n[0] ? "on" : ""}" onclick="tab('${n[0]}')">${I(n[1])}${t(n[2])}${n[0] === "chats" && u ? `<span class="badge">${u}</span>` : ""}${ROLE === "admin" && n[0] === "orders" && S.jobs.filter(j => j.status === "OPEN").length ? `<span class="badge">${S.jobs.filter(j => j.status === "OPEN").length}</span>` : ""}</button>`).join("")}</nav>`;

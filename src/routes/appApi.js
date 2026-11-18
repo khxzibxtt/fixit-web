@@ -1585,7 +1585,7 @@ function createAppApiRouter() {
     maintenanceMessage: "We are upgrading FixIt to serve you better.",
     maintenanceUntil: null,
     minVersionCode: 165,
-    latestVersionCode: 168,
+    latestVersionCode: 169,
     forceUpdate: false,
     updatedAt: new Date().toISOString()
   };

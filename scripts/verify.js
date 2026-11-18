@@ -239,13 +239,38 @@ async function run() {
       const vBuf = Buffer.from(await vRes.arrayBuffer());
       assert(vBuf.length > 100000 && vBuf[0] === 0x50 && vBuf[1] === 0x4b, "FixIt-Vendor.apk invalid ZIP/APK header");
 
+      const cAliasRes = await fetch(`${base}/download/consumer`);
+      assert.strictEqual(cAliasRes.status, 200, "/download/consumer must return direct 200 APK");
+      const cAliasBuf = Buffer.from(await cAliasRes.arrayBuffer());
+      assert(cAliasBuf.length > 100000 && cAliasBuf[0] === 0x50 && cAliasBuf[1] === 0x4b, "/download/consumer invalid APK");
+
+      const vAliasRes = await fetch(`${base}/download/vendor`);
+      assert.strictEqual(vAliasRes.status, 200, "/download/vendor must return direct 200 APK");
+      const vAliasBuf = Buffer.from(await vAliasRes.arrayBuffer());
+      assert(vAliasBuf.length > 100000 && vAliasBuf[0] === 0x50 && vAliasBuf[1] === 0x4b, "/download/vendor invalid APK");
+
       const aRes = await fetch(`${base}/downloads/FixIt-Admin.apk`);
       assert.strictEqual(aRes.status, 404, "FixIt-Admin.apk MUST return 404");
 
       const aAliasRes = await fetch(`${base}/download/admin`);
       assert.strictEqual(aAliasRes.status, 404, "/download/admin MUST return 404");
 
-      ok("APK download whitelist verified (Consumer/Vendor 200, Admin 404)");
+      for (const instRoute of ["/install/consumer", "/install/vendor", "/posters"]) {
+        const iRes = await fetch(`${base}${instRoute}`);
+        assert.strictEqual(iRes.status, 200, `GET ${instRoute} returned ${iRes.status}`);
+        const iHtml = await iRes.text();
+        assert(iHtml.includes("<svg"), `${instRoute} missing scannable SVG matrix`);
+        assertCleanPageContent(instRoute, iHtml);
+      }
+
+      for (const qrAsset of ["/qr/consumer.png", "/qr/vendor.png"]) {
+        const qRes = await fetch(`${base}${qrAsset}`);
+        assert.strictEqual(qRes.status, 200, `GET ${qrAsset} returned ${qRes.status}`);
+        const qBuf = Buffer.from(await qRes.arrayBuffer());
+        assert(qBuf.length > 500 && qBuf[0] === 0x89 && qBuf[1] === 0x50, `${qrAsset} invalid PNG`);
+      }
+
+      ok("APK direct download whitelist & QR install routes verified (Consumer/Vendor 200, Admin 404)");
     }
 
     // Support & Mail validation + telemetry
@@ -663,7 +688,7 @@ async function run() {
       const appStatusRes = await fetch(`${base}/api/app/status`);
       assert.strictEqual(appStatusRes.status, 200);
       const appStatusJson = await appStatusRes.json();
-      assert.strictEqual(appStatusJson.latestVersionCode, 168, "latestVersionCode must match v3.4.0 (168)");
+      assert.strictEqual(appStatusJson.latestVersionCode, 169, "latestVersionCode must match v3.4.1 (169)");
 
       // Quiet polling audit log filter check
       assert.strictEqual(isQuietPollingAudit({ event: "SESSION_HEARTBEAT", method: "POST", path: "/api/auth/session/heartbeat", status: 200 }), true);

@@ -87,9 +87,9 @@ function openAppPage({ reqHost = "fixit-web.onrender.com", reqPath = "/open", qu
                 <span>Copy Reward Code: ${escapeHtml(cleanPromo)}</span>
               </button>
             ` : ""}
-            <a href="/downloads/${escapeHtml(apkFileName)}" class="fx-btn fx-btn-outline" style="width:100%">
+            <a href="/install/${escapeHtml(targetRole)}" class="fx-btn fx-btn-outline" style="width:100%">
               ${ICONS.download}
-              <span>Download ${escapeHtml(appDisplayName)} Android App (v3.3.7)</span>
+              <span>Install ${escapeHtml(appDisplayName)} Android APK (v3.4.1)</span>
             </a>
           </div>
 

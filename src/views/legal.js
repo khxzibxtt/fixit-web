@@ -73,13 +73,13 @@ function partnerPage() {
             Receive real nearby repair requests with customer photos, videos, and pinned GPS coordinates. Quote only on the jobs that match your crew and Commercial Registration (CR).
           </p>
           <div style="display:flex;flex-wrap:wrap;gap:12px">
-            <a href="/downloads/FixIt-Vendor.apk" class="fx-btn fx-btn-primary fx-btn-lg">
+            <a href="/install/vendor" class="fx-btn fx-btn-primary fx-btn-lg">
               ${ICONS.download}
-              <span>Download FixIt Pro Vendor APK</span>
+              <span>Install FixIt Pro Partner APK (v3.4.1)</span>
             </a>
-            <a href="/support" class="fx-btn fx-btn-outline fx-btn-lg">
-              ${ICONS.mail}
-              <span>Partner Inquiry</span>
+            <a href="/posters" class="fx-btn fx-btn-outline fx-btn-lg">
+              ${ICONS.smartphone}
+              <span>Printable Shop Posters</span>
             </a>
           </div>
         </div>
@@ -125,6 +125,10 @@ function aboutPage() {
           </p>
           <div style="background:#FFF7ED;border:1px solid #FDBA74;border-radius:12px;padding:12px 14px;font-size:13.5px;color:#9A3412">
             <b>Independent Brand Notice:</b> FixIt is an independent Omani platform and is <b>NOT affiliated with, endorsed by, sponsored by, or connected in any kind of relation to Talabat, Delivery Hero SE, Uber</b>, or any other third-party delivery or ridesharing brand.
+          </div>
+          <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:14px;font-size:13.5px;color:#334155">
+            <b style="display:block;margin-bottom:6px;color:#0F172A">Third-Party Credits &amp; Open Source Attributions</b>
+            UI/UX navigation &amp; grid inspirations credited to modern on-demand marketplaces (Talabat pattern inspiration); maps powered by OpenStreetMap contributors and Leaflet.js; vector icons via Lucide and Google Material Design Icons; fonts via TT Commons Pro and Noto Sans Arabic; independent sponsorship via A-Ads.
           </div>
           <div style="border-top:1px solid var(--line);padding-top:14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;font-size:14px">
             <div><b>Service Region</b><br /><span style="color:var(--mu)">Salalah &amp; Governorate of Dhofar, Oman</span></div>

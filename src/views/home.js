@@ -66,8 +66,8 @@ const CATEGORIES = [
   }
 ];
 
-function homePage({ reqHost }) {
-  const origin = reqHost ? `https://${reqHost}` : "https://fixit-web.onrender.com";
+function homePage({ reqHost, cScanSvg = "", vScanSvg = "" }) {
+  const origin = reqHost ? `https://${reqHost}` : "https://fixit-now.xyz";
 
   const body = `
     <style>
@@ -267,38 +267,57 @@ function homePage({ reqHost }) {
       .trust-title { font-weight: 900; font-size: 16px; color: var(--neutral-black); margin-bottom: 2px; }
       .trust-desc { font-size: 13.5px; color: var(--neutral-gray); line-height: 1.4; }
 
-      /* ========== APP DOWNLOAD SHOWCASE ========== */
+      /* ========== APP DOWNLOAD & DIRECT INSTALL SHOWCASE ========== */
       .app-showcase {
         background: #FFFFFF;
         border: 1px solid var(--neutral-border);
         border-radius: 24px;
-        padding: 40px;
-        display: flex;
+        padding: 36px;
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
         align-items: center;
-        justify-content: space-between;
-        gap: 40px;
+        gap: 32px;
         margin-bottom: 48px;
         box-shadow: var(--shadow);
       }
-      @media (max-width: 860px) { .app-showcase { flex-direction: column; text-align: center; padding: 28px 20px; } }
+      @media (max-width: 900px) { .app-showcase { grid-template-columns: 1fr; padding: 24px 18px; } }
       .showcase-text h3 { font-size: 28px; font-weight: 900; margin-bottom: 10px; }
-      .showcase-text p { font-size: 15px; color: var(--neutral-gray); margin-bottom: 24px; max-width: 520px; line-height: 1.45; }
-      .download-btns { display: flex; gap: 14px; flex-wrap: wrap; }
-      @media (max-width: 860px) { .download-btns { justify-content: center; } }
+      .showcase-text p { font-size: 15px; color: var(--neutral-gray); margin-bottom: 20px; max-width: 540px; line-height: 1.5; }
+      .download-btns { display: flex; gap: 12px; flex-wrap: wrap; }
       .app-store-btn {
-        background: var(--neutral-black);
+        background: var(--primary);
         color: #fff;
-        padding: 12px 20px;
+        padding: 12px 18px;
         border-radius: 12px;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         gap: 12px;
         transition: opacity 0.15s;
       }
-      .app-store-btn:hover { opacity: 0.9; }
+      .app-store-btn:hover { opacity: 0.92; }
       .app-store-btn.vendor { background: #0F172A; border: 1.5px solid #334155; }
-      .as-sub { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.8; }
+      .as-sub { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.85; }
       .as-title { font-size: 14px; font-weight: 800; }
+      .scan-cards-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      @media (max-width: 520px) { .scan-cards-pair { grid-template-columns: 1fr; } }
+      .scan-card-box {
+        background: #F8FAFC;
+        border: 1.5px solid #E2E8F0;
+        border-radius: 18px;
+        padding: 16px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+      .scan-card-svg {
+        background: #FFFFFF;
+        border: 2px solid #0F172A;
+        border-radius: 14px;
+        padding: 8px;
+      }
+      .scan-card-svg svg { width: 132px; height: 132px; display: block; }
     </style>
 
     <!-- Talabat Hero Banner -->
@@ -390,32 +409,47 @@ function homePage({ reqHost }) {
         </div>
       </div>
 
-      <!-- App Download Showcase -->
-      <div class="app-showcase">
+      <!-- App Download & Direct Install Showcase -->
+      <div class="app-showcase" id="download">
         <div class="showcase-text">
-          <h3>Everything is easier in the FixIt App</h3>
+          <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;background:#FFF1E8;color:#FF5A00;font-size:11.5px;font-weight:900;margin-bottom:10px">OFFICIAL WEBSITE DISTRIBUTION · v3.4.1</span>
+          <h3>Direct Download — Official Android APKs</h3>
           <p>
-            Order in seconds, track your assigned pro live on the map, and chat directly in real-time. Download the official Android APKs below.
+            Install directly from our official website with no app store required. Share the direct install links or print counter posters for shops and partner workshops across Salalah.
           </p>
           <div class="download-btns">
-            <a href="/downloads/FixIt-Consumer.apk" class="app-store-btn">
+            <a href="/install/consumer" class="app-store-btn">
               ${ICONS.smartphone}
               <div>
-                <div class="as-sub">Customer App</div>
-                <div class="as-title">Download Consumer APK (v3.3.5)</div>
+                <div class="as-sub">Customer App · v3.4.1</div>
+                <div class="as-title">Install FixIt Customer</div>
               </div>
             </a>
-            <a href="/downloads/FixIt-Vendor.apk" class="app-store-btn vendor">
+            <a href="/install/vendor" class="app-store-btn vendor">
               ${ICONS.wrench}
               <div>
-                <div class="as-sub">Pro Vendor Portal</div>
-                <div class="as-title">Download Vendor APK (v3.3.5)</div>
+                <div class="as-sub">Vendor Portal · v3.4.1</div>
+                <div class="as-title">Install FixIt Pro</div>
               </div>
             </a>
           </div>
+          <div style="margin-top:16px;display:flex;flex-wrap:wrap;gap:14px;font-size:13px;font-weight:800">
+            <a href="/download/consumer" style="color:var(--primary)">Direct Consumer .APK →</a>
+            <a href="/download/vendor" style="color:#0F172A">Direct Vendor .APK →</a>
+            <a href="/posters" style="color:#15803D">Print Shop &amp; Vendor Posters →</a>
+          </div>
         </div>
-        <div>
-          <img src="/logo.png" alt="App Preview" style="width:140px;height:140px;border-radius:28px;box-shadow:0 12px 30px rgba(0,0,0,0.12)" />
+        <div class="scan-cards-pair">
+          <a href="/install/consumer" class="scan-card-box">
+            <div style="font-size:12.5px;font-weight:900;color:#FF5A00">CUSTOMER APP</div>
+            ${cScanSvg ? `<div class="scan-card-svg">${cScanSvg}</div>` : `<img src="/qr/consumer.png" alt="Consumer Install" style="width:132px;height:132px" />`}
+            <div style="font-size:11.5px;font-weight:700;color:#334155">Scan to Install<br/><span style="color:#64748B">/install/consumer</span></div>
+          </a>
+          <a href="/install/vendor" class="scan-card-box">
+            <div style="font-size:12.5px;font-weight:900;color:#0F172A">VENDOR PRO APP</div>
+            ${vScanSvg ? `<div class="scan-card-svg">${vScanSvg}</div>` : `<img src="/qr/vendor.png" alt="Vendor Install" style="width:132px;height:132px" />`}
+            <div style="font-size:11.5px;font-weight:700;color:#334155">Scan to Install<br/><span style="color:#64748B">/install/vendor</span></div>
+          </a>
         </div>
       </div>
       <!-- BEGIN AADS AD UNIT 2461953 -->

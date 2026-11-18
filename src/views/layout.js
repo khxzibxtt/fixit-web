@@ -322,9 +322,9 @@ function renderPage({ title, description = "", activePath = "/", body = "", head
         ${ICONS.smartphone}
         <span>Open FixIt App</span>
       </button>
-      <a href="/downloads/FixIt-Consumer.apk" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:700;color:var(--neutral-gray);padding:10px 0">
+      <a href="/install/consumer" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:700;color:var(--neutral-gray);padding:10px 0">
         ${ICONS.download}
-        <span>Direct APK Download (v3.3.5)</span>
+        <span>Direct APK Download (v3.4.1)</span>
       </a>
     </div>
   </div>
@@ -363,12 +363,14 @@ function renderPage({ title, description = "", activePath = "/", body = "", head
         </div>
 
         <div class="footer-col">
-          <h4>Platform</h4>
+          <h4>Direct Install &amp; Platform</h4>
           <ul>
-            <li><a href="/about">About FixIt</a></li>
+            <li><a href="/install/consumer">Install Customer App (v3.4.1)</a></li>
+            <li><a href="/install/vendor">Install Vendor Pro App (v3.4.1)</a></li>
+            <li><a href="/posters">Printable Shop Posters</a></li>
+            <li><a href="/about">About FixIt &amp; Credits</a></li>
             <li><a href="/partner">Become a Pro Partner</a></li>
             <li><a href="/support">Help &amp; Support Queue</a></li>
-            <li><a href="/api/health">System Status</a></li>
           </ul>
         </div>
 
