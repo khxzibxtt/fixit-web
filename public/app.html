@@ -48,30 +48,30 @@ svg.brand-svg{flex-shrink:0;display:block}
 @keyframes shimmer{to{background-position:-200% 0}}
 
 /* ---------- header ---------- */
-.talabat-top-bar{position:sticky;top:0;z-index:1100;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--ln)}
+.fx-top-bar{position:sticky;top:0;z-index:1100;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--ln)}
 .hdr-home{background:var(--o);color:#fff;border:0;padding:12px 16px}
-.hdr-home .talabat-loc-label{color:rgba(255,255,255,.88)}
-.hdr-home .talabat-loc-addr{color:#fff}
-.hdr-home .talabat-circle-btn{background:rgba(255,255,255,.18);color:#fff}
+.hdr-home .fx-loc-label{color:rgba(255,255,255,.88)}
+.hdr-home .fx-loc-addr{color:#fff}
+.hdr-home .fx-circle-btn{background:rgba(255,255,255,.18);color:#fff}
 .hdr-gps-pill{height:34px;padding:0 11px;border-radius:99px;background:rgba(255,255,255,.2);color:#fff;font-size:12px;font-weight:800;display:inline-flex;align-items:center;gap:5px;flex-shrink:0;border:1px solid rgba(255,255,255,.32)!important}
 .hdr-gps-pill svg{width:15px;height:15px}
-.talabat-back-btn,.talabat-circle-btn,.ib{width:42px;height:42px;border-radius:50%;background:#F3F3F3;display:grid;place-items:center;position:relative;z-index:5;color:var(--tx);flex-shrink:0;transition:transform .16s var(--spring),background-color .16s ease}
-.talabat-back-btn:active,.talabat-circle-btn:active,.ib:active{transform:scale(.88)}
-.talabat-circle-btn svg,.ib svg,.talabat-back-btn svg{width:20px;height:20px;pointer-events:none}
-.talabat-loc-picker{display:flex;align-items:center;gap:8px;flex:1;min-width:0;cursor:pointer;padding:4px 0}
-.talabat-loc-icon svg{width:22px;height:22px}
-.talabat-loc-label{font-size:12px;font-weight:600;color:var(--mu)}
-.talabat-loc-addr{font-size:16px;font-weight:800;display:flex;align-items:center;gap:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fx-back-btn,.fx-circle-btn,.ib{width:42px;height:42px;border-radius:50%;background:#F3F3F3;display:grid;place-items:center;position:relative;z-index:5;color:var(--tx);flex-shrink:0;transition:transform .16s var(--spring),background-color .16s ease}
+.fx-back-btn:active,.fx-circle-btn:active,.ib:active{transform:scale(.88)}
+.fx-circle-btn svg,.ib svg,.fx-back-btn svg{width:20px;height:20px;pointer-events:none}
+.fx-loc-picker{display:flex;align-items:center;gap:8px;flex:1;min-width:0;cursor:pointer;padding:4px 0}
+.fx-loc-icon svg{width:22px;height:22px}
+.fx-loc-label{font-size:12px;font-weight:600;color:var(--mu)}
+.fx-loc-addr{font-size:16px;font-weight:800;display:flex;align-items:center;gap:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .logo{width:34px;height:34px;border-radius:10px;object-fit:cover}
 .hdr-title{font-size:20px;font-weight:800;letter-spacing:-.3px}
 .hero-search{background:var(--o);padding:0 16px 18px;border-radius:0 0 24px 24px}
 
 /* ---------- search ---------- */
-.talabat-search,.search{display:flex;align-items:center;gap:10px;height:48px;padding:0 16px;border-radius:12px;background:#fff;color:var(--mu);box-shadow:var(--sh);width:100%;transition:box-shadow .18s var(--ease),transform .18s var(--ease)}
-.talabat-search:focus-within,.search:focus-within{box-shadow:0 0 0 2px rgba(255,90,0,.22),var(--sh)}
+.fx-search,.search{display:flex;align-items:center;gap:10px;height:48px;padding:0 16px;border-radius:12px;background:#fff;color:var(--mu);box-shadow:var(--sh);width:100%;transition:box-shadow .18s var(--ease),transform .18s var(--ease)}
+.fx-search:focus-within,.search:focus-within{box-shadow:0 0 0 2px rgba(255,90,0,.22),var(--sh)}
 .search{background:#F3F3F3;box-shadow:none}
-.talabat-search input,.search input{flex:1;min-width:0;height:100%;font-size:15px;color:var(--tx);background:transparent}
-.talabat-search input::placeholder,.search input::placeholder{color:var(--mu2)}
+.fx-search input,.search input{flex:1;min-width:0;height:100%;font-size:15px;color:var(--tx);background:transparent}
+.fx-search input::placeholder,.search input::placeholder{color:var(--mu2)}
 input.search{color:var(--tx)}
 
 /* ---------- layout ---------- */
@@ -99,14 +99,14 @@ input.search{color:var(--tx)}
 .empty{display:flex;flex-direction:column;align-items:center;gap:12px;padding:48px 16px;color:var(--mu2);text-align:center;animation:tlbtCardRise .28s var(--ease)}
 .empty svg{width:56px;height:56px;stroke-width:1.4;color:var(--o);background:var(--o2);padding:14px;border-radius:50%;box-sizing:content-box}
 
-/* ---------- categories (talabat verticals) ---------- */
-.talabat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 8px}
-.talabat-cat-card{display:flex;flex-direction:column;align-items:center;gap:6px;transition:transform .18s var(--spring)}
-.talabat-cat-card:active{transform:scale(.9)}
-.talabat-cat-icon{width:100%;aspect-ratio:1;border-radius:16px;background:#fff;color:var(--o);display:grid;place-items:center;box-shadow:var(--sh);transition:box-shadow .18s var(--ease),transform .18s var(--spring)}
-.talabat-cat-card:active .talabat-cat-icon{box-shadow:0 2px 6px rgba(255,90,0,.15)}
-.talabat-cat-icon svg{width:30px;height:30px;stroke-width:1.8}
-.talabat-cat-label{font-size:13px;font-weight:600;color:var(--tx);text-align:center;line-height:1.15}
+/* ---------- categories (fixit verticals) ---------- */
+.fx-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 8px}
+.fx-cat-card{display:flex;flex-direction:column;align-items:center;gap:6px;transition:transform .18s var(--spring)}
+.fx-cat-card:active{transform:scale(.9)}
+.fx-cat-icon{width:100%;aspect-ratio:1;border-radius:16px;background:#fff;color:var(--o);display:grid;place-items:center;box-shadow:var(--sh);transition:box-shadow .18s var(--ease),transform .18s var(--spring)}
+.fx-cat-card:active .fx-cat-icon{box-shadow:0 2px 6px rgba(255,90,0,.15)}
+.fx-cat-icon svg{width:30px;height:30px;stroke-width:1.8}
+.fx-cat-label{font-size:13px;font-weight:600;color:var(--tx);text-align:center;line-height:1.15}
 .cat-big{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .cat-big button{position:relative;height:120px;border-radius:18px;padding:14px;text-align:start;overflow:hidden;color:#fff;display:flex;flex-direction:column;justify-content:space-between;transition:transform .18s var(--spring),box-shadow .18s var(--ease)}
 .cat-big button:active{transform:scale(.96)}
@@ -222,7 +222,7 @@ textarea{width:100%;min-height:100px;padding:14px;border-radius:12px;background:
 .toast{position:fixed;top:calc(16px + env(safe-area-inset-top));left:16px;right:16px;margin:auto;max-width:420px;z-index:99999;background:rgba(255,255,255,0.96);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);color:#1F2937;padding:14px 18px;border-radius:16px;font-weight:600;font-size:14px;line-height:1.4;box-shadow:0 12px 36px -6px rgba(0,0,0,0.18),0 0 0 1px rgba(0,0,0,0.06);display:flex;align-items:center;gap:12px;animation:slideDownNotice .26s cubic-bezier(.16,1,.3,1)}
 .toast::before{content:"";display:block;width:8px;height:8px;border-radius:50%;background:#FF5A00;flex-shrink:0}
 @keyframes slideDownNotice{from{transform:translateY(-24px);opacity:0}to{transform:translateY(0);opacity:1}}
-.talabat-map-container{width:100%;background:#E8E8E8}
+.fx-map-container{width:100%;background:#E8E8E8}
 .web-role-bar{position:sticky;top:0;z-index:200;background:var(--tx);color:#fff;padding:8px 12px;font-size:12px;font-weight:700;justify-content:space-between;align-items:center}
 .web-role-btn{padding:5px 10px;border-radius:8px;background:rgba(255,255,255,.12);font-size:11px}
 .web-role-btn.active{background:var(--o)}
@@ -312,14 +312,14 @@ textarea{width:100%;min-height:100px;padding:14px;border-radius:12px;background:
 .rcpt .hd{padding:20px;text-align:center;border-bottom:2px dashed var(--ln)!important}
 .rcpt .bd{padding:16px 20px}
 
-/* ===== v5 fixes: Leaflet map, Push Banner, Print PDF, Full Chat, Talabat Account/Support ===== */
+/* ===== v5 fixes: Leaflet map, Push Banner, Print PDF, Full Chat, FixIt Account/Support ===== */
 .book-header, .sticky-top-header { position: sticky !important; top: 0 !important; z-index: 9999 !important; background: #ffffff !important; }
 .leaflet-container { position: relative !important; z-index: 1 !important; overflow: hidden !important; }
 .leaflet-pane { z-index: 10 !important; }
 .leaflet-top, .leaflet-bottom { z-index: 15 !important; }
 .leaflet-container svg, .leaflet-pane svg { width: auto !important; height: auto !important; display: inline !important; }
 .leaflet-pane svg path.leaflet-interactive { stroke: #FF5A00 !important; fill: none !important; }
-.talabat-map-container { position: relative !important; overflow: hidden !important; width: 100%; border-radius: 16px; background: #EAECEF; z-index: 1; }
+.fx-map-container { position: relative !important; overflow: hidden !important; width: 100%; border-radius: 16px; background: #EAECEF; z-index: 1; }
 .push-banner { position: fixed; top: calc(10px + env(safe-area-inset-top)); left: 12px; right: 12px; max-width: 496px; margin: 0 auto; z-index: 9998; background: #1A1A1A; color: #fff; border-radius: 16px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.35); border: 1px solid rgba(255,90,0,.5); animation: fade .2s; cursor: pointer; }
 .push-banner .ic { width: 38px; height: 38px; border-radius: 12px; background: var(--o); color: #fff; display: grid; place-items: center; flex-shrink: 0; }
 .seg3 { display: grid; grid-template-columns: repeat(3, 1fr); background: #EBEBEB; padding: 4px; border-radius: 12px; gap: 4px; }
@@ -337,7 +337,7 @@ textarea{width:100%;min-height:100px;padding:14px;border-radius:12px;background:
 .pcard { background: linear-gradient(135deg, #1E293B, #0F172A); color: #fff; border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 12px; box-shadow: var(--sh); }
 .pcard .brand { background: rgba(255,255,255,.15); padding: 6px 10px; border-radius: 8px; font-weight: 900; font-size: 12px; letter-spacing: .5px; }
 
-/* ===== v6 Talabat Polish: Full Booking Page, Sleek Cards, Compact PDF Buttons, Photo Chat ===== */
+/* ===== v6 FixIt Polish: Full Booking Page, Sleek Cards, Compact PDF Buttons, Photo Chat ===== */
 .sheet>div>* { flex-shrink: 0; }
 .chips { flex-shrink: 0; align-items: center; min-height: 40px; }
 .chips-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -360,7 +360,7 @@ textarea{width:100%;min-height:100px;padding:14px;border-radius:12px;background:
 .chat-img { max-width: 210px; max-height: 210px; border-radius: 12px; object-fit: cover; display: block; margin-bottom: 4px; cursor: pointer; border: 1px solid rgba(0,0,0,.08); }
 
 
-/* ===== v8 Talabat 1:1 Flow: Location Picker, Full Map Pin, New Address Form, Cart, Checkout & One Last Check ===== */
+/* ===== v8 FixIt 1:1 Flow: Location Picker, Full Map Pin, New Address Form, Cart, Checkout & One Last Check ===== */
 .tlbt-pill-btn { height: 54px; width: 100%; border-radius: 99px; background: var(--o); color: #fff; font-weight: 800; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform .12s; box-shadow: 0 4px 14px rgba(255,90,0,.22); }
 .tlbt-pill-btn:active { transform: scale(.98); background: var(--od); }
 .tlbt-pill-btn.outline { background: #fff; color: var(--tx); border: 1.5px solid #D1D5DB !important; box-shadow: none; }
@@ -391,7 +391,7 @@ textarea{width:100%;min-height:100px;padding:14px;border-radius:12px;background:
 .peach-bg { min-height: 100vh; background: #FDE6D2; background-image: radial-gradient(circle at 20% 10%, rgba(255,140,66,.16) 0%, transparent 45%), radial-gradient(circle at 85% 20%, rgba(255,90,0,.12) 0%, transparent 40%); display: flex; flex-direction: column; justify-content: space-between; padding-top: 48px; }
 
 
-/* ===== v9 Fixes: Wallet Circle Z-Index, Isolated Print Receipt, 4-Side Photos, PayPal, Chat Map & Talabat Support Bot ===== */
+/* ===== v9 Fixes: Wallet Circle Z-Index, Isolated Print Receipt, 4-Side Photos, PayPal, Chat Map & FixIt Support Bot ===== */
 .wcard > * { position: relative; z-index: 2; }
 .wcard::after { z-index: 0 !important; pointer-events: none !important; opacity: 0.45; right: -55px !important; top: -55px !important; }
 .verif-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -643,7 +643,7 @@ body {
 .nav button.nav-plus{color:var(--o);font-weight:800}
 .nav .nav-plus-ic{width:44px;height:44px;border-radius:50%;background:var(--o);color:#fff;display:grid;place-items:center;font-size:26px;font-weight:600;line-height:1;margin-top:-18px;box-shadow:0 6px 16px rgba(255,90,0,.34);border:3px solid #fff}
 
-/* Talabat x Toss Auth UI */
+/* FixIt x Toss Auth UI */
 .tlbt-auth-page{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;background:#FFFFFF;position:fixed;inset:0;width:100%;height:100%;z-index:999;overflow-y:auto;overflow-x:hidden}
 .tlbt-auth-hero{background:linear-gradient(175deg,#FFF7EF 0%,#FAF0E4 58%,#F6E9DA 100%);padding:max(16px,env(safe-area-inset-top)) 16px 32px;position:relative;display:flex;flex-direction:column;justify-content:space-between;min-height:42vh;overflow:hidden}
 .tlbt-circ-btn{min-width:44px;min-height:44px;width:44px;height:44px;border-radius:50%;background:#FFFFFF;color:#1F2937;display:grid;place-items:center;box-shadow:0 2px 10px rgba(65,21,23,.08);flex-shrink:0;transition:transform 150ms var(--ease)}
@@ -652,7 +652,7 @@ body {
 .tlbt-lang-pill{min-height:44px;padding:0 16px;border-radius:999px;background:rgba(255,255,255,.92);border:1px solid rgba(65,21,23,.10)!important;color:#411517;font-weight:800;font-size:13px;display:inline-flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(65,21,23,.06);transition:transform 150ms var(--ease)}
 .tlbt-lang-pill:active{transform:scale(.96)}
 
-/* Talabat Hero Stage & Layered Service Tiles (Compositor GPU Only) */
+/* FixIt Hero Stage & Layered Service Tiles (Compositor GPU Only) */
 .fx-hero-stage{position:relative;width:276px;height:184px;margin:8px auto 0;display:grid;place-items:center}
 .fx-hero-glow{position:absolute;width:184px;height:184px;border-radius:50%;background:radial-gradient(circle,rgba(255,90,0,.18) 0%,rgba(255,90,0,0) 72%);pointer-events:none}
 .fx-hero-emblem-card{position:relative;z-index:2;width:96px;height:96px;border-radius:26px;background:#FF5A00;padding:8px;box-shadow:0 18px 36px rgba(255,90,0,.26),0 4px 12px rgba(65,21,23,.10);transform:rotate(-3deg);display:grid;place-items:center;border:3px solid #FFFFFF}
@@ -2826,9 +2826,9 @@ async function sync() {
         const phCnt = S.photos.filter(p => p.job_id === S.jobId).length;
         const msgCnt = S.msgs.filter(m => m.job_id === S.jobId).length;
         const jobSig = curJob ? `${curJob.status}_${bidCnt}_${phCnt}_${msgCnt}` : "";
-        updateTalabatMapInPlace("cjobLeafletMap", S.jobId);
-        updateTalabatMapInPlace("vjobLeafletMap", S.jobId);
-        updateTalabatMapInPlace("fullTrackLeafletMap", S.jobId);
+        updateFixItMapInPlace("cjobLeafletMap", S.jobId);
+        updateFixItMapInPlace("vjobLeafletMap", S.jobId);
+        updateFixItMapInPlace("fullTrackLeafletMap", S.jobId);
         if ((curJob && curJob._renderedSig !== jobSig) || wasOffline) {
           if (curJob) curJob._renderedSig = jobSig;
           render();
@@ -2943,7 +2943,7 @@ const DEFAULT_SHOPS_DATA = [
     kyc_status: "PENDING",
     conflict_note: "",
     is_pro_shop: true,
-    board_photo: makeBadgeSvgDataUri("#0F172A", "#1E3A8A", "SHOP SIGNBOARD", "Tap Camera to Capture Signboard", "SHOP"),
+    board_photo: "",
     workers: [],
     vehicles: []
   }
@@ -2954,14 +2954,22 @@ S.shops = load("shops", DEFAULT_SHOPS_DATA);
 if (!Array.isArray(S.shops) || !S.shops.length) {
   S.shops = DEFAULT_SHOPS_DATA;
   save("shops", S.shops);
-} else if (S.shops.length > 1 || (S.shops[0] && (S.shops[0].shop_id === "FX-SHP-104821" || (S.shops[0].workers && S.shops[0].workers.length)))) {
-  const first = S.shops[0];
-  S.shops = first.shop_id === "FX-SHP-104821" ? DEFAULT_SHOPS_DATA : [{ ...first, workers: [], vehicles: [] }];
+} else {
+  const first = S.shops[0] || DEFAULT_SHOPS_DATA[0];
+  if (first.shop_id === "FX-SHP-104821") {
+    S.shops = DEFAULT_SHOPS_DATA;
+  } else {
+    if (String(first.board_photo || "").startsWith("data:image/svg+xml")) {
+      first.board_photo = "";
+    }
+    S.shops = [{ ...first, workers: [], vehicles: [] }];
+  }
   save("shops", S.shops);
 }
 S.activeShopId = S.shops[0].shop_id;
 save("activeShopId", S.activeShopId);
-S.onboardingPreviewGate = load("onboardingPreviewGate", false);
+S.onboardingPreviewGate = true;
+save("onboardingPreviewGate", true);
 S.rateLimits = load("rateLimits", {});
 S.rateLimitHits = load("rateLimitHits", 0);
 S.autoRepostCount = load("autoRepostCount", 0);
@@ -3754,7 +3762,7 @@ function onOtpTyped(rawVal) {
       slot.style.fontWeight = digits[i] ? "900" : "700";
     }
   }
-  if (digits.length === 6) verifyTalabatOtp();
+  if (digits.length === 6) verifyFixItOtp();
 }
 
 function applyAuthenticatedSession(data) {
@@ -3795,7 +3803,7 @@ function applyAuthenticatedSession(data) {
   if (typeof setActiveUserId === "function") setActiveUserId(uid, data.sessionCode, ROLE);
 }
 
-async function verifyTalabatOtp() {
+async function verifyFixItOtp() {
   const ar = L === "ar";
   if (window._otpVerifying) return;
   const digits = String(S.auth.otpTyped || (document.getElementById("authOtpInp") || {}).value || "").replace(/[^0-9]/g, "");
@@ -3893,7 +3901,7 @@ async function verifyTalabatOtp() {
 }
 
 function handleAuthSubmit() {
-  return verifyTalabatOtp();
+  return verifyFixItOtp();
 }
 
 function changePendingGooglePfp() {
@@ -4589,11 +4597,8 @@ function authScreen() {
     return `<div class="tlbt-auth-page">
       <div class="tlbt-auth-hero">
         <div class="row" style="justify-content:space-between;position:relative;z-index:2">
-          ${isBackable
-            ? `<button class="tlbt-circ-btn" aria-label="${ar ? "رجوع" : "Back"}" onclick="back()">${I("back", "flip")}</button>`
-            : `<div style="min-height:44px;padding:0 12px;border-radius:999px;background:rgba(255,255,255,.78);border:1px solid rgba(65,21,23,.08);display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:#411517"><span style="width:16px;height:16px;display:inline-grid;place-items:center;color:#FF5A00">${I("pin")}</span><span>${ar ? "صلالة · عُمان" : "Salalah · Oman"}</span></div>`
-          }
-          <button class="tlbt-lang-pill" onclick="setLang(L==='en'?'ar':'en')">${I("globe")}<span>${L === "en" ? "عربي" : "EN"}</span></button>
+          <button type="button" class="tlbt-circ-btn" aria-label="${ar ? "رجوع" : "Back"}" onclick="if(S.stack.length){S.stack.pop();}render()">${I("back", "flip")}</button>
+          <button type="button" class="tlbt-lang-pill" onclick="setLang(L==='en'?'ar':'en')">${I("globe")}<span>${L === "en" ? "عربي" : "EN"}</span></button>
         </div>
 
         <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;padding:4px 0 8px">
@@ -4640,19 +4645,22 @@ function authScreen() {
         </div>
 
         <div class="fx-auth-stagger-3" style="display:flex;flex-direction:column;gap:12px">
-          <button class="tlbt-pill-btn tlbt-phone-btn" onclick="S.auth.mode='phone';S.auth.linkGoogleMode=false;S.auth.phoneError='';S.auth.channelSheetOpen=false;save('auth_state',S.auth);render()">
+          <button type="button" class="tlbt-pill-btn tlbt-phone-btn" onclick="S.auth.mode='phone';S.auth.linkGoogleMode=false;S.auth.phoneError='';S.auth.channelSheetOpen=false;save('auth_state',S.auth);render()">
             ${pIcon}
             <span style="font-weight:800">${ar ? "المتابعة برقم الهاتف" : "Continue with phone number"}</span>
           </button>
-          <button class="tlbt-pill-btn tlbt-google-btn" onclick="initiateGoogleSignIn()">
+          <button type="button" class="tlbt-pill-btn tlbt-google-btn" onclick="initiateGoogleSignIn()">
             ${gIcon}
             <span style="font-weight:700">${ar ? "المتابعة باستخدام Google" : "Continue with Google"}</span>
           </button>
-          ${isBiometricLoginReady() ? `<button class="tlbt-pill-btn" style="background:#111827;color:#FFFFFF;border:1px solid #1F2937;box-shadow:0 6px 18px rgba(17,24,39,.14)" onclick="initiateBiometricSignIn()" ${window._biometricBusy ? "disabled" : ""}>
+          ${isBiometricLoginReady() ? `<button type="button" class="tlbt-pill-btn" style="background:#111827;color:#FFFFFF;border:1px solid #1F2937;box-shadow:0 6px 18px rgba(17,24,39,.14)" onclick="initiateBiometricSignIn()" ${window._biometricBusy ? "disabled" : ""}>
             <span style="display:inline-flex;color:#FFFFFF">${I("fingerprint")}</span>
             <span style="font-weight:800">${window._biometricBusy ? (ar ? "جاري التحقق..." : "Verifying...") : (ar ? "الدخول بالبصمة أو الوجه" : "Sign in with Fingerprint / Face")}</span>
             ${getBiometricSavedHint() ? `<span dir="ltr" style="font-size:12px;font-weight:600;color:rgba(255,255,255,.72);margin-inline-start:4px">${esc(getBiometricSavedHint())}</span>` : ""}
           </button>` : ""}
+          <button type="button" class="tlbt-pill-btn outline" style="height:48px;font-size:14.5px;color:#4B5563" onclick="if(S.stack.length){S.stack.pop();}render()">
+            <span>${ar ? "تصفح الخدمات أولاً" : "Browse services first"}</span>
+          </button>
         </div>
       </div>
     </div>`;
@@ -4817,7 +4825,7 @@ function authScreen() {
           <button class="pill ok" style="font-size:12px;min-height:44px;padding:4px 12px" onclick="onOtpTyped('${esc(S.auth.lastOtpCode)}')">${ar ? "تعبئة" : "Auto-Fill"}</button>
         </div>` : ""}
 
-        <button class="tlbt-cta-pill" style="margin-top:20px" onclick="verifyTalabatOtp()">${ar ? "تأكيد الرمز" : "Verify"}</button>
+        <button class="tlbt-cta-pill" style="margin-top:20px" onclick="verifyFixItOtp()">${ar ? "تأكيد الرمز" : "Verify"}</button>
       </div>
     </div>` : ""}
   </div>`;
@@ -4924,166 +4932,109 @@ function toggleShopSpecialty(catId) {
   render();
 }
 
-function vShopKycScreen(isLockedOnboardingGate) {
+function vShopKycScreen() {
   const ar = L === "ar";
   const shop = getActiveShop();
   if (!Array.isArray(shop.specialties) || !shop.specialties.length) {
     shop.specialties = ["AC_REPAIR", "PLUMBER", "ELECTRICIAN"];
   }
-  const statusColors = {
-    APPROVED: { bg: "#DCFCE7", tx: "#15803D", lblEn: "Verified Partner", lblAr: "شريك معتمد" },
-    PENDING: { bg: "#FEF3C7", tx: "#B45309", lblEn: "In Regulatory Review", lblAr: "قيد المراجعة التنظيمية" },
-    CONFLICT: { bg: "#FEE2E2", tx: "#DC2626", lblEn: "Action Required", lblAr: "يتطلب التحديث" },
-    REJECTED: { bg: "#FEE2E2", tx: "#991B1B", lblEn: "Not Approved", lblAr: "غير معتمد" }
-  };
-  const st = statusColors[shop.kyc_status] || statusColors.PENDING;
+  const hasRealPhoto = Boolean(shop.board_photo && !String(shop.board_photo).startsWith("data:image/svg+xml"));
+  const isApproved = shop.kyc_status === "APPROVED";
 
-  const step1Done = Boolean(shop.shop_name && String(shop.cr_number || "").replace(/\D/g, "").length >= 5);
-  const step2Done = Boolean(String(shop.civil_id || "").replace(/\D/g, "").length >= 7 && shop.board_photo);
-  const step3Done = Boolean(Array.isArray(shop.specialties) && shop.specialties.length > 0);
-  const step4Done = Boolean(shop.regulations_accepted);
-  const doneCount = [step1Done, step2Done, step3Done, step4Done].filter(Boolean).length;
-
-  return `${bar(ar ? "توثيق الشريك والامتثال" : "Partner KYC & Compliance", S.stack.length > 0)}
-  <div class="pad">
-    <div class="card" style="background:linear-gradient(135deg,#1A1A1A,#2A2B36);color:#fff;display:flex;flex-direction:column;gap:12px">
-      <div class="row" style="justify-content:space-between;align-items:flex-start">
-        <div style="display:flex;align-items:center;gap:10px">
-          <div style="width:42px;height:42px;border-radius:12px;background:var(--o);color:#fff;display:grid;place-items:center;flex-shrink:0">${I("shield")}</div>
-          <div>
-            <div style="font-size:16px;font-weight:900">${ar ? "بوابة توثيق الشريك (KYC)" : "Partner Verification Gate"}</div>
-            <div style="font-size:12px;color:#9CA3AF;margin-top:2px">${ar ? `${doneCount} من 4 متطلبات مكتملة` : `${doneCount} of 4 regulatory steps complete`}</div>
-          </div>
+  return `${S.stack.length > 0 ? bar(ar ? "ملف المحل والتوثيق" : "Shop Profile & KYC", true) : `<div class="ph"><h1>${ar ? "ملف الشريك" : "Shop Profile"}</h1><p>${ar ? "السجل التجاري، التخصصات، وتوثيق المحل" : "Commercial Registration, services & verification"}</p></div>`}
+  <div class="pad ${S.stack.length > 0 ? "" : "lift"}">
+    <!-- Status Summary Row Card -->
+    <div class="card row" style="justify-content:space-between;gap:12px">
+      <div class="row" style="gap:12px">
+        <div class="ico" style="background:${isApproved ? "var(--gr2)" : "var(--o2)"};color:${isApproved ? "var(--gr)" : "var(--o)"}">${I("shield")}</div>
+        <div>
+          <div class="t1">${esc(shop.shop_name || (ar ? "أكمل بيانات محلك" : "Complete your shop details"))}</div>
+          <div class="t2">${isApproved ? (ar ? "شريك موثق ومعتمد في صلالة" : "Verified Partner in Salalah") : (ar ? "أدخل السجل التجاري والبطاقة المدنية للتوثيق" : "Add your CR & Civil ID to verify your account")}</div>
         </div>
-        <span class="pill" style="background:${st.bg};color:${st.tx};font-weight:900;font-size:11px">${ar ? st.lblAr : st.lblEn}</span>
       </div>
-      <div style="height:6px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden">
-        <div style="width:${(doneCount / 4) * 100}%;height:100%;background:var(--o);transition:width .3s ease"></div>
-      </div>
-      <div style="font-size:12.5px;color:#D1D5DB;line-height:1.45">${ar ? "وفقاً للوائح حماية المستهلك في سلطنة عُمان، يجب توثيق السجل التجاري والبطاقة المدنية والموافقة على ميثاق الضمان قبل استقبال الطلبات." : "Per Oman service regulations, partners must verify their Commercial Registration (CR), Civil ID, signboard photo, and 14-day warranty charter to accept orders."}</div>
-      ${isLockedOnboardingGate ? `<button class="btn s" style="background:#fff;color:#1A1A1A;min-height:44px;font-weight:800" onclick="S.onboardingPreviewGate=true;render()">${I("radar")}${ar ? "معاينة رادار الطلبات" : "Preview Live Job Radar"}</button>` : ""}
+      <span class="pill ${isApproved ? "ok" : "am"}">${isApproved ? (ar ? "موثق" : "Verified") : (ar ? "قيد الإكمال" : "Pending")}</span>
     </div>
 
-    ${shop.kyc_status === "CONFLICT" ? `<div class="card" style="background:#FEF2F2;border:1.5px solid #EF4444;display:flex;flex-direction:column;gap:10px">
-      <div class="row" style="gap:10px">
-        <div class="ico" style="background:#FEE2E2;color:#DC2626">${I("shield")}</div>
-        <div class="sp">
-          <div style="font-weight:900;color:#991B1B;font-size:15px">${ar ? "ملاحظة فريق المراجعة" : "Compliance Review Note"}</div>
-          <div style="font-size:13px;color:#B91C1C;margin-top:2px">"${esc(shop.conflict_note || (ar ? "يرجى تحديث صورة اللوحة والسجل التجاري وإعادة الإرسال." : "Please update your signboard photo and CR details and resubmit."))}"</div>
-        </div>
-      </div>
-      <div class="two">
-        <button class="btn s" style="min-height:44px;background:#DC2626" onclick="captureShopSignboardPhoto()">${I("camera")}${ar ? "إعادة التصوير" : "Retake Sign Photo"}</button>
-        <button class="btn ok s" style="min-height:44px" onclick="submitShopKycForAdminApproval()">${I("check")}${ar ? "إعادة الإرسال" : "Resubmit"}</button>
-      </div>
+    ${shop.kyc_status === "CONFLICT" ? `<div class="card" style="background:#FEF2F2;border:1.5px solid #EF4444;display:flex;flex-direction:column;gap:8px">
+      <div style="font-weight:800;color:#991B1B;font-size:14px">${ar ? "ملاحظة المراجعة" : "Review Note"}</div>
+      <div style="font-size:13px;color:#B91C1C">${esc(shop.conflict_note || (ar ? "يرجى تحديث صورة اللوحة والسجل التجاري وإعادة الإرسال." : "Please update your signboard photo and CR details and resubmit."))}</div>
     </div>` : ""}
 
-    <!-- STEP 1: Commercial Registration & Trade License -->
+    <!-- 1. Commercial Registration & Shop Info -->
     <div class="card" style="display:flex;flex-direction:column;gap:12px">
-      <div class="row" style="justify-content:space-between">
-        <div class="row" style="gap:8px">
-          <span style="width:24px;height:24px;border-radius:50%;background:${step1Done ? "#16A34A" : "var(--o)"};color:#fff;font-size:12px;font-weight:900;display:grid;place-items:center">1</span>
-          <span class="t1" style="font-size:15.5px">${ar ? "السجل التجاري والترخيص البلدي" : "Commercial Registration (CR)"}</span>
-        </div>
-        <span class="pill ${shop.obp_status === "PERMITTED" ? "ok" : "am"}" style="font-size:10.5px">${shop.obp_status === "PERMITTED" ? (ar ? "موثق" : "Verified") : (ar ? "مطلوب" : "Required")}</span>
-      </div>
+      <div class="t1">${ar ? "بيانات السجل التجاري" : "Business Details"}</div>
 
       <div class="fld">
-        <label>${ar ? "اسم المؤسسة أو المحل التجاري" : "Official Registered Shop Name"}</label>
-        <input id="kycShopNameInp" class="tlbt-input" style="min-height:46px" value="${esc(shop.shop_name || "")}" placeholder="${ar ? "كما هو مسجل في السجل التجاري" : "As printed on your Commercial Registration"}">
+        <label>${ar ? "اسم المحل أو المؤسسة" : "Shop / Business Name"}</label>
+        <input id="kycShopNameInp" class="tlbt-input" style="height:48px" value="${esc(shop.shop_name || "")}" placeholder="${ar ? "الاسم كما في السجل التجاري" : "Registered business name"}">
       </div>
 
       <div class="two">
         <div class="fld">
-          <label>${ar ? "رقم السجل التجاري (CR)" : "CR Number (Oman)"}</label>
-          <input id="kycCrInp" dir="ltr" class="tlbt-input" style="min-height:46px" value="${esc(shop.cr_number || "")}" placeholder="e.g. 1294821">
+          <label>${ar ? "رقم السجل التجاري (CR)" : "CR Number"}</label>
+          <input id="kycCrInp" dir="ltr" class="tlbt-input" style="height:48px" value="${esc(shop.cr_number || "")}" placeholder="e.g. 1294821">
         </div>
         <div class="fld">
-          <label>${ar ? "رقم الترخيص البلدي" : "Municipality License"}</label>
-          <input id="kycMuniInp" dir="ltr" class="tlbt-input" style="min-height:46px" value="${esc(shop.municipality_license || "")}" placeholder="e.g. DM-SLL-4021">
+          <label>${ar ? "الترخيص البلدي" : "Municipality License"}</label>
+          <input id="kycMuniInp" dir="ltr" class="tlbt-input" style="height:48px" value="${esc(shop.municipality_license || "")}" placeholder="e.g. DM-SLL-4021">
         </div>
       </div>
 
       <div class="fld">
-        <label>${ar ? "المنطقة / الفرع في صلالة" : "Salalah Branch & Street"}</label>
-        <input id="kycBranchInp" class="tlbt-input" style="min-height:46px" value="${esc(shop.branch_name || "")}" placeholder="${ar ? "مثال: صلالة الوسطى - شارع 23 يوليو" : "e.g. Central Salalah, 23 July St"}">
+        <label>${ar ? "المنطقة في صلالة" : "Salalah Area / Street"}</label>
+        <input id="kycBranchInp" class="tlbt-input" style="height:48px" value="${esc(shop.branch_name || "")}" placeholder="${ar ? "مثال: صلالة الوسطى، السعادة، عوقد..." : "e.g. Central Salalah, Al Saada, Auqad..."}">
       </div>
 
-      <button class="btn outline s" style="min-height:44px" onclick="verifyCrWithOmanBusinessPlatform()">
+      <button type="button" class="btn outline s" onclick="verifyCrWithOmanBusinessPlatform()">
         ${I("check")}${ar ? "التحقق من رقم السجل التجاري" : "Validate CR Number"}
       </button>
     </div>
 
-    <!-- STEP 2: Owner / Lead Technician Civil ID & Live Signboard Photo -->
+    <!-- 2. Civil ID & Signboard Photo -->
     <div class="card" style="display:flex;flex-direction:column;gap:12px">
-      <div class="row" style="justify-content:space-between">
-        <div class="row" style="gap:8px">
-          <span style="width:24px;height:24px;border-radius:50%;background:${step2Done ? "#16A34A" : "var(--o)"};color:#fff;font-size:12px;font-weight:900;display:grid;place-items:center">2</span>
-          <span class="t1" style="font-size:15.5px">${ar ? "البطاقة المدنية وصورة المحل" : "Civil ID & Shop Signboard"}</span>
-        </div>
-        <span class="pill ${step2Done ? "ok" : "am"}" style="font-size:10.5px">${step2Done ? (ar ? "مكتمل" : "Complete") : (ar ? "مطلوب" : "Required")}</span>
-      </div>
+      <div class="t1">${ar ? "البطاقة المدنية وصورة المحل" : "Civil ID & Shop Photo"}</div>
 
       <div class="fld">
-        <label>${ar ? "الرقم المدني للمالك أو الفني المسؤول" : "Owner / Lead Technician Civil ID Number"}</label>
-        <input id="kycCivilIdInp" dir="ltr" inputmode="numeric" class="tlbt-input" style="min-height:46px" value="${esc(shop.civil_id || "")}" placeholder="${ar ? "أدخل الرقم المدني المكون من 8-10 أرقام" : "Enter 8–10 digit Oman Civil / Resident ID"}">
+        <label>${ar ? "الرقم المدني للمالك أو الفني" : "Civil / Resident ID Number"}</label>
+        <input id="kycCivilIdInp" dir="ltr" inputmode="numeric" class="tlbt-input" style="height:48px" value="${esc(shop.civil_id || "")}" placeholder="${ar ? "8 إلى 10 أرقام" : "8–10 digit Civil ID"}">
       </div>
 
-      <div style="position:relative;border-radius:16px;overflow:hidden;border:1.5px solid var(--ln);background:#0F172A">
-        <img src="${esc(shop.board_photo)}" alt="Shop Signboard" style="width:100%;height:165px;object-fit:cover;display:block" onclick="S.previewImg=this.src;render()" />
-        <div style="position:relative;background:linear-gradient(transparent,rgba(0,0,0,.86));margin-top:-70px;padding:12px;color:#fff;display:flex;align-items:flex-end;justify-content:space-between;gap:8px">
-          <div style="min-width:0">
-            <div style="font-size:11px;color:#FDBA74;font-weight:800">${ar ? "صورة اللوحة التجارية (الكاميرا المباشرة)" : "Live Signboard Photo (Shows CR & Name)"}</div>
-            <div style="font-size:14.5px;font-weight:900" class="ell">${esc(shop.shop_name || (ar ? "اسم المحل" : "Your Shop"))}</div>
-          </div>
-          <button class="pill" style="min-height:44px;background:var(--o);color:#fff;font-size:12px;padding:8px 14px;white-space:nowrap" onclick="captureShopSignboardPhoto()">${I("camera")}${ar ? "تصوير اللوحة" : "Capture Photo"}</button>
-        </div>
-      </div>
+      <button type="button" class="tlbt-loc-card" style="justify-content:center;border:1.5px dashed var(--o)!important;background:var(--o2);color:var(--o);font-weight:800" onclick="captureShopSignboardPhoto()">
+        ${I("camera")}
+        <span>${hasRealPhoto ? (ar ? "تحديث صورة اللوحة التجارية" : "Update Signboard Photo") : (ar ? "إضافة صورة اللوحة التجارية" : "Add Shop Signboard Photo")}</span>
+      </button>
+
+      ${hasRealPhoto ? `<div style="position:relative;border-radius:14px;overflow:hidden;border:1.5px solid var(--gr)">
+        <img src="${esc(shop.board_photo)}" alt="Shop Signboard" style="width:100%;height:150px;object-fit:cover;display:block" onclick="S.previewImg=this.src;render()" />
+      </div>` : ""}
     </div>
 
-    <!-- STEP 3: Authorized Service Categories -->
+    <!-- 3. Service Categories -->
     <div class="card" style="display:flex;flex-direction:column;gap:10px">
       <div class="row" style="justify-content:space-between">
-        <div class="row" style="gap:8px">
-          <span style="width:24px;height:24px;border-radius:50%;background:${step3Done ? "#16A34A" : "var(--o)"};color:#fff;font-size:12px;font-weight:900;display:grid;place-items:center">3</span>
-          <span class="t1" style="font-size:15.5px">${ar ? "التخصصات المعتمدة" : "Authorized Service Trades"}</span>
-        </div>
-        <span class="pill ok" style="font-size:10.5px">${shop.specialties.length} ${ar ? "أقسام" : "Selected"}</span>
+        <span class="t1">${ar ? "الخدمات التي تقدمها" : "Services Offered"}</span>
+        <span class="pill">${shop.specialties.length} ${ar ? "محددة" : "selected"}</span>
       </div>
-      <div style="font-size:12px;color:var(--mut)">${ar ? "اختر الخدمات التي يغطيها نشاطك التجاري:" : "Select the categories covered by your trade license:"}</div>
-      <div class="chips" style="margin:0;flex-wrap:wrap">
+      <div class="chips-wrap">
         ${CATS.map(ct => {
           const on = shop.specialties.includes(ct[0]);
-          return `<button class="chip ${on ? 'on' : ''}" style="min-height:40px;font-size:12px" onclick="toggleShopSpecialty('${ct[0]}')">${ar ? ct[3] : ct[2]}</button>`;
+          return `<button type="button" class="chip ${on ? "on" : ""}" onclick="toggleShopSpecialty('${ct[0]}')">${ar ? ct[3] : ct[2]}</button>`;
         }).join("")}
       </div>
     </div>
 
-    <!-- STEP 4: Mandatory Partner Regulations & Safety Charter -->
-    <div class="card" style="display:flex;flex-direction:column;gap:12px;border:1.5px solid ${shop.regulations_accepted ? "#86EFAC" : "#FDBA74"};background:${shop.regulations_accepted ? "#F0FDF4" : "#FFFBEB"}">
-      <div class="row" style="justify-content:space-between">
-        <div class="row" style="gap:8px">
-          <span style="width:24px;height:24px;border-radius:50%;background:${step4Done ? "#16A34A" : "var(--o)"};color:#fff;font-size:12px;font-weight:900;display:grid;place-items:center">4</span>
-          <span class="t1" style="font-size:15.5px">${ar ? "ميثاق اللوائح والضمان للشركاء" : "Partner Regulations & Charter"}</span>
-        </div>
-        <span class="pill ${shop.regulations_accepted ? "ok" : "am"}" style="font-size:10.5px">${shop.regulations_accepted ? (ar ? "موافق عليه" : "Accepted") : (ar ? "إلزامي" : "Mandatory")}</span>
-      </div>
-
-      <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;color:#1F2937;line-height:1.45;background:#fff;padding:12px;border-radius:12px;border:1px solid #E5E7EB">
-        <div class="row" style="align-items:flex-start;gap:8px"><span style="color:#16A34A;flex-shrink:0">${I("check")}</span><span><b>${ar ? "ضمان جودة العمل (14 يوماً):" : "14-Day Workmanship Warranty:"}</b> ${ar ? "الالتزام بإصلاح أي عطل ناتج عن الصيانة مجاناً خلال 14 يوماً من إغلاق الطلب." : "Mandatory free revisit if the same repair issue recurs within 14 days."}</span></div>
-        <div class="row" style="align-items:flex-start;gap:8px"><span style="color:#16A34A;flex-shrink:0">${I("check")}</span><span><b>${ar ? "توثيق صور العمل (قبل وبعد):" : "Before & After Job Photos:"}</b> ${ar ? "رفع صور واضحة للعطل قبل البدء وبعد الإنجاز لحفظ حقوق الشريك والعميل." : "Upload clear job photos before starting and upon completion for Protected Payment release."}</span></div>
-        <div class="row" style="align-items:flex-start;gap:8px"><span style="color:#16A34A;flex-shrink:0">${I("check")}</span><span><b>${ar ? "الرسوم التدريجية ومنع التعامل خارج التطبيق:" : "Progressive Fee & Anti-Bypass Rule:"}</b> ${ar ? "القبول بنسبة عمولة المنصة التدريجية (1% إلى 15%) وعدم طلب تحويلات خارجية." : "Compliance with the 1%–15% platform fee schedule and strict ban on off-app payment solicitation."}</span></div>
-        <div class="row" style="align-items:flex-start;gap:8px"><span style="color:#16A34A;flex-shrink:0">${I("check")}</span><span><b>${ar ? "أنظمة حماية المستهلك والسلامة المهنية:" : "Oman Consumer Protection Compliance:"}</b> ${ar ? "الالتزام بتسعير شفاف وقطع غيار أصلية أو معتمدة وإصدار فاتورة إلكترونية." : "Transparent pricing, genuine parts disclosure, and automated digital invoicing."}</span></div>
-      </div>
-
-      <button type="button" class="row" style="gap:10px;padding:10px 12px;border-radius:12px;background:#fff;border:1.5px solid ${shop.regulations_accepted ? "#16A34A" : "#D1D5DB"};text-align:start;cursor:pointer;min-height:48px" onclick="syncKycDraftInputsToShop(getActiveShop());getActiveShop().regulations_accepted=!getActiveShop().regulations_accepted;syncShopsToCloud();render()">
-        <div style="width:24px;height:24px;border-radius:6px;border:2px solid ${shop.regulations_accepted ? "#16A34A" : "#9CA3AF"};background:${shop.regulations_accepted ? "#16A34A" : "#fff"};color:#fff;display:grid;place-items:center;flex-shrink:0">${shop.regulations_accepted ? I("check") : ""}</div>
-        <span style="font-size:13px;font-weight:800;color:#111827">${ar ? "أقر بصحة السجل التجاري والبطاقة المدنية وأوافق على جميع لوائح الشركاء وضمان الـ 14 يوماً." : "I certify my CR & Civil ID are authentic and agree to the Partner Regulations & 14-Day Warranty."}</span>
+    <!-- 4. Partner Warranty Agreement -->
+    <div class="card" style="display:flex;flex-direction:column;gap:10px">
+      <div class="t1">${ar ? "ضمان جودة الخدمة" : "Service Guarantee"}</div>
+      <div class="t2" style="line-height:1.45">${ar ? "الالتزام بضمان الصيانة لمدة 14 يوماً، وتوثيق صور العمل (قبل وبعد)، والتسعير الشفاف داخل التطبيق." : "Includes 14-day workmanship warranty, before & after job photos, and transparent in-app pricing."}</div>
+      <button type="button" class="row" style="gap:10px;padding:12px;border-radius:12px;background:#F9FAFB;border:1.5px solid ${shop.regulations_accepted ? "var(--gr)" : "#D1D5DB"}!important;text-align:start;width:100%" onclick="syncKycDraftInputsToShop(getActiveShop());getActiveShop().regulations_accepted=!getActiveShop().regulations_accepted;syncShopsToCloud();render()">
+        <div style="width:24px;height:24px;border-radius:6px;border:2px solid ${shop.regulations_accepted ? "var(--gr)" : "#9CA3AF"};background:${shop.regulations_accepted ? "var(--gr)" : "#fff"};color:#fff;display:grid;place-items:center;flex-shrink:0">${shop.regulations_accepted ? I("check") : ""}</div>
+        <span style="font-size:13.5px;font-weight:700;color:var(--tx)">${ar ? "أوافق على شروط الشركاء وضمان الـ 14 يوماً" : "I agree to the Partner Terms & 14-Day Warranty"}</span>
       </button>
     </div>
 
-    <button class="btn" style="min-height:50px" onclick="submitShopKycForAdminApproval()">
-      ${I("check")}${ar ? "حفظ وإرسال ملف التوثيق للمراجعة" : "Submit KYC & Regulations for Approval"}
+    <button type="button" class="tlbt-pill-btn" onclick="submitShopKycForAdminApproval()">
+      ${I("check")}<span>${ar ? "حفظ وإرسال للتوثيق" : "Save & Submit"}</span>
     </button>
   </div>`;
 }
@@ -6159,7 +6110,7 @@ function withdrawSheet() {
 }
 
 
-/* ================= REAL TALABAT GPS MAP ENGINE (NO FAKE MOVING CAR) ================= */
+/* ================= REAL FIXIT GPS MAP ENGINE (NO FAKE MOVING CAR) ================= */
 let activeMapInstances = {};
 
 function getJobCoords(j) {
@@ -6196,9 +6147,9 @@ function getAssignedProCoords(j, destCoord) {
   return [17.0185, 54.0882];
 }
 
-function renderTalabatLeafletMap(containerId, heightPx, isFullscreen, jobId) {
+function renderFixItLeafletMap(containerId, heightPx, isFullscreen, jobId) {
   setTimeout(() => {
-    initTalabatMap(containerId, jobId);
+    initFixItMap(containerId, jobId);
   }, 50);
 
   const j = (jobId && S.jobs.find(x => x.job_id === jobId)) || S.jobs[0] || {};
@@ -6214,10 +6165,10 @@ function renderTalabatLeafletMap(containerId, heightPx, isFullscreen, jobId) {
     : (ar ? "موقع تنفيذ الخدمة" : "Service location");
 
   return `
-  <div class="talabat-map-container no-print" style="height:${heightPx || '220px'}">
+  <div class="fx-map-container no-print" style="height:${heightPx || '220px'}">
     <div id="${containerId}" style="width:100%;height:100%"></div>
 
-    <!-- Clean Talabat Top Floating Status Pill -->
+    <!-- Clean FixIt Top Floating Status Pill -->
     <div style="position:absolute;top:12px;left:12px;right:12px;z-index:500;display:flex;justify-content:space-between;align-items:center;pointer-events:none">
       <div style="pointer-events:auto;background:#fff;color:var(--tx);font-size:12px;font-weight:800;padding:7px 12px;border-radius:99px;display:flex;align-items:center;gap:7px;box-shadow:0 4px 14px rgba(0,0,0,0.12)">
         <span style="width:8px;height:8px;border-radius:50%;background:${proCoord ? 'var(--gr)' : 'var(--o)'}"></span>
@@ -6225,7 +6176,7 @@ function renderTalabatLeafletMap(containerId, heightPx, isFullscreen, jobId) {
       </div>
     </div>
 
-    <!-- Clean Talabat Bottom-Right GPS Target Button -->
+    <!-- Clean FixIt Bottom-Right GPS Target Button -->
     <button style="position:absolute;bottom:12px;right:12px;z-index:500;background:#fff;color:var(--tx);height:38px;padding:0 12px;border-radius:99px;font-size:12px;font-weight:800;display:flex;align-items:center;gap:6px;box-shadow:0 4px 14px rgba(0,0,0,0.16)" onclick="event.stopPropagation();shareMyLiveGps('${j.job_id || ""}')">
       <span style="color:var(--o);display:grid;place-items:center">${I("gps")}</span>
       <span>${ar ? "موقعي الحقيقي" : "Locate Me"}</span>
@@ -6233,7 +6184,7 @@ function renderTalabatLeafletMap(containerId, heightPx, isFullscreen, jobId) {
   </div>`;
 }
 
-function initTalabatMap(containerId, jobId) {
+function initFixItMap(containerId, jobId) {
   const Lf = window.L || Leaf;
   if (!Lf || !Lf.map) return;
   const el = document.getElementById(containerId);
@@ -6270,7 +6221,7 @@ function initTalabatMap(containerId, jobId) {
       Lf.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(map);
     });
 
-    // Soft Talabat accuracy / service radius halo around customer pin
+    // Soft FixIt accuracy / service radius halo around customer pin
     const AccuracyCircle = Lf.circle(destCoord, {
       radius: proCoord ? 120 : 220,
       color: "#FF5A00",
@@ -6279,9 +6230,9 @@ function initTalabatMap(containerId, jobId) {
       fillOpacity: 0.10
     }).addTo(map);
 
-    // Talabat-style Customer Location Pin (Orange Pin + White Home Center)
+    // FixIt-style Customer Location Pin (Orange Pin + White Home Center)
     const destIcon = Lf.divIcon({
-      className: "talabat-dest-pin",
+      className: "fx-dest-pin",
       html: `<div style="position:relative;display:flex;flex-direction:column;align-items:center">
         <div style="background:#1A1A1A;color:#fff;font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:99px;white-space:nowrap;margin-bottom:4px;box-shadow:0 3px 8px rgba(0,0,0,.25)">${L === "ar" ? "موقعك المثبت" : "Service Location"}</div>
         <div style="background:#FF5A00;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:#fff;border:3px solid #fff;box-shadow:0 4px 14px rgba(255,90,0,0.45)">
@@ -6314,7 +6265,7 @@ function initTalabatMap(containerId, jobId) {
         .catch(() => {});
 
       const proIcon = Lf.divIcon({
-        className: "talabat-pro-pin",
+        className: "fx-pro-pin",
         html: `<div style="position:relative;display:flex;flex-direction:column;align-items:center">
           <div style="background:#00A862;color:#fff;font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:99px;white-space:nowrap;margin-bottom:4px;box-shadow:0 3px 8px rgba(0,0,0,.25)">${L === "ar" ? "الفني المعتمد" : "Assigned Pro"}</div>
           <div style="width:36px;height:36px;border-radius:50%;background:#00A862;color:#fff;display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,168,98,0.45);border:3px solid #fff">
@@ -6620,12 +6571,12 @@ const bar = (title, withBack, right) => {
     const a = defAddr();
     const unreadNotifs = (S.notifs || []).filter(n => !isNotifRead(n)).length;
     const activeJob = myJobs().find(j => j && j.status !== "COMPLETED" && j.status !== "CANCELLED");
-    return `<div class="talabat-top-bar hdr-home">
-      <div class="talabat-loc-picker" onclick="S.sheet='loc_picker';render()">
-        <div class="talabat-loc-icon">${I("pin")}</div>
+    return `<div class="fx-top-bar hdr-home">
+      <div class="fx-loc-picker" onclick="S.sheet='loc_picker';render()">
+        <div class="fx-loc-icon">${I("pin")}</div>
         <div class="sp">
-          <div class="talabat-loc-label">${ar ? "توصيل الخدمة إلى" : "Delivering service to"}</div>
-          <div class="talabat-loc-addr ell">${esc(a.label)} · ${esc(addrText(a))} <span style="font-size:10px">▼</span></div>
+          <div class="fx-loc-label">${ar ? "توصيل الخدمة إلى" : "Delivering service to"}</div>
+          <div class="fx-loc-addr ell">${esc(a.label)} · ${esc(addrText(a))} <span style="font-size:10px">▼</span></div>
         </div>
       </div>
       <button type="button" class="hdr-gps-pill" onclick="event.stopPropagation();quickDetectHomeGps()" title="Auto-detect GPS">
@@ -6634,16 +6585,16 @@ const bar = (title, withBack, right) => {
       ${activeJob ? `<button type="button" class="hdr-gps-pill" style="background:rgba(0,0,0,.24)" onclick="go('job','${activeJob.job_id}')">
         <span>#${esc(activeJob.short_id || String(activeJob.job_id).slice(0, 5))}</span>
       </button>` : ""}
-      <button type="button" class="talabat-circle-btn" onclick="go('notifs')">${I("bell")}${unreadNotifs ? `<span class="badge" style="position:absolute;top:-3px;right:-3px">${unreadNotifs}</span>` : ""}</button>
+      <button type="button" class="fx-circle-btn" onclick="go('notifs')">${I("bell")}${unreadNotifs ? `<span class="badge" style="position:absolute;top:-3px;right:-3px">${unreadNotifs}</span>` : ""}</button>
     </div>`;
   }
-  return `<div class="talabat-top-bar">
-    ${withBack ? `<button type="button" class="talabat-back-btn" onclick="back()">${I("back", "flip")}</button>` : ""}
+  return `<div class="fx-top-bar">
+    ${withBack ? `<button type="button" class="fx-back-btn" onclick="back()">${I("back", "flip")}</button>` : ""}
     <div class="sp ell hdr-title" style="${withBack ? "font-size:18px" : ""}">${title || (ar ? "تفاصيل الطلب" : "FixIt")}</div>
     ${right ? `<div class="row" style="gap:8px">${right}</div>` : ""}
   </div>`;
 };
-const langBtn = () => `<button class="talabat-circle-btn" onclick="setLang(L==='ar'?'en':'ar')" style="font-weight:800;font-size:13px">${L === "ar" ? "EN" : "ع"}</button>`;
+const langBtn = () => `<button class="fx-circle-btn" onclick="setLang(L==='ar'?'en':'ar')" style="font-weight:800;font-size:13px">${L === "ar" ? "EN" : "ع"}</button>`;
 const empty = (icon, text) => `<div class="empty">${I(icon)}<div class="t1">${text}</div></div>`;
 
 function jobCard(j) {
@@ -6819,6 +6770,7 @@ function jobChatScreen() {
 function cHome() {
   const act = myJobs().filter(j => !isDone(j));
   const ar = L === "ar";
+  const isSignedIn = Boolean(S.auth && S.auth.loggedIn && S.auth.sessionCode && !S.auth.isGuest);
   const top = [["AC_REPAIR", ar ? "صيانة المكيفات" : "AC Services", ar ? "تبريد سريع وفوري" : "Fast cooling fix"], ["CLEANER", ar ? "تنظيف المنازل" : "Home Cleaning", ar ? "تنظيف شامل وعميق" : "Deep & sparkling"]];
   const pop = [
     ["AC_REPAIR", ar ? "فحص وتبريد وغاز" : "Cooling & gas service", ar ? "~30 دقيقة" : "~30 min"],
@@ -6829,8 +6781,16 @@ function cHome() {
   ];
   const book = id => `openBookPage('${id}')`;
   return `${bar("FixIt", false)}
-  <div class="hero-search"><div class="talabat-search" onclick="openBookPage()">${I("search")}<input readonly placeholder="${ar ? "ابحث أو اطلب: تكييف، سباكة، كهرباء، تنظيف…" : "Search or order AC, plumbing, electrical…"}"></div></div>
+  <div class="hero-search"><div class="fx-search" onclick="openBookPage()">${I("search")}<input readonly placeholder="${ar ? "ابحث أو اطلب: تكييف، سباكة، كهرباء، تنظيف…" : "Search or order AC, plumbing, electrical…"}"></div></div>
   <div class="pad">
+    ${!isSignedIn ? `<div class="card row" style="justify-content:space-between;gap:12px;border:1.5px solid var(--o3);background:var(--o2)">
+      <div class="sp">
+        <div class="t1" style="font-size:15px">${ar ? "سجّل دخولك لمتابعة طلباتك والمحفظة" : "Sign in for live order tracking & wallet"}</div>
+        <div class="t2" style="font-size:12.5px">${ar ? "برقم الهاتف أو Google أو البصمة" : "Phone number, Google, or Biometrics"}</div>
+      </div>
+      <button type="button" class="btn s" style="width:auto;padding:0 16px" onclick="openAuthScreen('welcome')">${ar ? "دخول" : "Sign In"}</button>
+    </div>` : ""}
+
     ${act.length ? `<div class="live" onclick="go('job','${act[0].job_id}')">
       <div class="ring">${I(cat(act[0].category_id).icon)}</div>
       <div class="sp"><div class="row" style="gap:6px"><span class="dot"></span><span style="font-size:12px;font-weight:700;opacity:.8">${t(act[0].status)} · ${sid(act[0])}</span></div>
@@ -6839,10 +6799,8 @@ function cHome() {
 
     <div class="cat-big">${top.map(x => `<button style="background:${ccol(x[0])}" onclick="${book(x[0])}"><b>${x[1]}</b><small>${x[2]}</small>${I(cat(x[0]).icon)}</button>`).join("")}</div>
 
-    <div class="talabat-grid">${CATS.filter(c => c[0] !== "AC_REPAIR" && c[0] !== "CLEANER").map(c => `
-      <button class="talabat-cat-card" onclick="${book(c[0])}"><div class="talabat-cat-icon" style="color:${ccol(c[0])}">${I(c[1])}</div><div class="talabat-cat-label">${ar ? c[3] : c[2]}</div></button>`).join("")}</div>
-
-    ${aadsSlotHtml("margin:4px 0;")}
+    <div class="fx-grid">${CATS.filter(c => c[0] !== "AC_REPAIR" && c[0] !== "CLEANER").map(c => `
+      <button class="fx-cat-card" onclick="${book(c[0])}"><div class="fx-cat-icon" style="color:${ccol(c[0])}">${I(c[1])}</div><div class="fx-cat-label">${ar ? c[3] : c[2]}</div></button>`).join("")}</div>
 
     <div class="hscroll">
       <div class="promo" style="background:linear-gradient(120deg,#FF5A00,#FF8A3D)" onclick="go('coupons')"><div><h3>${ar ? "عروض وخصومات حصرية" : "Exclusive member offers"}</h3><p>${ar ? "فعّل رمز SALALAH25 في طلبك القادم" : "Apply code SALALAH25 on your booking"}</p></div><span class="cta">${ar ? "عرض الكوبونات" : "View offers"}</span>${I("tag")}</div>
@@ -6850,7 +6808,7 @@ function cHome() {
       <div class="promo" style="background:linear-gradient(120deg,#0F172A,#334155)" onclick="openBookPage()"><div><h3>${ar ? "اطلب فني خلال 30 ثانية" : "Request a pro in 30s"}</h3><p>${ar ? "اختر نطاق العمل وقارن عروض الفنيين" : "Pick your job scope & compare direct bids"}</p></div><span class="cta">${ar ? "اطلب الآن" : "Order now"}</span>${I("plus")}</div>
     </div>
 
-    <div class="trust"><div>${I("shield")}${t("escrowSecured")}</div><div>${I("check")}${ar ? "فنيون معتمدون" : "Verified pros"}</div><div>${I("star")}4.9 ${ar ? "تقييم" : "rating"}</div></div>
+    <div class="trust"><div>${I("shield")}${t("escrowSecured")}</div><div>${I("check")}${ar ? "فنيون معتمدون" : "Verified pros"}</div><div>${I("clock")}${ar ? "حجز فوري أو مجدول" : "Instant or scheduled"}</div></div>
 
     <div class="sec"><h2>${ar ? "الأكثر طلباً في صلالة" : "Popular in Salalah"}</h2><span>${ar ? "صلالة" : "Salalah"}</span></div>
     <div class="hscroll">${pop.map(p => { const c = cat(p[0]); return `<button class="svc" onclick="${book(p[0])}"><div class="im" style="background:${ccol(p[0])}">${I(c.icon)}</div><div class="bd"><b>${c.name}</b><span>${p[1]}</span><br><span class="tagl">${p[2]}</span></div></button>`; }).join("")}</div>
@@ -7338,7 +7296,7 @@ function checkoutScreen() {
   </div>`;
 }
 
-// Talabat "One last check..." 6-Second Confirmation Screen
+// FixIt "One last check..." 6-Second Confirmation Screen
 let _lastCheckInterval = null;
 function startLastCheckFlow() {
   const ar = L === "ar";
@@ -7474,7 +7432,7 @@ function cBookSheet() { return bookScreen(); }
 
 function cOrders() {
   const list = filtered(myJobs()), ar = L === "ar";
-  return `<div class="ph"><h1>${t("orders")}</h1><p>${ar ? "جميع طلباتك، التتبع المباشر والفواتير" : "Track live orders, offers & official receipts"}</p></div><div class="pad lift">${searchBar().replace('class="search"','class="talabat-search"')}${chipRow([["ACTIVE","active"],["DONE","done"],["ALL","all"],["TODAY","today"],["WEEK","week"]])}
+  return `<div class="ph"><h1>${t("orders")}</h1><p>${ar ? "جميع طلباتك، التتبع المباشر والفواتير" : "Track live orders, offers & official receipts"}</p></div><div class="pad lift">${searchBar().replace('class="search"','class="fx-search"')}${chipRow([["ACTIVE","active"],["DONE","done"],["ALL","all"],["TODAY","today"],["WEEK","week"]])}
     ${list.length ? list.map(jobCard).join("") : empty("list", t("noOrders"))}</div>`;
 }
 
@@ -7681,7 +7639,7 @@ function cJob() {
 
     <!-- 2. Live Interactive Location Map (Real Pro GPS & User Pin on Map) -->
     <div class="card no-print" style="padding:0;overflow:hidden">
-      ${renderTalabatLeafletMap("cjobLeafletMap", "230px", false, j.job_id)}
+      ${renderFixItLeafletMap("cjobLeafletMap", "230px", false, j.job_id)}
       <div class="row" style="padding:12px 14px;justify-content:space-between">
         <div class="row" style="gap:8px">
           <span class="live" style="padding:0;background:none;box-shadow:none"><span class="dot"></span></span>
@@ -8575,7 +8533,7 @@ function complianceScreen() {
   </div>`;
 }
 
-/* ================= ACCOUNT TAB (CLEAN TALABAT STYLE) ================= */
+/* ================= ACCOUNT TAB (CLEAN FIXIT STYLE) ================= */
 function accountScreen() {
   const ar = L === "ar";
   const activeShop = ROLE === "vendor" ? getActiveShop() : null;
@@ -8643,7 +8601,7 @@ function accountScreen() {
   </div>`;
 }
 
-// SCREENSHOT 2: Exact Talabat "Account info" Page (Clean, no 'Change profile picture' text!)
+// SCREENSHOT 2: Exact FixIt "Account info" Page (Clean, no 'Change profile picture' text!)
 function saveAccountInfoPage() {
   const ar = L === "ar";
   const fn = ((document.getElementById("ai_first") || {}).value || "").trim();
@@ -8831,7 +8789,7 @@ function settingsScreen() {
 }
 function profileSheet() { return accountInfoScreen(); }
 
-/* ================= TALABAT-INSPIRED ABOUT, TERMS OF SERVICE & PRIVACY POLICY (fixit-now.xyz) ================= */
+/* ================= FIXIT-INSPIRED ABOUT, TERMS OF SERVICE & PRIVACY POLICY (fixit-now.xyz) ================= */
 function aboutScreen() {
   const ar = L === "ar";
   return `${bar(ar ? "عن FixIt" : "About FixIt", true)}
@@ -8956,8 +8914,8 @@ function legalScreen() {
       <div class="t1" style="font-size:17px">${ar ? "الوثائق القانونية الرسمية لمنصة FixIt" : "FixIt Official Legal Documentation"}</div>
       <div class="t2" style="font-size:12.5px;line-height:1.45">
         ${ar
-          ? "تخضع جميع خدمات الصيانة المنزلية وخدمات الطرق والتاكسي عبر تطبيق FixIt (fixit-now.xyz) للشروط والسياسات القانونية الموضحة أدناه. منصة FixIt مستقلة تماماً وغير تابعة لشركة طلبات (Talabat) أو Delivery Hero بأي شكل."
-          : "All home maintenance, roadside recovery, and transport services booked via FixIt (fixit-now.xyz) are governed by the policies below. FixIt is an independent platform and is NOT affiliated with Talabat or Delivery Hero SE in any way."}
+          ? "تخضع جميع خدمات الصيانة المنزلية وخدمات الطرق والتاكسي عبر تطبيق FixIt (fixit-now.xyz) للشروط والسياسات القانونية الموضحة أدناه. منصة FixIt مستقلة تماماً وغير تابعة لشركة طلبات (FixIt) أو Delivery Hero بأي شكل."
+          : "All home maintenance, roadside recovery, and transport services booked via FixIt (fixit-now.xyz) are governed by the policies below. FixIt is an independent platform and is NOT affiliated with FixIt or Delivery Hero SE in any way."}
       </div>
     </div>
 
@@ -8966,7 +8924,7 @@ function legalScreen() {
         <div class="ico">${I("list")}</div>
         <div class="sp">
           <div class="t1">${ar ? "1. شروط الخدمة (Terms of Service)" : "1. Terms of Service"}</div>
-          <div class="t2">${ar ? "قواعد الاستخدام، إخلاء المسؤولية، عدم التبعية لطلبات، وإنهاء الحساب" : "Acceptable use, non-affiliation with Talabat, liability & account rules"}</div>
+          <div class="t2">${ar ? "قواعد الاستخدام، إخلاء المسؤولية، استقلالية المنصة، وإنهاء الحساب" : "Acceptable use, non-affiliation with FixIt, liability & account rules"}</div>
         </div>
         ${I("next","flip")}
       </button>
@@ -9017,8 +8975,8 @@ function tosScreen() {
       <div style="background:#FFF7ED;border:1.5px solid #FDBA74;border-radius:12px;padding:10px 12px;font-size:12.5px;color:#9A3412">
         <b>${ar ? "إقرار استقلالية العلامة التجارية وعدم التبعية:" : "Mandatory Non-Affiliation Notice:"}</b><br/>
         ${ar
-          ? "منصة FixIt (fixit-now.xyz) هي سوق تقني عُماني مستقل تماماً، وليست تابعة أو شريكة أو مرتبطة بأي شكل من الأشكال بشركة طلبات (Talabat) أو Delivery Hero SE أو Uber أو A-Ads."
-          : "FixIt (fixit-now.xyz) is an independent Omani marketplace and is NOT affiliated with, endorsed by, sponsored by, or related in ANY kind of relation to Talabat, Delivery Hero SE, Uber Technologies Inc., or A-Ads."}
+          ? "منصة FixIt (fixit-now.xyz) هي سوق تقني عُماني مستقل تماماً، وليست تابعة أو شريكة أو مرتبطة بأي شكل من الأشكال بشركة طلبات (FixIt) أو Delivery Hero SE أو Uber أو A-Ads."
+          : "FixIt (fixit-now.xyz) is an independent Omani marketplace and is NOT affiliated with, endorsed by, sponsored by, or related in ANY kind of relation to FixIt, Delivery Hero SE, Uber Technologies Inc., or A-Ads."}
       </div>
 
       <div class="t1" style="font-size:15px;color:var(--tx)">${ar ? "1. الأهلية، التسجيل عبر واتساب، والدخول بالبصمة" : "1. Eligibility, WhatsApp OTP & Biometric Authentication"}</div>
@@ -9080,7 +9038,7 @@ function privacyScreen() {
   </div>`;
 }
 
-/* ================= TALABAT 1:1 LOCATION PICKER, FULL MAP PIN & NEW ADDRESS FORM ================= */
+/* ================= FIXIT 1:1 LOCATION PICKER, FULL MAP PIN & NEW ADDRESS FORM ================= */
 function selectActiveAddress(id) {
   S.addresses.forEach(a => { a.is_default = (a.address_id === id); });
   S.addresses.sort((a, b) => (b.is_default ? 1 : 0) - (a.is_default ? 1 : 0));
@@ -9200,7 +9158,7 @@ function addrMapScreen() {
     <div style="flex:1;position:relative;overflow:hidden">
       <div id="addrPinMap" style="width:100%;height:100%"></div>
 
-      <!-- Talabat Floating Tooltip + Orange Pin in Center (Screenshot E) -->
+      <!-- FixIt Floating Tooltip + Orange Pin in Center (Screenshot E) -->
       <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-100%);z-index:600;pointer-events:none;display:flex;flex-direction:column;align-items:center">
         <div style="background:#262626;color:#fff;font-size:13px;font-weight:700;padding:10px 16px;border-radius:12px;white-space:nowrap;box-shadow:0 6px 20px rgba(0,0,0,.25);position:relative;margin-bottom:8px">
           ${ar ? "سيتم تنفيذ خدمتك في هذا الموقع" : "Your service will be performed here"}
@@ -9259,7 +9217,7 @@ function initMiniPreviewMap(containerId, lat, lng) {
   } catch (e) {}
 }
 
-async function saveTalabatAddressForm() {
+async function saveFixItAddressForm() {
   const d = S.addrDraft || {};
   const bldg = (document.getElementById("f_bldg") || {}).value || "";
   const apt = (document.getElementById("f_apt") || {}).value || "";
@@ -9396,7 +9354,7 @@ function addrFormScreen() {
 
     <!-- Bottom Sticky Save Button (Screenshot F) -->
     <div style="position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;background:#fff;padding:12px 16px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--ln);z-index:60">
-      <button class="tlbt-pill-btn" onclick="saveTalabatAddressForm()">${ar ? "حفظ العنوان" : "Save address"}</button>
+      <button class="tlbt-pill-btn" onclick="saveFixItAddressForm()">${ar ? "حفظ العنوان" : "Save address"}</button>
     </div>
   </div>`;
 }
@@ -9430,7 +9388,7 @@ function addressesScreen() {
 }
 function addressSheet() { return locPickerSheet(); }
 
-/* ================= TALABAT COUPONS (EXPIRATION DATE + UNUSED / USED / EXPIRED TABS) ================= */
+/* ================= FIXIT COUPONS (EXPIRATION DATE + UNUSED / USED / EXPIRED TABS) ================= */
 function couponsScreen() {
   const ar = L === "ar";
   const allCoupons = [
@@ -9488,7 +9446,7 @@ function couponsScreen() {
   </div>`;
 }
 
-/* ================= REBUILT 1:1 TALABAT "GET HELP" SUPPORT SYSTEM ================= */
+/* ================= REBUILT 1:1 FIXIT "GET HELP" SUPPORT SYSTEM ================= */
 const HELP_TOPICS_DATA = {
   pay: {
     icon: "wallet",
@@ -9813,7 +9771,7 @@ function notifsScreen() {
   </div>`;
 }
 
-/* ================= TALABAT SUPPORT CHAT (NO AUTO FREE MONEY ON PHOTO — REQUIRES ADMIN VERIFICATION!) ================= */
+/* ================= FIXIT SUPPORT CHAT (NO AUTO FREE MONEY ON PHOTO — REQUIRES ADMIN VERIFICATION!) ================= */
 function triggerSupportBotStep(stepKey) {
   const ar = L === "ar";
   const j = (S.supportOrderId && S.jobs.find(x => x.job_id === S.supportOrderId)) || myJobs()[0] || S.jobs[0] || {};
@@ -9889,8 +9847,8 @@ function supportChatScreen() {
   const firstName = (S.profile.full_name || "").trim().split(" ")[0];
 
   return `<div class="chat-page" style="background:#F7F7F8">
-    <div class="talabat-top-bar" style="border-bottom:1px solid var(--ln);background:#fff">
-      <button class="talabat-back-btn" onclick="back()">${I("back", "flip")}</button>
+    <div class="fx-top-bar" style="border-bottom:1px solid var(--ln);background:#fff">
+      <button class="fx-back-btn" onclick="back()">${I("back", "flip")}</button>
       <div class="bot-av" style="width:38px;height:38px">${I("help")}</div>
       <div class="sp">
         <div class="t1 ell" style="font-size:16px">${ar ? "دعم عملاء FixIt" : "FixIt Support Care"}</div>
@@ -10016,7 +9974,7 @@ async function sendSupportMsg(presetText) {
   try { await sb("/support_messages", "POST", newMsg); } catch (e) {}
 }
 
-/* ================= SCREEN: TALABAT LIVE TRACKING SCREEN (MATCHES USER SCREENSHOT 1) ================= */
+/* ================= SCREEN: FIXIT LIVE TRACKING SCREEN (MATCHES USER SCREENSHOT 1) ================= */
 function trackingScreen() {
   const j = S.jobs.find(x => x.job_id === S.jobId) || S.jobs.find(x => x.status === "BID_SELECTED" || x.status === "IN_PROGRESS") || S.jobs[0] || {};
   const c = cat(j.category_id), ar = L === "ar", isVendor = ROLE === "vendor";
@@ -10026,7 +9984,7 @@ function trackingScreen() {
       <button class="ib" style="pointer-events:auto;background:#fff;box-shadow:var(--sh)" onclick="back()">${I("x")}</button>
       <span class="pill" style="pointer-events:auto;background:#fff;color:var(--tx);box-shadow:var(--sh);height:40px;padding:0 14px">${sid(j)}</span>
     </div>
-    <div style="height:52vh">${renderTalabatLeafletMap("trackingLeafletMap", "100%", true, j.job_id)}</div>
+    <div style="height:52vh">${renderFixItLeafletMap("trackingLeafletMap", "100%", true, j.job_id)}</div>
     <div class="trk">
       <div class="grab"></div>
       <div class="t2" style="font-weight:700">${j.status === "OPEN" ? (ar ? "حالة الطلب على الخريطة" : "Live Order Status") : (ar ? "الوصول المتوقع" : "Estimated arrival")}</div>
@@ -10043,7 +10001,7 @@ function trackingScreen() {
 }
 
 
-/* ================= SCREEN: TALABAT ORDER DETAILS (MATCHES USER SCREENSHOT 2) ================= */
+/* ================= SCREEN: FIXIT ORDER DETAILS (MATCHES USER SCREENSHOT 2) ================= */
 function receiptScreen() {
   const j = S.jobs.find(x => x.job_id === S.jobId) || S.jobs[0] || {};
   const c = cat(j.category_id), ar = L === "ar";
@@ -10071,7 +10029,7 @@ function receiptScreen() {
 }
 
 
-/* ================= TALABAT VENDOR PRO SCREENS (DISTANCE RADAR, AUTO-TRANSLATED LEADS, LIVE CAMERA VERIFICATION) ================= */
+/* ================= VENDOR PARTNER SCREENS (CONSUMER-MATCHED UI, REAL STATS, FULL VENDOR FLOW) ================= */
 function calcVendorNetPayoutOmr(bidOmr) {
   const amt = Math.max(0, Number(bidOmr || 0));
   const doneCount = myJobs().filter(j => j.status === "COMPLETED").length;
@@ -10082,169 +10040,181 @@ function calcVendorNetPayoutOmr(bidOmr) {
 }
 
 function vJobs() {
-  const curShop = getActiveShop();
-  if (curShop && curShop.kyc_status !== "APPROVED" && !S.onboardingPreviewGate) {
-    return vShopKycScreen(true);
-  }
   const ar = L === "ar";
+  const curShop = getActiveShop();
   const mine = myJobs();
   const catFilter = S.vCatFilter || "ALL";
-  const allOpenJobs = S.jobs.filter(j => j.status === "OPEN").sort((a, b) => (isProCustomerJob(b) ? 1 : 0) - (isProCustomerJob(a) ? 1 : 0));
-  const openJobs = catFilter === "ALL" ? allOpenJobs : allOpenJobs.filter(j => j.category_id === catFilter);
+  const q = String(S.vSearch || "").trim().toLowerCase();
+  const allOpenJobs = (S.jobs || []).filter(j => j && j.status === "OPEN").sort((a, b) => (isProCustomerJob(b) ? 1 : 0) - (isProCustomerJob(a) ? 1 : 0));
+  let openJobs = catFilter === "ALL" ? allOpenJobs : allOpenJobs.filter(j => j.category_id === catFilter);
   const activeMine = mine.filter(j => !isDone(j) && j.status !== "OPEN");
   const doneMine = mine.filter(j => j.status === "COMPLETED");
   const showNew = S.filter !== "MINE" && S.filter !== "DONE";
-  const list = S.filter === "MINE" ? activeMine : S.filter === "DONE" ? doneMine : openJobs;
+  let list = S.filter === "MINE" ? activeMine : S.filter === "DONE" ? doneMine : openJobs;
+  if (q) {
+    list = list.filter(j => {
+      const c = cat(j.category_id);
+      const hay = `${c.name} ${j.description || ""} ${j.short_id || ""}`.toLowerCase();
+      return hay.includes(q);
+    });
+  }
   const unreadNotifs = (S.notifs || []).filter(n => !isNotifRead(n)).length;
-  const pInfo = getProDirectoryInfo(VENDOR_ID);
-  const partnerDisplayName = (curShop && curShop.shop_name) || S.profile.full_name || (ar ? pInfo.nameAr : pInfo.nameEn);
   const walletBal = Number((S.wallet && S.wallet.balance) || 0);
+  const a = defAddr();
+  const isSignedIn = Boolean(S.auth && S.auth.loggedIn && S.auth.sessionCode && !S.auth.isGuest);
 
-  const rightBar = `<div class="row" style="gap:8px">
-    <button class="talabat-circle-btn" style="position:relative" onclick="go('notifs')">${I("bell")}${unreadNotifs ? `<span class="badge" style="position:absolute;top:-3px;right:-3px">${unreadNotifs}</span>` : ""}</button>
-    <button class="tog ${S.online ? "on" : ""}" onclick="S.online=!S.online;save('online',S.online);render()"></button>
-  </div>`;
-
-  return `${bar(ar ? "بوابة شريك FixIt" : "FixIt Partner Hub", false, rightBar)}
-  <div class="pad">
-    ${(curShop && curShop.kyc_status !== "APPROVED") ? `<div class="card" style="background:#FFF7ED;border:1.5px solid #FDBA74;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px">
+  return `<div class="fx-top-bar hdr-home">
+    <div class="fx-loc-picker" onclick="S.sheet='loc_picker';render()">
+      <div class="fx-loc-icon">${I("pin")}</div>
       <div class="sp">
-        <div style="font-size:13.5px;font-weight:900;color:#9A3412">${ar ? "وضع معاينة الرادار · أكمل توثيق الشريك" : "Radar Preview · Complete Partner KYC"}</div>
-        <div style="font-size:11.5px;color:#B45309">${ar ? "أكمل توثيق السجل التجاري والبطاقة المدنية والميثاق لتقديم العروض" : "Verify your CR, Civil ID, and Charter to unlock bidding"}</div>
-      </div>
-      <button class="pill" style="background:var(--o);color:#fff;min-height:40px;padding:0 12px" onclick="S.onboardingPreviewGate=false;go('shop_kyc')">${ar ? "توثيق الآن" : "Verify KYC"}</button>
-    </div>` : ""}
-
-    <!-- Pro Partner Status & Stats Hero Card -->
-    <div class="card" style="background:linear-gradient(135deg,#1A1A1A,#2D2D35);color:#fff;display:flex;flex-direction:column;gap:12px">
-      <div class="row" style="gap:12px">
-        <div class="av" style="background:var(--o);width:48px;height:48px;border-radius:14px">${esc(pInfo.avatar)}</div>
-        <div class="sp">
-          <div class="row" style="gap:6px;flex-wrap:wrap">
-            <span style="font-size:17px;font-weight:900">${esc(partnerDisplayName)}</span>
-            <span class="pill ok" style="font-size:10px">${pInfo.rating.toFixed(1)} Rating</span>
-            ${curShop && curShop.cr_number ? `<span class="pill" style="background:rgba(255,255,255,.14);color:#E5E7EB;font-size:10px">CR ${esc(curShop.cr_number)}</span>` : ""}
-          </div>
-          <div class="row" style="gap:6px;font-size:12px;opacity:.9;margin-top:3px">
-            <span style="width:8px;height:8px;border-radius:50%;background:${S.online ? "#22C55E" : "#EF4444"};display:inline-block"></span>
-            <span>${S.online ? (ar ? "متصل بالرادار · يستقبل طلبات صلالة" : "Online · Receiving Salalah orders") : (ar ? "غير متصل" : "Offline")}</span>
-          </div>
-        </div>
-        <button class="pill" style="background:rgba(255,255,255,.15);color:#fff;font-size:11.5px;min-height:40px" onclick="openProProfile(VENDOR_ID)">${ar ? "ملفي" : "Profile"}</button>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.12);text-align:center">
-        <div onclick="S.filter='NEW';render()" style="cursor:pointer"><div style="font-size:17px;font-weight:900;color:var(--o)">${allOpenJobs.length}</div><div style="font-size:10.5px;opacity:.8">${ar ? "طلبات قريبة" : "Nearby"}</div></div>
-        <div onclick="S.filter='MINE';render()" style="cursor:pointer"><div style="font-size:17px;font-weight:900;color:#4ADE80">${activeMine.length}</div><div style="font-size:10.5px;opacity:.8">${ar ? "نشط" : "Active"}</div></div>
-        <div onclick="S.filter='DONE';render()" style="cursor:pointer"><div style="font-size:17px;font-weight:900;color:#fff">${pInfo.jobsDone + doneMine.length}</div><div style="font-size:10.5px;opacity:.8">${ar ? "منجز" : "Done"}</div></div>
-        <div onclick="tab('wallet')" style="cursor:pointer"><div style="font-size:15px;font-weight:900;color:#FBBF24">${walletBal.toFixed(3)}</div><div style="font-size:10.5px;opacity:.8">${ar ? "المحفظة (ر.ع)" : "Wallet OMR"}</div></div>
+        <div class="fx-loc-label">${ar ? "نطاق عملك في صلالة" : "Your service area"}</div>
+        <div class="fx-loc-addr ell">${esc(a.label)} · ${esc(addrText(a))} <span style="font-size:10px">▼</span></div>
       </div>
     </div>
+    <button type="button" class="hdr-gps-pill" onclick="event.stopPropagation();quickDetectHomeGps()">
+      ${I("radar")}<span>${ar ? "موقعي" : "GPS"}</span>
+    </button>
+    <button type="button" class="hdr-gps-pill" style="background:${S.online ? "rgba(0,168,98,.92)" : "rgba(0,0,0,.28)"}" onclick="S.online=!S.online;save('online',S.online);render()">
+      <span>● ${S.online ? (ar ? "متصل" : "Online") : (ar ? "متوقف" : "Offline")}</span>
+    </button>
+    <button type="button" class="fx-circle-btn" onclick="go('notifs')">${I("bell")}${unreadNotifs ? `<span class="badge" style="position:absolute;top:-3px;right:-3px">${unreadNotifs}</span>` : ""}</button>
+  </div>
 
-    ${activeMine.length ? activeMine.slice(0, 3).map(aj => {
-      const schedLbl = getJobScheduleLabel(aj);
-      return `<div class="live" style="${schedLbl ? "background:linear-gradient(135deg,#1E3A8A,#2563EB)" : ""}" onclick="go('job','${aj.job_id}')">
-        <div class="ring">${I(cat(aj.category_id).icon)}</div>
-        <div class="sp">
-          <div class="row" style="gap:6px;flex-wrap:wrap"><span class="dot"></span><span style="font-size:12px;font-weight:800;opacity:.9">${t(aj.status)} · ${sid(aj)}</span>${schedLbl ? `<span class="pill" style="background:rgba(255,255,255,.22);color:#fff;font-size:10.5px">${ar ? "موعد مجدول:" : "Scheduled:"} ${esc(schedLbl)}</span>` : ""}</div>
-          <div style="font-size:15px;font-weight:900;margin-top:2px">${cat(aj.category_id).name} — ${schedLbl ? (ar ? `الزيارة في الموعد المحدد (${esc(schedLbl)}) · يمكنك قبول طلبات أخرى` : `Visit at scheduled time (${esc(schedLbl)}) · Free to take other jobs`) : (ar ? "اضغط لفتح الخريطة وتحديث الحالة" : "Tap to navigate & update job status")}</div>
-        </div>
-        ${I("next", "flip")}
-      </div>`;
-    }).join("") : ""}
-
-    <div class="chips" style="margin-bottom:2px">
-      <button class="chip ${showNew ? "on" : ""}" onclick="S.filter='NEW';render()">${I("radar")}${t("newJobs")} (${allOpenJobs.length})</button>
-      <button class="chip ${S.filter === "MINE" ? "on" : ""}" onclick="S.filter='MINE';render()">${I("tool")}${t("myJobs")} (${activeMine.length})</button>
-      <button class="chip ${S.filter === "DONE" ? "on" : ""}" onclick="S.filter='DONE';render()">${I("check")}${t("done")} (${doneMine.length})</button>
+  <div class="hero-search">
+    <div class="fx-search">
+      ${I("search")}
+      <input value="${esc(S.vSearch || "")}" placeholder="${ar ? "ابحث في الطلبات حسب الخدمة أو المنطقة..." : "Search requests by service or area..."}" oninput="S.vSearch=this.value;render()">
     </div>
+  </div>
 
-    ${showNew ? `<div class="chips" style="margin-top:0">
-      <button class="chip ${catFilter === "ALL" ? "on" : ""}" style="height:36px;font-size:12px" onclick="S.vCatFilter='ALL';render()">${ar ? "الكل" : "All Trades"}</button>
-      ${CATS.map(ct => `<button class="chip ${catFilter === ct[0] ? "on" : ""}" style="height:36px;font-size:12px" onclick="S.vCatFilter='${ct[0]}';render()">${ar ? ct[3] : ct[2]}</button>`).join("")}
+  <div class="pad">
+    ${!isSignedIn ? `<div class="card row" style="justify-content:space-between;gap:12px;border:1.5px solid var(--o3);background:var(--o2)">
+      <div class="sp">
+        <div class="t1" style="font-size:15px">${ar ? "سجّل دخولك كشريك معتمد" : "Sign in to your Partner Account"}</div>
+        <div class="t2" style="font-size:12.5px">${ar ? "لتقديم عروض الأسعار واستلام الأرباح في محفظتك" : "Submit price offers and receive instant payouts"}</div>
+      </div>
+      <button type="button" class="btn s" style="width:auto;padding:0 16px" onclick="openAuthScreen('welcome')">${ar ? "دخول" : "Sign In"}</button>
     </div>` : ""}
 
-    ${aadsSlotHtml("margin:4px 0;")}
+    ${activeMine.length ? `<div class="live" onclick="go('job','${activeMine[0].job_id}')">
+      <div class="ring">${I(cat(activeMine[0].category_id).icon)}</div>
+      <div class="sp">
+        <div class="row" style="gap:6px"><span class="dot"></span><span style="font-size:12px;font-weight:700;opacity:.85">${t(activeMine[0].status)} · ${sid(activeMine[0])}${getJobScheduleLabel(activeMine[0]) ? ` · ${esc(getJobScheduleLabel(activeMine[0]))}` : ""}</span></div>
+        <div style="font-size:16px;font-weight:800;margin-top:2px">${cat(activeMine[0].category_id).name} — ${ar ? "متابعة الطلب والخريطة" : "Open map & job details"}</div>
+      </div>
+      ${I("next", "flip")}
+    </div>` : ""}
 
-    ${!S.online ? empty("power", ar ? "قم بتفعيل زر الاتصال لاستقبال الطلبات القريبة" : "Switch Online to receive nearby repair orders") : list.length ? list.map(j => showNew ? vLeadCard(j) : jobCard(j)).join("") : empty("radar", ar ? "لا توجد طلبات في هذا القسم حالياً" : "No jobs in this tab right now")}
+    <!-- Clean 3-Column Real Stats Bar (Same as Consumer UI) -->
+    <div class="stats">
+      <div onclick="S.filter='NEW';render()" style="cursor:pointer"><b>${allOpenJobs.length}</b><span>${ar ? "طلبات متاحة" : "Open Leads"}</span></div>
+      <div onclick="S.filter='MINE';render()" style="cursor:pointer"><b>${activeMine.length}</b><span>${ar ? "مهامي الجارية" : "Active Jobs"}</span></div>
+      <div onclick="tab('wallet')" style="cursor:pointer"><b style="color:var(--o)">${walletBal.toFixed(3)}</b><span>${ar ? "المحفظة (ر.ع)" : "Wallet OMR"}</span></div>
+    </div>
+
+    ${(curShop && curShop.kyc_status !== "APPROVED") ? `<button type="button" class="card row" style="text-align:start;width:100%;padding:13px 16px" onclick="tab('shop')">
+      <div class="ico" style="width:40px;height:40px">${I("shield")}</div>
+      <div class="sp">
+        <div class="t1" style="font-size:14.5px">${ar ? "إكمال توثيق المحل (CR)" : "Complete Shop Verification"}</div>
+        <div class="t2" style="font-size:12px">${ar ? "أضف السجل التجاري والبطاقة المدنية لتوثيق حسابك" : "Add your CR & Civil ID in Shop Profile"}</div>
+      </div>
+      ${I("next", "flip")}
+    </button>` : ""}
+
+    <!-- Clean 3-Segment Switcher -->
+    <div class="seg3">
+      <button type="button" class="${showNew ? "on" : ""}" onclick="S.filter='NEW';render()">${ar ? "طلبات جديدة" : "Nearby"} (${allOpenJobs.length})</button>
+      <button type="button" class="${S.filter === "MINE" ? "on" : ""}" onclick="S.filter='MINE';render()">${ar ? "مهامي" : "My Active"} (${activeMine.length})</button>
+      <button type="button" class="${S.filter === "DONE" ? "on" : ""}" onclick="S.filter='DONE';render()">${ar ? "المكتملة" : "Completed"} (${doneMine.length})</button>
+    </div>
+
+    ${showNew ? `<div class="chips" style="margin-top:-4px">
+      <button type="button" class="chip ${catFilter === "ALL" ? "on" : ""}" style="height:36px;font-size:12.5px" onclick="S.vCatFilter='ALL';render()">${ar ? "الكل" : "All"}</button>
+      ${CATS.map(ct => `<button type="button" class="chip ${catFilter === ct[0] ? "on" : ""}" style="height:36px;font-size:12.5px" onclick="S.vCatFilter='${ct[0]}';render()">${ar ? ct[3] : ct[2]}</button>`).join("")}
+    </div>` : ""}
+
+    ${!S.online
+      ? empty("power", ar ? "اضغط على زر (متصل) في الأعلى لاستقبال الطلبات القريبة" : "Tap Online in the top bar to receive nearby requests")
+      : list.length
+        ? list.map(j => showNew ? vLeadCard(j) : jobCard(j)).join("")
+        : empty("radar", ar ? "لا توجد طلبات في هذا القسم حالياً" : "No requests in this tab right now")}
   </div>`;
 }
 
 function vLeadCard(j) {
-  const c = cat(j.category_id), mine = S.bids.find(b => b.job_id === j.job_id && b.vendor_id === ME), ar = L === "ar";
+  const c = cat(j.category_id), mine = (S.bids || []).find(b => b.job_id === j.job_id && b.vendor_id === ME), ar = L === "ar";
   const jCoords = getJobCoords(j);
   const myCoords = S.userGps || [17.0190, 54.0890];
   const dist = Math.max(0.4, calcDistKm(myCoords, jCoords)).toFixed(1);
-  const etaMins = Math.max(8, Math.round(Number(dist) * 3.5));
   const jPhotos = (S.photos || []).filter(p => p.job_id === j.job_id && !String(p.url || "").startsWith("[VID]"));
-  const jVid = (S.jobVideos && S.jobVideos[j.job_id]) || (S.photos || []).find(p => p.job_id === j.job_id && String(p.url || "").startsWith("[VID]"));
-  const vidSrc = typeof jVid === "string" ? jVid : (jVid && jVid.url ? String(jVid.url).slice(5) : null);
-  const isProCust = isProCustomerJob(j);
   const schedLbl = getJobScheduleLabel(j);
+  const area = salalahAreaName(jCoords[0], jCoords[1]);
 
-  return `<div class="card" style="display:flex;flex-direction:column;gap:12px;border:${isProCust ? "2px solid #F59E0B" : "1.5px solid #E5E7EB"};background:${isProCust ? "linear-gradient(180deg,#FFFBEB 0%,#FFFFFF 55px)" : "#fff"}">
-    ${isProCust ? `<div class="row" style="justify-content:space-between;margin-bottom:-4px">
-      <span class="pill" style="background:linear-gradient(135deg,#7E22CE,#6B21A8);color:#fff;font-size:10.5px;font-weight:900">${ar ? "عميل FixIt Pro · أولوية" : "FIXIT PRO · PRIORITY"}</span>
-      <span style="font-size:11px;font-weight:800;color:#15803D">Protected Payment</span>
-    </div>` : ""}
-    <div class="row" onclick="go('job','${j.job_id}')" style="cursor:pointer">
-      <div class="ico" style="background:${ccol(c.id)};color:#fff">${I(c.icon)}</div>
+  return `<div class="oc" onclick="go('job','${j.job_id}')">
+    <div class="top">
+      <div class="thumb" style="background:${ccol(c.id)}">${I(c.icon)}</div>
       <div class="sp">
-        <div class="row" style="gap:6px;flex-wrap:wrap">
-          <span class="t1">${c.name} · ${sid(j)}</span>
-          <span class="pill" style="font-size:11px;background:var(--o2);color:var(--o);font-weight:800">${dist} km · ~${etaMins} min</span>
-          ${schedLbl ? `<span class="pill" style="font-size:11px;background:#DBEAFE;color:#1D4ED8;font-weight:800">${ar ? "مجدول:" : "Scheduled:"} ${esc(schedLbl)}</span>` : `<span class="pill ok" style="font-size:10.5px">${ar ? "فوري الآن" : "Now"}</span>`}
+        <div class="row" style="justify-content:space-between;gap:8px">
+          <span class="t1 ell">${c.name}</span>
+          <span class="pill" style="font-size:11px">${dist} km</span>
         </div>
-        <div class="t2" style="margin-top:4px;color:var(--tx);font-size:14px;font-weight:600">${esc(displayTranslated(cleanDesc(j.description))) || sid(j)}</div>
-        <div class="t2" style="font-size:11.5px;margin-top:2px">${salalahAreaName(jCoords[0], jCoords[1])} · ${ago(j.created_at)}</div>
+        <div class="desc ell">${esc(displayTranslated(cleanDesc(j.description))) || sid(j)}</div>
+        <div class="row" style="gap:6px;margin-top:6px;flex-wrap:wrap">
+          <span class="t2" style="font-size:11.5px">${esc(area)} · ${sid(j)} · ${ago(j.created_at)}</span>
+          ${schedLbl ? `<span class="pill" style="background:#EFF6FF;color:#1D4ED8;font-size:10.5px">📅 ${esc(schedLbl)}</span>` : ""}
+        </div>
       </div>
     </div>
-    ${jPhotos.length ? `<div class="hscroll" style="margin:0">${jPhotos.map(p => `<img src="${esc(p.url)}" style="width:72px;height:72px;border-radius:10px;object-fit:cover;border:1.5px solid var(--gr)" onclick="S.previewImg=this.src;render()">`).join("")}</div>` : ""}
-    ${vidSrc ? `<video src="${esc(vidSrc)}" controls playsinline style="width:100%;max-height:170px;border-radius:10px;background:#000"></video>` : ""}
-    <div class="row" style="gap:8px">
-      <button class="btn outline s" style="width:auto;padding:0 14px" onclick="go('job','${j.job_id}')">${I("pin")}${ar ? "الخريطة والتفاصيل" : "Map & Details"}</button>
-      ${mine
-        ? `<div class="pill ok sp" style="justify-content:center;height:44px;font-size:13px">${I("check")} ${ar ? "تم تقديم عرض:" : "Bid Sent:"} ${Number(mine.bid_amount).toFixed(3)} ${t("omr")}</div>`
-        : `<button class="btn s sp" onclick="S.sheet='bid';S.jobId='${j.job_id}';render()">${I("send", "flip")}${ar ? `تقديم عرض (${dist} كم)` : `Bid Now (${dist} km)`}</button>`}
+    ${jPhotos.length ? `<div class="hscroll" style="margin:0;padding:0 14px 10px">${jPhotos.map(p => `<img src="${esc(p.url)}" style="width:64px;height:64px;border-radius:10px;object-fit:cover;border:1.5px solid var(--ln)" onclick="event.stopPropagation();S.previewImg=this.src;render()">`).join("")}</div>` : ""}
+    <div class="foot" onclick="event.stopPropagation()">
+      <div class="pr sp">
+        ${mine
+          ? `<span style="color:var(--gr);font-size:13.5px">✓ ${ar ? "عرضك:" : "Your quote:"} ${Number(mine.bid_amount).toFixed(3)} ${t("omr")}</span>`
+          : `<span style="color:var(--mu);font-size:13px;font-weight:600">${ar ? "بانتظار عرض السعر" : "Open for quote"}</span>`}
+      </div>
+      <button type="button" class="act" onclick="go('job','${j.job_id}')">${ar ? "التفاصيل" : "Details"}</button>
+      <button type="button" class="act o" onclick="S.sheet='bid';S.jobId='${j.job_id}';render()">${mine ? (ar ? "تعديل العرض" : "Edit Quote") : (ar ? "تقديم عرض" : "Send Quote")}</button>
     </div>
   </div>`;
 }
 
 function vBidSheet() {
-  const j = S.jobs.find(x => x.job_id === S.jobId) || {}, c = cat(j.category_id), ar = L === "ar";
-  const shop = getActiveShop();
+  const j = S.jobs.find(x => x.job_id === S.jobId) || findActiveJob() || {}, c = cat(j.category_id), ar = L === "ar";
   const previewAmt = Number(S.bidDraftAmt || 10);
   const netInfo = calcVendorNetPayoutOmr(previewAmt);
   const etaSel = S.bidEtaDraft || "25 min";
 
   return `<div class="sheet" onclick="if(event.target===this){S.sheet=null;render()}"><div><div class="grab"></div>
-    <div class="row"><div class="ico" style="background:${ccol(c.id)};color:#fff">${I(c.icon)}</div><div class="sp"><div class="t1" style="font-size:19px">${c.name} · ${sid(j)}</div><div class="t2" style="font-size:12px">${esc(displayTranslated(cleanDesc(j.description)))}</div></div><button class="ib" onclick="S.sheet=null;render()">${I("x")}</button></div>
+    <div class="row">
+      <div class="ico" style="background:${ccol(c.id)};color:#fff">${I(c.icon)}</div>
+      <div class="sp">
+        <div class="t1" style="font-size:18px">${c.name} · ${sid(j)}</div>
+        <div class="t2 ell" style="font-size:12.5px">${esc(displayTranslated(cleanDesc(j.description)))}</div>
+      </div>
+      <button type="button" class="ib" onclick="S.sheet=null;render()">${I("x")}</button>
+    </div>
 
-    ${shop && shop.shop_name ? `<div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:10px 12px;font-size:12.5px;font-weight:700;color:#0F172A;display:flex;justify-content:space-between;align-items:center">
-      <span>${esc(shop.shop_name)}${shop.cr_number ? ` · CR ${esc(shop.cr_number)}` : ""}</span>
-      <span class="pill ok" style="font-size:10px">${ar ? "عمولة" : "Fee"} ${netInfo.feePct}%</span>
-    </div>` : ""}
-
-    <div style="background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:12px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center">
+    <div class="card" style="background:#F9FAFB;border:1px solid var(--ln);padding:12px 14px;display:flex;justify-content:space-between;align-items:center">
       <div>
-        <div style="font-size:11.5px;color:#166534;font-weight:700">${ar ? "صافي ربحك المتوقع في المحفظة" : "Estimated Net Payout to Wallet"}</div>
-        <div style="font-size:18px;font-weight:900;color:#14532D">${netInfo.netOmr.toFixed(3)} ${t("omr")}</div>
+        <div class="t2" style="font-size:12px">${ar ? "صافي مستحقاتك بعد العمولة" : "Your net payout"} (${100 - netInfo.feePct}%)</div>
+        <div class="t1" style="font-size:19px;color:var(--gr)">${netInfo.netOmr.toFixed(3)} ${t("omr")}</div>
       </div>
-      <div style="text-align:end;font-size:11.5px;color:#15803D">
-        <div>${ar ? "العرض:" : "Bid:"} ${netInfo.amt.toFixed(3)} ${t("omr")}</div>
-        <div>${ar ? "رسوم المنصة:" : "Platform fee:"} -${netInfo.feeOmr.toFixed(3)} ${t("omr")}</div>
+      <div style="text-align:end;font-size:12px;color:var(--mu)">
+        <div>${ar ? "العرض:" : "Quote:"} ${netInfo.amt.toFixed(3)} ${t("omr")}</div>
+        <div>${ar ? "الرسوم:" : "Fee:"} -${netInfo.feeOmr.toFixed(3)} ${t("omr")}</div>
       </div>
     </div>
 
-    <div class="t2" style="font-weight:700">${ar ? "وقت الوصول المتوقع:" : "Estimated Arrival Time (ETA):"}</div>
+    <div class="t2" style="font-weight:700">${ar ? "وقت الوصول المتوقع:" : "Estimated arrival time:"}</div>
     <div class="chips" style="margin:0">
-      ${["15 min", "25 min", "45 min", "1 hr"].map(eta => `<button class="chip ${etaSel === eta ? "on" : ""}" style="height:38px;font-size:12.5px" onclick="S.bidEtaDraft='${eta}';render()">${I("car")} ${eta}</button>`).join("")}
+      ${["15 min", "25 min", "45 min", "1 hr"].map(eta => `<button type="button" class="chip ${etaSel === eta ? "on" : ""}" style="height:38px;font-size:12.5px" onclick="S.bidEtaDraft='${eta}';render()">${I("car")} ${eta}</button>`).join("")}
     </div>
 
-    <div class="t2" style="font-weight:700">${ar ? "اختر قيمة العرض السريع (ر.ع):" : "Quick Bid Amount (OMR):"}</div>
-    <div class="grid">${[5,8,10,12,15,18,20,25].map(a => `<button class="chip ${previewAmt === a ? 'on' : ''}" style="min-height:48px;font-size:16px;font-weight:800" onclick="S.bidDraftAmt=${a};sendBid('${j.job_id}',${a})">${a.toFixed(3)} ${t("omr")}</button>`).join("")}</div>
+    <div class="t2" style="font-weight:700">${ar ? "اختر قيمة العرض (ر.ع):" : "Select quote amount (OMR):"}</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">${[5,8,10,12,15,18,20,25].map(a => `<button type="button" class="chip ${previewAmt === a ? 'on' : ''}" style="height:44px;padding:0;font-size:14px;font-weight:800;justify-content:center" onclick="S.bidDraftAmt=${a};const inp=document.getElementById('customBidInp');if(inp)inp.value=${a};render()">${a.toFixed(3)}</button>`).join("")}</div>
     <div class="row" style="gap:8px;margin-top:4px">
-      <input id="customBidInp" type="number" step="0.5" value="${previewAmt}" oninput="S.bidDraftAmt=Number(this.value||0)" placeholder="${ar ? "أو أدخل مبلغاً مخصصاً بالريال..." : "Or enter custom OMR amount..."}" class="tlbt-input" style="flex:1;height:48px">
-      <button class="btn s" style="width:auto;padding:0 20px;height:48px" onclick="const v=Number((document.getElementById('customBidInp')||{}).value||0);if(v>0)sendBid('${j.job_id}',v);else toast('Enter valid OMR amount')">${ar ? "إرسال العرض" : "Send Bid"}</button>
+      <input id="customBidInp" type="number" step="0.5" value="${previewAmt}" oninput="S.bidDraftAmt=Number(this.value||0)" placeholder="${ar ? "أدخل المبلغ بالريال..." : "Enter OMR amount..."}" class="tlbt-input" style="flex:1;height:48px">
+      <button type="button" class="btn s" style="width:auto;padding:0 22px;height:48px" onclick="const v=Number((document.getElementById('customBidInp')||{}).value||S.bidDraftAmt||0);if(v>0)sendBid('${j.job_id}',v);else toast('Enter valid OMR amount')">${ar ? "إرسال العرض" : "Send Quote"}</button>
     </div>
   </div></div>`;
 }
@@ -10253,25 +10223,39 @@ function vJob() {
   const ar = L === "ar";
   const j = findActiveJob();
   if (!j) {
-    return `${bar(ar ? "تفاصيل المهمة" : "Job Details", true)}<div class="pad">${empty("list", ar ? "لا توجد مهام نشطة حالياً" : "No active job selected")}</div>`;
+    return `${bar(ar ? "تفاصيل الطلب" : "Job Details", true)}<div class="pad">${empty("list", ar ? "لا توجد مهام نشطة حالياً" : "No active job selected")}</div>`;
   }
   const c = cat(j.category_id);
   const proAssigned = j.status !== "OPEN" && j.status !== "CANCELLED";
-  const mine = S.bids.find(b => b.job_id === j.job_id && b.vendor_id === ME);
-  const chosenBid = S.bids.find(b => b.job_id === j.job_id && (b.status === "SELECTED" || b.status === "ACCEPTED")) || mine;
+  const mine = (S.bids || []).find(b => b.job_id === j.job_id && b.vendor_id === ME);
+  const chosenBid = (S.bids || []).find(b => b.job_id === j.job_id && (b.status === "SELECTED" || b.status === "ACCEPTED")) || mine;
   const [jLat, jLng] = getJobCoords(j);
   const areaName = salalahAreaName(jLat, jLng);
   const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(jLat + "," + jLng)}`;
   const netInfo = chosenBid ? calcVendorNetPayoutOmr(chosenBid.bid_amount) : null;
   const schedLbl = getJobScheduleLabel(j);
 
-  return `${bar(c.name + " · " + sid(j), true, proAssigned ? `<a class="ib" href="https://wa.me/${getJobWaDigits(j)}" target="_blank" rel="noopener" style="background:#DCFCE7;color:#15803D">${I("whatsapp")}</a>` : "")}<div class="pad">
+  return `<div class="jh no-print" style="background:${ccol(c.id)}">
+    <div class="jhb">
+      <button type="button" onclick="back()" aria-label="Back">${I("back", "flip")}</button>
+      <div class="sp"></div>
+      ${proAssigned ? `<a class="ib" href="https://wa.me/${getJobWaDigits(j)}" target="_blank" rel="noopener" style="background:rgba(255,255,255,.22);color:#fff">${I("whatsapp")}</a>` : ""}
+      ${statusPill(j)}
+    </div>
+    <div style="font-size:13px;font-weight:700;opacity:.92;position:relative;z-index:2">${sid(j)} · ${ago(j.created_at)}${schedLbl ? ` · 📅 ${esc(schedLbl)}` : ""}</div>
+    <h1>${c.name}</h1>
+    ${cleanDesc(j.description) ? `<div style="font-size:14px;opacity:.95;margin-top:4px;max-width:90%;position:relative;z-index:2">${esc(displayTranslated(cleanDesc(j.description)))}</div>` : ""}
+    ${I(c.icon, "bg")}
+  </div>
+
+  <div class="pad lift">
     <div class="card">${stepper(j)}</div>
+
     ${schedLbl ? `<div class="card" style="background:#EFF6FF;border:1.5px solid #93C5FD;display:flex;align-items:center;gap:10px">
       <div class="ico" style="background:#1D4ED8;color:#fff">${I("clock")}</div>
       <div class="sp">
-        <div style="font-size:13.5px;font-weight:900;color:#1E3A8A">${ar ? "موعد مجدول:" : "Scheduled Booking:"} ${esc(schedLbl)}</div>
-        <div style="font-size:12px;color:#1D4ED8;margin-top:2px">${ar ? "التوجه للعميل يكون في الموعد المحدد فقط — يمكنك استقبال وإنجاز طلبات أخرى في نفس اليوم بحرية." : "Only head to the customer at the scheduled time — you are free to accept and complete other jobs meanwhile."}</div>
+        <div style="font-size:13.5px;font-weight:900;color:#1E3A8A">${ar ? "موعد الزيارة:" : "Scheduled Visit:"} ${esc(schedLbl)}</div>
+        <div style="font-size:12px;color:#1D4ED8;margin-top:2px">${ar ? "يمكنك قبول وإنجاز طلبات أخرى بحرية حتى يحين موعد الزيارة." : "Head to the customer at the scheduled time — you can take other jobs meanwhile."}</div>
       </div>
       <button type="button" class="pill" style="background:#1D4ED8;color:#fff;min-height:36px;padding:0 12px;font-weight:800;flex-shrink:0" onclick="sendDualScheduleReminderNotif(findActiveJob(),'Upcoming Visit','تذكير بالموعد',true)">
         🔔 ${ar ? "تذكير" : "Remind"}
@@ -10279,43 +10263,42 @@ function vJob() {
     </div>` : ""}
 
     <div class="card" style="padding:0;overflow:hidden">
-      ${renderTalabatLeafletMap("vjobLeafletMap", "210px", false, j.job_id)}
+      ${renderFixItLeafletMap("vjobLeafletMap", "210px", false, j.job_id)}
       <div class="row" style="padding:12px 14px;justify-content:space-between;background:#fff;border-top:1px solid var(--ln)">
         <div>
-          <div style="font-size:13.5px;font-weight:800;color:var(--tx)">${esc(areaName)}</div>
-          <div style="font-size:11.5px;color:#6B7280">${esc(getCustomerDisplayName(j))}</div>
+          <div style="font-size:14px;font-weight:800;color:var(--tx)">${esc(areaName)}</div>
+          <div style="font-size:12px;color:var(--mu)">${esc(getCustomerDisplayName(j))}</div>
         </div>
         <div class="row" style="gap:8px">
-          <a class="pill" href="${gmapsUrl}" target="_blank" rel="noopener" style="background:#EFF6FF;color:#1D4ED8;min-height:40px;padding:0 12px;font-weight:800">${I("pin")} ${ar ? "خرائط جوجل" : "Navigate"}</a>
-          ${proAssigned ? `<button class="pill ok" style="min-height:40px;padding:0 12px" onclick="shareMyLiveGps()">${I("radar")} ${ar ? "تحديث موقعي" : "Share GPS"}</button>` : ""}
+          <a class="pill" href="${gmapsUrl}" target="_blank" rel="noopener" style="background:#EFF6FF;color:#1D4ED8;min-height:38px;padding:0 12px;font-weight:800">${I("pin")} ${ar ? "خرائط جوجل" : "Navigate"}</a>
+          ${proAssigned ? `<button type="button" class="pill ok" style="min-height:38px;padding:0 12px" onclick="shareMyLiveGps()">${I("radar")} ${ar ? "تحديث موقعي" : "Share GPS"}</button>` : ""}
         </div>
       </div>
     </div>
 
-    ${netInfo ? `<div class="card" style="background:#F0FDF4;border:1.5px solid #86EFAC;display:flex;justify-content:space-between;align-items:center">
+    ${netInfo ? `<div class="card row" style="justify-content:space-between">
       <div>
-        <div style="font-size:12px;font-weight:800;color:#166534">${ar ? "صافي مستحقاتك للطلب (مضمونة)" : "Protected Partner Payout"}</div>
-        <div style="font-size:20px;font-weight:900;color:#14532D">${netInfo.netOmr.toFixed(3)} ${t("omr")}</div>
+        <div class="t2">${ar ? "صافي مستحقاتك للطلب" : "Your Net Payout"}</div>
+        <div class="t1" style="font-size:20px;color:var(--gr)">${netInfo.netOmr.toFixed(3)} ${t("omr")}</div>
       </div>
       <span class="pill ok">${ar ? "دفع محمي" : "Protected Payment"}</span>
     </div>` : ""}
 
-    ${cleanDesc(j.description) ? `<div class="card" style="font-size:15px;color:var(--tx)"><b>${ar ? "وصف العميل:" : "Customer Description:"}</b><div style="margin-top:4px">${esc(displayTranslated(cleanDesc(j.description)))}</div></div>` : ""}
     ${j.status === "OPEN" ? `<div class="card" style="display:flex;flex-direction:column;gap:10px">
-      ${mine ? `<div class="pill-wrap">${ar ? "عرضك المرسل:" : "Your Bid:"} <b>${Number(mine.bid_amount).toFixed(3)} ${t("omr")}</b> — ${ar ? "بانتظار قبول العميل والدفع" : "Waiting for customer acceptance & payment"}</div>
-      <button class="btn outline s" onclick="S.sheet='bid';S.jobId='${j.job_id}';render()">${I("edit")}${ar ? "تعديل قيمة العرض" : "Update Bid Amount"}</button>` : `<button class="btn" onclick="S.sheet='bid';S.jobId='${j.job_id}';render()">${I("send","flip")}${ar ? "تقديم عرض سعر الآن" : "Submit Offer Now"}</button>`}
+      ${mine ? `<div class="t2">${ar ? "عرضك المرسل:" : "Your sent quote:"} <b style="color:var(--tx)">${Number(mine.bid_amount).toFixed(3)} ${t("omr")}</b> — ${ar ? "بانتظار قبول العميل" : "Awaiting customer acceptance"}</div>
+      <button type="button" class="btn outline s" onclick="S.sheet='bid';S.jobId='${j.job_id}';render()">${I("edit")}${ar ? "تعديل قيمة العرض" : "Update Quote"}</button>` : `<button type="button" class="tlbt-pill-btn" onclick="S.sheet='bid';S.jobId='${j.job_id}';render()">${I("send","flip")}${ar ? "تقديم عرض سعر" : "Send Price Quote"}</button>`}
     </div>` : `<div class="two">
-      <button class="btn g s" onclick="sendMsg(t('onWay'))">${I("car")}${t("onWay")}</button>
-      <button class="btn g s" onclick="sendMsg(t('arrived'))">${I("pin")}${t("arrived")}</button>
-      <button class="btn s" onclick="setStatus('${j.job_id}','IN_PROGRESS')">${I("tool")}${t("start")}</button>
-      <button class="btn ok s" onclick="setStatus('${j.job_id}','COMPLETED')">${I("check")}${t("finish")}</button>
+      <button type="button" class="btn g s" onclick="sendMsg(t('onWay'))">${I("car")}${t("onWay")}</button>
+      <button type="button" class="btn g s" onclick="sendMsg(t('arrived'))">${I("pin")}${t("arrived")}</button>
+      <button type="button" class="btn s" onclick="setStatus('${j.job_id}','IN_PROGRESS')">${I("tool")}${t("start")}</button>
+      <button type="button" class="btn ok s" onclick="setStatus('${j.job_id}','COMPLETED')">${I("check")}${t("finish")}</button>
     </div>`}
     ${render4SidePhotoGrid(j.job_id)}
     ${proAssigned ? chatBox(j, ["v1", "v2", "v3"]) : ""}
   </div>`;
 }
 
-/* ================= TALABAT ADMIN CONTROL CENTER SCREENS ================= */
+/* ================= FIXIT ADMIN CONTROL CENTER SCREENS ================= */
 function adminQuickEditUser(uid) {
   const u = (S.users || []).find(x => x.user_id === uid);
   if (!u) return;
@@ -10443,7 +10426,7 @@ let _waPollTimer = null;
 let _lastWaCheckAt = 0;
 
 window._waState = window._waState || {
-  tab: "code",
+  tab: "qr",
   isConnected: false,
   isConnecting: false,
   qrDataUrl: null,
@@ -10473,8 +10456,8 @@ function formatWaCodeDisplay(code) {
 
 function getWaPillMeta(st, ar) {
   if (st.isConnected) return { text: ar ? "● متصل" : "● Connected", bg: "#DCFCE7", fg: "#15803D" };
-  if (st.pairingCode) return { text: ar ? "الرمز جاهز" : "Code Ready", bg: "#FEF3C7", fg: "#B45309" };
   if (st.tab === "qr" && st.qrDataUrl) return { text: ar ? "امسح QR" : "Scan QR", bg: "#FEF3C7", fg: "#B45309" };
+  if (st.pairingCode) return { text: ar ? "الرمز جاهز" : "Code Ready", bg: "#FEF3C7", fg: "#B45309" };
   if (st.qrDataUrl) return { text: ar ? "امسح QR" : "Scan QR", bg: "#FEF3C7", fg: "#B45309" };
   if (st.busy || st.isConnecting) return { text: ar ? "جاري الاتصال..." : "Connecting...", bg: "#DBEAFE", fg: "#1D4ED8" };
   if (!st.loaded) return { text: ar ? "جاري الفحص..." : "Checking...", bg: "#F1F5F9", fg: "#64748B" };
@@ -10638,11 +10621,6 @@ function updateWaUiFromStatus(res) {
   if (res.phone !== undefined) st.phone = res.phone || "";
   if (res.me !== undefined) st.me = res.me || null;
   st.error = res.error ? String(res.error) : "";
-  if (st.pairingCode && !st.isConnected) {
-    st.tab = "code";
-  } else if (st.qrDataUrl && !st.pairingCode && !st.isConnected && !st.phoneInput) {
-    st.tab = "qr";
-  }
   if (st.isConnected && _waPollTimer) {
     clearInterval(_waPollTimer);
     _waPollTimer = null;
@@ -10794,7 +10772,7 @@ function aJob() {
   const c = cat(j.category_id), bids = S.bids.filter(b => b.job_id === j.job_id);
   return `${bar(c.name + " " + sid(j), true, statusPill(j))}<div class="pad">
     <div class="card">${stepper(j)}</div>
-    <div class="card" style="padding:0;overflow:hidden">${renderTalabatLeafletMap("ajobLeafletMap", "200px", false, j.job_id)}</div>
+    <div class="card" style="padding:0;overflow:hidden">${renderFixItLeafletMap("ajobLeafletMap", "200px", false, j.job_id)}</div>
 
     <div class="card" style="display:flex;flex-direction:column;gap:10px;border:1.5px solid #FF5A00">
       <div class="row" style="justify-content:space-between">
@@ -10903,10 +10881,10 @@ function aEscrow() {
 /* ---------- router ---------- */
 const NAV = {
   consumer: [["home","home","home"],["orders","list","orders"],["__post__","plus","post"],["chats","chat","chats"],["account","user","account"]],
-  vendor: [["jobs","radar","jobs"],["shop","box","Shop KYC"],["chats","chat","chats"],["wallet","wallet","wallet"],["account","user","account"]],
-  admin: [["overview","grid","overview"],["shops","box","Shop KYC"],["analytics","star","Analytics"],["orders","list","orders"],["users","users","users"],["escrow","wallet","escrow"]]
+  vendor: [["jobs","home","jobs"],["shop","box","Shop"],["chats","chat","chats"],["wallet","wallet","wallet"],["account","user","account"]],
+  admin: [["overview","grid","overview"],["shops","box","Shops"],["analytics","star","Analytics"],["orders","list","orders"],["users","users","users"],["escrow","wallet","escrow"]]
 };
-const APP_VERSION_CODE = 167;
+const APP_VERSION_CODE = 168;
 let _appControlTimer = null;
 function checkAppControlStatus() {
   fetch(`https://fixit-now.xyz/api/app/status?role=${encodeURIComponent(ROLE || "consumer")}`)
@@ -10982,22 +10960,8 @@ function updateGateScreen() {
   </div>`;
 }
 
-function aadsSlotHtml(extraStyle) {
-  if (typeof navigator !== "undefined" && navigator.onLine === false) return "";
-  const ar = L === "ar";
-  return `<div class="fx-ad-slot" role="region" aria-label="Advertisement" style="margin:12px 16px;border-radius:12px;overflow:hidden;border:1.5px solid #CBD5E1;background:#F1F5F9;box-shadow:inset 0 1px 2px rgba(15,23,42,0.04);${extraStyle || ""}">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 10px;background:#E2E8F0;border-bottom:1px solid #CBD5E1;font-size:10px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#475569;">
-      <span>${ar ? "إعلان خارجي · ADVERTISEMENT (غير تابع لـ FixIt)" : "ADVERTISEMENT · THIRD-PARTY AD (NOT FIXIT)"}</span>
-      <a href="https://aads.com/privacy_policy" target="_blank" rel="noopener noreferrer" style="color:#475569;text-decoration:underline;font-weight:700;">A-Ads Privacy</a>
-    </div>
-    <div style="position:relative;min-height:80px;background:repeating-linear-gradient(135deg,#F8FAFC,#F8FAFC 10px,#F1F5F9 10px,#F1F5F9 20px);display:flex;align-items:center;justify-content:center;">
-      <div aria-hidden="true" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;user-select:none;z-index:0;">
-        <span style="font-size:14px;font-weight:900;letter-spacing:0.22em;text-transform:uppercase;color:#94A3B8;background:rgba(226,232,240,0.85);padding:3px 12px;border-radius:6px;border:1px dashed #CBD5E1;">ADVERTISEMENT · إعلان</span>
-        <span style="font-size:9.5px;font-weight:700;color:#94A3B8;margin-top:2px;">Served by A-Ads · Independent of FixIt</span>
-      </div>
-      <iframe data-aa="2461953" src="https://acceptable.a-ads.com/2461953/?size=Adaptive" referrerpolicy="no-referrer-when-downgrade" loading="lazy" scrolling="no" frameborder="0" style="position:relative;z-index:1;width:100%;height:80px;border:0;overflow:hidden;display:block;background:transparent;"></iframe>
-    </div>
-  </div>`;
+function aadsSlotHtml() {
+  return "";
 }
 
 function screen() {
@@ -11007,7 +10971,10 @@ function screen() {
   if (ROLE !== "admin" && S.appControl && (S.appControl.forceUpdate || (S.appControl.minVersionCode && APP_VERSION_CODE < S.appControl.minVersionCode))) {
     return updateGateScreen();
   }
-  if (!S.auth || !S.auth.loggedIn || !S.auth.sessionCode || S.auth.needsProfileCompletion || S.auth.mode === "complete_profile") {
+  if (ROLE === "admin" && (!S.auth || !S.auth.loggedIn || !S.auth.sessionCode)) {
+    return authScreen();
+  }
+  if (S.auth && (S.auth.needsProfileCompletion || S.auth.mode === "complete_profile")) {
     return authScreen();
   }
   const s = S.stack[S.stack.length - 1];
@@ -11047,15 +11014,10 @@ function screen() {
     }[ROLE];
     html = (m[S.tab] || Object.values(m)[0])();
   }
-  const adScreens = new Set(["wallet", "job", "job_chat", "book", "checkout", "shop_kyc", "account_info", "tracking", "support_chat", "addresses", "coupons", "tickets", "notifs", "settings", "about", "legal", "tos", "privacy", "refund_policy", "cookie_policy"]);
-  const adTabs = new Set(["home", "orders", "jobs", "shop", "chats", "wallet", "account"]);
-  if (ROLE !== "admin" && ((s && adScreens.has(s)) || (!s && adTabs.has(S.tab)))) {
-    html += aadsSlotHtml();
-  }
   return html;
 }
 // Update existing Leaflet map markers & polyline in-place without recreating the map!
-function updateTalabatMapInPlace(containerId, jobId) {
+function updateFixItMapInPlace(containerId, jobId) {
   const inst = activeMapInstances && activeMapInstances[containerId];
   if (!inst || !inst.map) return;
   const j = (jobId && S.jobs.find(x => x.job_id === jobId)) || S.jobs[0];
@@ -11072,8 +11034,8 @@ function updateTalabatMapInPlace(containerId, jobId) {
 
 function render() {
   const u = totalUnread();
-  const isLoggedOut = (!S.auth || !S.auth.loggedIn || !S.auth.sessionCode || S.auth.needsProfileCompletion || S.auth.mode === "complete_profile");
-  const isAuthScreen = isLoggedOut || (S.stack.length > 0 && S.stack[S.stack.length - 1] === "auth");
+  const isLockedAuth = (ROLE === "admin" && (!S.auth || !S.auth.loggedIn || !S.auth.sessionCode)) || Boolean(S.auth && (S.auth.needsProfileCompletion || S.auth.mode === "complete_profile"));
+  const isAuthScreen = isLockedAuth || (S.stack.length > 0 && S.stack[S.stack.length - 1] === "auth");
   const nav = (S.stack.length > 0 || isAuthScreen) ? "" : `<nav class="nav">${NAV[ROLE].map(n => n[0] === "__post__"
     ? `<button class="nav-plus" onclick="openBookPage()" aria-label="Order Service"><span class="nav-plus-ic">+</span><span>${L === "ar" ? "طلب" : "Order"}</span></button>`
     : `<button class="${S.tab === n[0] ? "on" : ""}" onclick="tab('${n[0]}')">${I(n[1])}${t(n[2])}${n[0] === "chats" && u ? `<span class="badge">${u}</span>` : ""}${ROLE === "admin" && n[0] === "orders" && S.jobs.filter(j => j.status === "OPEN").length ? `<span class="badge">${S.jobs.filter(j => j.status === "OPEN").length}</span>` : ""}</button>`).join("")}</nav>`;
@@ -11115,7 +11077,7 @@ function render() {
     const newPlaceholder = document.getElementById(mid);
     if (newPlaceholder && newPlaceholder.parentNode) {
       newPlaceholder.parentNode.replaceChild(preservedMaps[mid], newPlaceholder);
-      updateTalabatMapInPlace(mid, S.jobId);
+      updateFixItMapInPlace(mid, S.jobId);
     }
   });
 

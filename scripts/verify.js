@@ -663,7 +663,7 @@ async function run() {
       const appStatusRes = await fetch(`${base}/api/app/status`);
       assert.strictEqual(appStatusRes.status, 200);
       const appStatusJson = await appStatusRes.json();
-      assert.strictEqual(appStatusJson.latestVersionCode, 167, "latestVersionCode must match v3.3.7 (167)");
+      assert.strictEqual(appStatusJson.latestVersionCode, 168, "latestVersionCode must match v3.4.0 (168)");
 
       // Quiet polling audit log filter check
       assert.strictEqual(isQuietPollingAudit({ event: "SESSION_HEARTBEAT", method: "POST", path: "/api/auth/session/heartbeat", status: 200 }), true);

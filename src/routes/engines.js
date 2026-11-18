@@ -79,7 +79,7 @@ function createEnginesRouter() {
     const visitor = await detectVisitorDetails(req, { skipExternalLookup: true });
     const fingerprintHash = generateDeviceFingerprint(phone, deviceId, visitor.ip);
 
-    if (isSupabaseConfigured()) {
+    if (isSupabaseConfigured() && /^[0-9a-f-]{36}$/i.test(String(vendorId))) {
       const rpcRes = await supabaseRequest("/rpc/claim_launch_pro_promo", "POST", {
         p_vendor_id: vendorId,
         p_fingerprint_hash: fingerprintHash
@@ -87,10 +87,6 @@ function createEnginesRouter() {
       if (rpcRes.ok && rpcRes.data) {
         return res.json(rpcRes.data);
       }
-      return res.status(rpcRes.status || 400).json({
-        ok: false,
-        error: rpcRes.error || "Failed to claim launch promo"
-      });
     }
 
     // Local deterministic fallback when running standalone without DB
@@ -119,7 +115,7 @@ function createEnginesRouter() {
       return res.status(400).json({ ok: false, error: "user_id and valid referral code are required" });
     }
 
-    if (isSupabaseConfigured()) {
+    if (isSupabaseConfigured() && /^[0-9a-f-]{36}$/i.test(String(userId))) {
       const rpcRes = await supabaseRequest("/rpc/claim_referral_vip_offer", "POST", {
         p_user_id: userId,
         p_referral_code: referralCode
@@ -127,10 +123,6 @@ function createEnginesRouter() {
       if (rpcRes.ok && rpcRes.data) {
         return res.json(rpcRes.data);
       }
-      return res.status(rpcRes.status || 400).json({
-        ok: false,
-        error: rpcRes.error || "Failed to unlock referral VIP offer"
-      });
     }
 
     const now = new Date();
@@ -293,7 +285,7 @@ function createEnginesRouter() {
       return res.status(400).json({ ok: false, error: "order_id and detailed reason (min 5 chars) are required" });
     }
 
-    if (isSupabaseConfigured()) {
+    if (isSupabaseConfigured() && /^[0-9a-f-]{36}$/i.test(String(orderId))) {
       const rpcRes = await supabaseRequest("/rpc/file_warranty_claim", "POST", {
         p_order_id: orderId,
         p_description: reason
@@ -301,10 +293,6 @@ function createEnginesRouter() {
       if (rpcRes.ok && rpcRes.data) {
         return res.json(rpcRes.data);
       }
-      return res.status(rpcRes.status || 400).json({
-        ok: false,
-        error: rpcRes.error || "Failed to file warranty claim"
-      });
     }
 
     const now = new Date();

@@ -905,7 +905,9 @@ function createAppApiRouter() {
       createdAt: new Date().toISOString()
     };
 
-    const dbSettings = isSupabaseConfigured() ? await getUserSettings(userId) : {};
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
+    const useDb = isSupabaseConfigured() && isUuid;
+    const dbSettings = useDb ? await getUserSettings(userId) : {};
     const existingList = Array.isArray(dbSettings.biometric_credentials)
       ? dbSettings.biometric_credentials
       : (biometricCredentialCache.get(userId) || []);
@@ -913,7 +915,7 @@ function createAppApiRouter() {
     const nextList = [newCred, ...filtered];
     biometricCredentialCache.set(userId, nextList);
 
-    if (isSupabaseConfigured()) {
+    if (useDb) {
       await upsertUserSettings(userId, {
         biometric_credentials: nextList,
         biometric_enabled: true
@@ -951,7 +953,9 @@ function createAppApiRouter() {
       return res.status(400).json({ ok: false, error: "Invalid biometric login payload." });
     }
 
-    const dbSettings = isSupabaseConfigured() ? await getUserSettings(userId) : {};
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
+    const useDb = isSupabaseConfigured() && isUuid;
+    const dbSettings = useDb ? await getUserSettings(userId) : {};
     const storedCreds = (Array.isArray(dbSettings.biometric_credentials) && dbSettings.biometric_credentials.length)
       ? dbSettings.biometric_credentials
       : (biometricCredentialCache.get(userId) || []);
@@ -984,7 +988,7 @@ function createAppApiRouter() {
 
     let userRow = null;
     let wallet = null;
-    if (isSupabaseConfigured()) {
+    if (useDb) {
       const uRes = await supabaseRequest(`/users?user_id=eq.${encodeURIComponent(userId)}&limit=1`);
       userRow = uRes.ok && Array.isArray(uRes.data) ? uRes.data[0] : null;
       if (!userRow) {
@@ -1042,7 +1046,9 @@ function createAppApiRouter() {
     const deviceId = String(b.deviceId || "").trim();
     const revokeAll = Boolean(b.all);
 
-    const dbSettings = isSupabaseConfigured() ? await getUserSettings(userId) : {};
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
+    const useDb = isSupabaseConfigured() && isUuid;
+    const dbSettings = useDb ? await getUserSettings(userId) : {};
     const existingList = Array.isArray(dbSettings.biometric_credentials)
       ? dbSettings.biometric_credentials
       : (biometricCredentialCache.get(userId) || []);
@@ -1058,7 +1064,7 @@ function createAppApiRouter() {
         });
 
     biometricCredentialCache.set(userId, nextList);
-    if (isSupabaseConfigured()) {
+    if (useDb) {
       await upsertUserSettings(userId, {
         biometric_credentials: nextList,
         biometric_enabled: nextList.length > 0
@@ -1579,7 +1585,7 @@ function createAppApiRouter() {
     maintenanceMessage: "We are upgrading FixIt to serve you better.",
     maintenanceUntil: null,
     minVersionCode: 165,
-    latestVersionCode: 167,
+    latestVersionCode: 168,
     forceUpdate: false,
     updatedAt: new Date().toISOString()
   };
