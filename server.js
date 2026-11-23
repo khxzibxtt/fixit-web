@@ -11,6 +11,7 @@ const { createRateLimiter } = require("./src/middleware/rateLimit");
 const { createApiRouter } = require("./src/routes/api");
 const { createAppApiRouter } = require("./src/routes/appApi");
 const { createWebRouter, renderNotFoundPage } = require("./src/routes/web");
+const { createSubdomainRouter } = require("./src/middleware/subdomainRouter");
 const { createEnginesRouter } = require("./src/routes/engines");
 const { startAutoConfirmCron } = require("./src/workers/autoConfirmCron");
 
@@ -60,6 +61,9 @@ function createApp() {
 
   // API & Digital Asset Links routes
   app.use(createApiRouter());
+
+  // Dynamic Subdomain routing (install.*, partner.*, admin.*, app.*)
+  app.use(createSubdomainRouter({ publicDir }));
 
   // Pure-JS rendered HTML pages & whitelisted Consumer/Vendor APK downloads
   app.use(createWebRouter({ publicDir }));

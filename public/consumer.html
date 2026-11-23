@@ -1,0 +1,2386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#FF5A00" />
+<title>FixIt</title>
+<style>
+/* ================= AUTHENTIC TALABAT MM3 DESIGN SYSTEM ================= */
+@font-face {
+  font-family: 'TT Commons Pro';
+  src: url('fonts/TTCommonsPro-Normal.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'TT Commons Pro';
+  src: url('fonts/TTCommonsPro-DemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'TT Commons Pro';
+  src: url('fonts/TTCommonsPro-Bold.otf') format('opentype');
+  font-weight: 700 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'TT Commons Pro';
+  src: url('fonts/TTCommonsPro-Black.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Noto Sans Arabic';
+  src: url('fonts/NotoSansArabic-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Noto Sans Arabic';
+  src: url('fonts/NotoSansArabic-SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Noto Sans Arabic';
+  src: url('fonts/NotoSansArabic-Bold.otf') format('opentype');
+  font-weight: 700 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Talabat Core Palette */
+  --o: #FF5A00;
+  --o2: #FFF4ED;
+  --o-dark: #EA580C;
+  --o-glow: rgba(255, 90, 0, 0.28);
+  --lime: #CFFF00;
+  --lime-dark: #262626;
+  --bg: #F7F7F8;
+  --card: #FFFFFF;
+  --tx: #18181B;
+  --mu: #71717A;
+  --ln: #F1F1F4;
+  --ln-dark: #E4E4E7;
+  --gr: #10B981;
+  --gr2: #ECFDF5;
+  --rd: #EF4444;
+  --rd2: #FEE2E2;
+  --am: #F59E0B;
+  --am2: #FEF3C7;
+  --hud: #0F172A;
+  
+  /* Dimensions & Corners */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
+  --radius-pill: 9999px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-card: 0 2px 10px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.02);
+  --shadow-btn: 0 4px 14px rgba(255, 90, 0, 0.28);
+  --shadow-hover: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--tx);
+  font-family: 'TT Commons Pro', 'Noto Sans Arabic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 15px;
+  line-height: 1.4;
+  letter-spacing: -0.2px;
+  touch-action: pan-x pan-y;
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-user-select: none;
+  user-select: none;
+  overscroll-behavior: none;
+}
+body {
+  padding-bottom: 90px;
+}
+button, input, textarea, select {
+  font: inherit;
+  color: inherit;
+  border: 0;
+  outline: 0;
+  background: none;
+  -webkit-appearance: none;
+  appearance: none;
+  box-shadow: none;
+}
+button {
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+  display: block;
+}
+
+/* ================= TALABAT TOP HEADER BAR ================= */
+.talabat-top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: #FFFFFF;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--ln);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+}
+.talabat-back-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #F8F9FA;
+  display: grid;
+  place-items: center;
+  border: 1px solid #ECECEC;
+  color: var(--tx);
+}
+.talabat-circle-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #F8F9FA;
+  display: grid;
+  place-items: center;
+  border: 1px solid #ECECEC;
+  color: var(--tx);
+  position: relative;
+}
+.talabat-loc-picker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  flex: 1;
+  min-width: 0;
+}
+.talabat-loc-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--o2);
+  color: var(--o);
+  display: grid;
+  place-items: center;
+  border: 1px solid #FFE4D6;
+}
+.talabat-loc-label {
+  font-size: 11px;
+  color: var(--mu);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.talabat-loc-addr {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--tx);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ================= TALABAT CARDS & LAYOUT ================= */
+.pad {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.card {
+  background: var(--card);
+  border-radius: var(--radius-xl);
+  padding: 16px;
+  border: 1px solid var(--ln);
+  box-shadow: var(--shadow-card);
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sp {
+  flex: 1;
+  min-width: 0;
+}
+.t1 {
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--tx);
+}
+.t2 {
+  color: var(--mu);
+  font-size: 13px;
+}
+.ell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ================= TALABAT SEARCH BAR ================= */
+.talabat-search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #FFFFFF;
+  border-radius: var(--radius-md);
+  padding: 0 16px;
+  height: 48px;
+  color: var(--mu);
+  border: 1px solid var(--ln-dark);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+  cursor: pointer;
+}
+.talabat-search svg {
+  width: 20px;
+  height: 20px;
+  stroke: #71717A;
+  stroke-width: 2.2;
+}
+.talabat-search input {
+  flex: 1;
+  color: var(--tx);
+  font-weight: 600;
+  font-size: 14px;
+  font-family: inherit;
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
+/* ================= TALABAT CATEGORY SQUIRCLES ================= */
+.talabat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.talabat-cat-card {
+  width: 100%;
+  border-radius: var(--radius-lg);
+  background: #FFFFFF;
+  border: 1px solid var(--ln);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+  padding: 12px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.12s ease;
+}
+.talabat-cat-card:active {
+  transform: scale(0.95);
+}
+.talabat-cat-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  background: #FFF4ED;
+  color: #FF5A00;
+  display: grid;
+  place-items: center;
+  border: 1px solid #FFE5D7;
+}
+.talabat-cat-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: #FF5A00;
+  stroke-width: 2;
+  fill: none;
+}
+.talabat-cat-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--tx);
+  line-height: 1.2;
+}
+
+/* ================= TALABAT AUTHENTIC BUTTONS & PILLS ================= */
+.btn {
+  height: 50px;
+  border-radius: var(--radius-md);
+  background: var(--o);
+  color: #FFFFFF;
+  font-family: 'TT Commons Pro', 'Noto Sans Arabic', sans-serif;
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: -0.2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  box-shadow: var(--shadow-btn);
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.12s ease, background 0.12s ease;
+}
+.btn:active {
+  transform: scale(0.975);
+  box-shadow: 0 2px 8px rgba(255, 90, 0, 0.2);
+}
+.btn.g {
+  background: var(--o2);
+  color: var(--o);
+  box-shadow: none;
+  border: 1px solid #FFE4D6;
+}
+.btn.g:active {
+  background: #FFE8DB;
+}
+.btn.s {
+  height: 42px;
+  font-size: 14px;
+  border-radius: var(--radius-sm);
+}
+.btn.ok {
+  background: var(--gr);
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.28);
+}
+.btn.outline {
+  background: #FFFFFF;
+  border: 1.5px solid var(--ln-dark);
+  color: var(--tx);
+  box-shadow: var(--shadow-sm);
+}
+.btn.outline:active {
+  background: #F8F9FA;
+}
+.btn.lime {
+  background: var(--lime);
+  color: var(--lime-dark);
+  box-shadow: 0 4px 14px rgba(207, 255, 0, 0.35);
+  font-weight: 900;
+}
+.two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.pill {
+  font-family: 'TT Commons Pro', 'Noto Sans Arabic', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--o2);
+  color: var(--o);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #FFE4D6;
+  letter-spacing: -0.1px;
+}
+.pill.ok {
+  background: var(--gr2);
+  color: var(--gr);
+  border-color: #D1FAE5;
+}
+.pill.am {
+  background: var(--am2);
+  color: var(--am);
+  border-color: #FDE68A;
+}
+.pill.lime {
+  background: var(--lime);
+  color: var(--lime-dark);
+  border-color: #CFFF00;
+}
+.badge {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: var(--rd);
+  color: #FFFFFF;
+  font-family: 'TT Commons Pro', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  display: inline-grid;
+  place-items: center;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
+}
+.chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+.chips::-webkit-scrollbar {
+  display: none;
+}
+.chip {
+  height: 40px;
+  padding: 0 16px;
+  border-radius: var(--radius-pill);
+  background: #FFFFFF;
+  font-family: 'TT Commons Pro', 'Noto Sans Arabic', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  border: 1.5px solid var(--ln);
+  color: var(--tx);
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+.chip:active {
+  transform: scale(0.96);
+}
+.chip.on {
+  background: var(--hud);
+  color: #FFFFFF;
+  border-color: var(--hud);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15);
+}
+
+/* ================= TALABAT BOTTOM NAVIGATION ================= */
+.nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  background: #FFFFFF;
+  border-top: 1px solid var(--ln);
+  display: flex;
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+  box-shadow: 0 -4px 16px rgba(0,0,0,0.03);
+}
+.nav button {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 800;
+  font-family: 'TT Commons Pro', 'Noto Sans Arabic', sans-serif;
+  color: #8E8E93;
+  position: relative;
+  min-height: 54px;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+  transition: all 0.15s ease;
+}
+.nav button svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  transition: transform 0.15s ease;
+}
+.nav button.on {
+  color: var(--o);
+}
+.nav button.on svg {
+  transform: translateY(-2px);
+  stroke-width: 2.3;
+  stroke: var(--o);
+}
+.nav button.on {
+  color: var(--o);
+}
+.nav button.on svg {
+  transform: translateY(-2px);
+  stroke-width: 2.3;
+}
+.nav .badge {
+  position: absolute;
+  top: 3px;
+  inset-inline-start: 52%;
+}
+
+/* Modal Bottom Sheets */
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(15,23,42,0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-end;
+}
+.sheet > div {
+  background: var(--card);
+  width: 100%;
+  border-radius: 24px 24px 0 0;
+  padding: 16px 18px calc(24px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: 0 -8px 30px rgba(0,0,0,0.15);
+}
+.grab {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: #E4E4E7;
+  align-self: center;
+}
+textarea {
+  width: 100%;
+  min-height: 90px;
+  border-radius: 16px;
+  background: #F8F9FA;
+  padding: 14px 16px;
+  resize: none;
+  border: 1px solid var(--ln);
+}
+.toast {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  z-index: 9999;
+  background: var(--hud);
+  color: #fff;
+  border-radius: 16px;
+  padding: 14px 18px;
+  font-weight: 800;
+  font-size: 14px;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+
+.talabat-map-container {
+  position: relative;
+  width: 100%;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  border: 1px solid var(--ln);
+  background: #f8fafc;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+.talabat-map-container .leaflet-control-attribution,
+.talabat-map-container .leaflet-control-zoom {
+  display: none !important;
+}
+.web-role-bar {
+  background: #0F172A;
+  color: #fff;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 800;
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.web-role-btn {
+  background: rgba(255,255,255,0.12);
+  color: #CBD5E1;
+  padding: 5px 12px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 800;
+  transition: all 0.15s ease;
+}
+.web-role-btn.active {
+  background: #FF5A00;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(255,90,0,0.4);
+}
+@media (min-width: 600px) {
+  body {
+    background: #0B0F19;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+  #app-wrapper {
+    width: 100%;
+    max-width: 440px;
+    min-height: 100vh;
+    background: var(--bg);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    position: relative;
+    overflow-x: hidden;
+  }
+  .web-role-bar {
+    max-width: 440px;
+    margin: 0 auto;
+  }
+  .nav {
+    max-width: 440px;
+    left: 50% !important;
+    transform: translateX(-50%);
+  }
+}
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+.m {
+  max-width: 82%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  font-size: 14px;
+  background: #FFFFFF;
+  border: 1px solid var(--ln);
+  align-self: flex-start;
+}
+.m.me {
+  align-self: flex-end;
+  background: var(--o);
+  color: #fff;
+  border: 0;
+}
+.m.ad {
+  align-self: center;
+  background: #FFFBEB;
+  font-size: 13px;
+  border: 1px solid #FDE68A;
+  color: #92400E;
+}
+.send {
+  display: flex;
+  gap: 8px;
+}
+.send input {
+  flex: 1;
+  height: 48px;
+  border-radius: 24px;
+  background: #F4F4F5;
+  padding: 0 16px;
+}
+.send button {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--o);
+  color: #fff;
+  display: grid;
+  place-items: center;
+}
+.steps {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+.steps:before {
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: 12%;
+  right: 12%;
+  height: 3px;
+  background: var(--ln);
+}
+.st {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  font-family: 'TT Commons Pro', sans-serif;
+  color: var(--mu);
+  z-index: 1;
+  width: 25%;
+}
+.st i {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 3px solid var(--ln);
+  display: grid;
+  place-items: center;
+}
+.st i svg {
+  width: 18px;
+  height: 18px;
+}
+.st.on {
+  color: var(--o);
+}
+.st.on i {
+  border-color: var(--o);
+  background: var(--o);
+  color: #fff;
+}
+.stars button {
+  font-size: 32px;
+  color: #D1D5DB;
+}
+.stars button.on {
+  color: #F59E0B;
+}
+.tog {
+  width: 52px;
+  height: 32px;
+  border-radius: 16px;
+  background: #D1D5DB;
+  position: relative;
+}
+.tog:after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  inset-inline-start: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  transition: 0.2s;
+}
+.tog.on {
+  background: var(--gr);
+}
+.tog.on:after {
+  inset-inline-start: 24px;
+}
+[dir=rtl] .flip {
+  transform: scaleX(-1);
+}
+.empty {
+  text-align: center;
+  padding: 48px 16px;
+  color: var(--mu);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.empty svg {
+  width: 48px;
+  height: 48px;
+  color: #D1D5DB;
+}
+.logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+.li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--ln);
+  width: 100%;
+  text-align: start;
+}
+.li:last-child {
+  border: 0;
+}
+.ico {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--o2);
+  color: var(--o);
+  display: grid;
+  place-items: center;
+}
+.big {
+  font-size: 26px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+.num {
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--card);
+  border-radius: 16px;
+  padding: 0 16px;
+  height: 50px;
+  color: var(--mu);
+  border: 1px solid var(--ln);
+}
+.search input {
+  flex: 1;
+  color: var(--tx);
+}
+.ib {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+}
+</style>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+</head>
+<body>
+
+<div id="webRoleBar" class="web-role-bar" style="display:none !important">
+  <div style="display:flex;align-items:center;gap:6px">
+    <span style="width:8px;height:8px;border-radius:50%;background:#10B981;box-shadow:0 0 6px #10B981"></span>
+    <span style="letter-spacing:0.3px">FixIt Salalah Web</span>
+  </div>
+  <div style="display:flex;gap:6px">
+    <button class="web-role-btn" id="roleBtnConsumer" onclick="switchRole('consumer')">Customer</button>
+    <button class="web-role-btn" id="roleBtnVendor" onclick="switchRole('vendor')">Pro Vendor</button>
+    <button class="web-role-btn" id="roleBtnAdmin" onclick="switchRole('admin')">Admin</button>
+  </div>
+</div>
+
+<div id="app-wrapper"><div id="app"></div></div>
+<script>
+"use strict";
+let ROLE = "consumer"; // consumer | vendor | admin
+const SB_URL = "https://fuavdydvadklatjnimal.supabase.co";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1YXZkeWR2YWRrbGF0am5pbWFsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjIxNTg3MiwiZXhwIjoyMDk3NzkxODcyfQ.WxAjdxqkwRFj1yF10Y3kJ9UQit2XkLpQn65qX2lK5qY";
+const CONSUMER_ID = "bd5b7118-e852-4d66-8082-c0d768195007";
+const VENDOR_ID = "8a16bdd6-0a42-4dd8-99d7-a14302183e37";
+const ME = ROLE === "vendor" ? VENDOR_ID : (() => { try { const v = localStorage.getItem("fixit_auth_user_id"); const p = v ? (v.startsWith('"') ? JSON.parse(v) : v) : ""; return /^[0-9a-f-]{36}$/.test(p) ? p : CONSUMER_ID; } catch (e) { return CONSUMER_ID; } })();
+const PHONE = "+96895956361";
+
+/* ---------- cache ---------- */
+const K = "fx3_" + ROLE + "_";
+const load = (k, d) => { try { const v = localStorage.getItem(K + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } };
+const save = (k, v) => { try { localStorage.setItem(K + k, JSON.stringify(v)); } catch (e) {} };
+
+/* ---------- icons ---------- */
+const P = {
+  home:'<path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2z"/>',
+  list:'<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/>',
+  chat:'<path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-6.4A8 8 0 1 1 21 12z"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  users:'<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M16 4a4 4 0 0 1 0 8M22 21a7 7 0 0 0-4-6.3"/>',
+  grid:'<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',
+  radar:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+  back:'<path d="m15 18-6-6 6-6"/>',
+  next:'<path d="m9 18 6-6-6-6"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
+  phone:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>',
+  send:'<path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>',
+  x:'<path d="M18 6 6 18M6 6l12 12"/>',
+  car:'<path d="M5 17h14M6 17v2M18 17v2M3 13l2-6h14l2 6v4H3z"/><circle cx="7.5" cy="13.5" r="1"/><circle cx="16.5" cy="13.5" r="1"/>',
+  pin:'<path d="M12 22s7-6.3 7-12a7 7 0 0 0-14 0c0 5.7 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>',
+  tool:'<path d="M14.7 6.3a4 4 0 0 0 5 5L21 13l-8 8-3-3 8-8-1.3-1.3a4 4 0 0 0-5-5L14 2z"/><path d="M3 21l6-6"/>',
+  globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.7M12 17h.01"/>',
+  bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a2 2 0 0 0 3.4 0"/>',
+  wallet:'<rect x="3" y="6" width="18" height="14" rx="3"/><path d="M3 10h18M16 15h2"/>',
+  star:'<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/>',
+  power:'<path d="M12 3v9M6.3 6.3a8 8 0 1 0 11.4 0"/>',
+  refresh:'<path d="M21 12a9 9 0 0 1-15.5 6.3L3 16M3 12a9 9 0 0 1 15.5-6.3L21 8M21 3v5h-5M3 21v-5h5"/>',
+  shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  tag:'<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>',
+  camera:'<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
+  trash:'<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+  /* categories */
+  ac:'<path d="M12 2v20M4.9 4.9l14.2 14.2M2 12h20M4.9 19.1 19.1 4.9"/>',
+  bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+  drop:'<path d="M12 2.7 6.3 9a7 7 0 1 0 11.4 0z"/>',
+  hammer:'<path d="m15 12-8.5 8.5a2.1 2.1 0 0 1-3-3L12 9M17.6 15 22 10.6 13.4 2 9 6.4"/>',
+  brush:'<path d="M18 2l4 4-9.5 9.5-4-4zM8.5 11.5 4 16a3 3 0 0 0 4 4l4.5-4.5"/>',
+  spark:'<path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8"/>',
+  key:'<circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 10.3-10.3M17 6l3 3M14 9l2 2"/>',
+  bug:'<rect x="7" y="7" width="10" height="13" rx="5"/><path d="M12 7V4M9 4l1 3M15 4l-1 3M3 12h4M17 12h4M4 18l3-2M20 18l-3-2"/>',
+  leaf:'<path d="M11 20A7 7 0 0 1 4 13c0-6 6-10 16-10 0 10-4 16-9 17zM4 21c4-4 7-7 10-10"/>',
+  truck:'<path d="M3 6h11v10H3zM14 9h4l3 3v4h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',
+  mobile:'<rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/>',
+  box:'<path d="M21 8 12 3 3 8v8l9 5 9-5zM3 8l9 5 9-5M12 13v8"/>'
+};
+const I = (n, cls) => `<svg viewBox="0 0 24 24" class="${cls || ""}">${P[n] || P.tool}</svg>`;
+
+const CATS = [
+  ["AC_REPAIR","ac","AC","مكيف"],["ELECTRICIAN","bolt","Electric","كهرباء"],["PLUMBER","drop","Plumbing","سباكة"],["CARPENTER","hammer","Carpentry","نجارة"],
+  ["PAINTER","brush","Paint","دهان"],["CLEANER","spark","Cleaning","تنظيف"],["LOCKSMITH","key","Locks","أقفال"],["PEST_CONTROL","bug","Pests","حشرات"],
+  ["GARDENER","leaf","Garden","حدائق"],["MECHANIC","car","Car","سيارات"],["MOVERS","truck","Moving","نقل"],["PHONE_REPAIR","mobile","Phone","هواتف"]
+];
+const cat = id => { const c = CATS.find(x => x[0] === id) || [id, "tool", String(id || "Service").replace(/_/g, " "), "خدمة"]; return { id: c[0], icon: c[1], name: L === "ar" ? c[3] : c[2] }; };
+
+/* ---------- i18n ---------- */
+let L = localStorage.getItem("fixit_lang") || "en";
+const T = {
+  home:["Home","الرئيسية"], orders:["Orders","الطلبات"], chats:["Chats","المحادثات"], account:["Account","حسابي"], wallet:["Wallet","المحفظة"],
+  hello:["What do you need fixed?","ماذا تريد أن تصلح؟"], search:["Search","بحث"], book:["Book","احجز"],
+  active:["Active","نشطة"], done:["Done","مكتملة"], all:["All","الكل"], today:["Today","اليوم"], week:["Week","الأسبوع"],
+  call:["Call","اتصال"], message:["Message","رسالة"], send:["Send","إرسال"], typemsg:["Type a message","اكتب رسالة"],
+  OPEN:["Waiting","بانتظار"], BID_SELECTED:["Accepted","مقبول"], IN_PROGRESS:["Working","جاري العمل"], COMPLETED:["Done","مكتمل"], CANCELLED:["Cancelled","ملغي"],
+  s1:["Sent","أُرسل"], s2:["Accepted","قُبل"], s3:["Working","جاري"], s4:["Done","تم"],
+  offers:["Offers","العروض"], accept:["Accept","قبول"], noOffers:["Waiting for pros…","بانتظار الفنيين…"],
+  markDone:["Mark as done","تأكيد الإنجاز"], rate:["Rate","قيّم"], noOrders:["No orders yet","لا توجد طلبات"],
+  noChats:["No chats yet","لا توجد محادثات"], describe:["Describe the problem (optional)","صف المشكلة (اختياري)"],
+  when:["When?","متى؟"], now:["Now","الآن"], later:["Later","لاحقاً"], urgent:["Urgent","عاجل"], confirm:["Send request","إرسال الطلب"],
+  sent:["Request sent!","تم إرسال الطلب!"], language:["Language","اللغة"], support:["Support","الدعم"], notifs:["Notifications","الإشعارات"],
+  jobs:["Jobs","المهام"], newJobs:["New","جديدة"], myJobs:["My jobs","مهامي"], bid:["Send offer","أرسل عرض"], online:["Online","متصل"],
+  offerSent:["Offer sent","تم إرسال العرض"], onWay:["On my way","في الطريق"], arrived:["Arrived","وصلت"], start:["Start","ابدأ"], finish:["Finish","إنهاء"],
+  overview:["Overview","نظرة عامة"], users:["Users","المستخدمين"], open:["Open","مفتوحة"], live:["Live","جارية"], escrow:["Escrow","الضمان"],
+  notice:["Post notice","إرسال تنبيه"], status:["Status","الحالة"], cancel:["Cancel","إلغاء"], earnings:["Earnings","الأرباح"],
+  q1:["Where are you?","وين أنت؟"], q2:["Gate code?","رمز البوابة؟"], q3:["I'm home","أنا في البيت"],
+  v1:["On my way","في الطريق"], v2:["Outside","أنا بالخارج"], v3:["All done","انتهيت"], omr:["OMR","ر.ع"], refresh:["Refresh","تحديث"],
+  balance:["Balance","الرصيد"], locked:["Locked in Escrow","محتجز في الضمان"], deposit:["Add Funds","إيداع"], withdraw:["Withdraw","سحب"],
+  addresses:["Addresses","العناوين"], coupons:["Coupons","الكوبونات"], tickets:["Support Tickets","تذاكر الدعم"],
+  addAddress:["Add Address","إضافة عنوان"], addressLabel:["Label (e.g. Home, Office)","اسم العنوان (مثل المنزل)"],
+  addressLine:["Street, Area, Building","الشارع، المنطقة، المبنى"], newTicket:["New Ticket","تذكرة جديدة"],
+  ticketSubject:["Subject","الموضوع"], ticketBody:["Details","التفاصيل"], redeemPromo:["Redeem Code","تفعيل الرمز"],
+  promoApplied:["Promo applied!","تم تفعيل الكوبون!"], escrowSecured:["100% Escrow Protected","محمي بالضمان 100%"],
+  warrantyBadge:["14-Day Warranty Active","ضمان لمدة 14 يوماً فعال"], addPhoto:["Add Photo","إضافة صورة"],
+  broadcast:["Send Broadcast Push","إرسال إشعار عام"], refundUser:["Refund User","استرجاع للمستخدم"], payPro:["Release to Pro","صرف للفني"]
+};
+const t = k => (T[k] ? T[k][L === "ar" ? 1 : 0] : k);
+function applyLang() { document.documentElement.lang = L; document.documentElement.dir = L === "ar" ? "rtl" : "ltr"; }
+function setLang(l) { L = l; localStorage.setItem("fixit_lang", l); applyLang(); render(); }
+applyLang();
+
+/* ---------- state ---------- */
+const S = {
+  tab: ROLE === "vendor" ? "jobs" : ROLE === "admin" ? "overview" : "home",
+  stack: [], jobId: null, filter: "ACTIVE", q: "", sheet: null, draft: {}, toast: null, trackingStep: 3, ticketId: null, role: typeof ROLE !== "undefined" ? ROLE : "consumer",
+  supportMsgs: load("supportMsgs", []),
+  jobs: load("jobs", [
+    { job_id: "demo-1", short_id: "AC-881", category_id: "AC_REPAIR", status: "OPEN", budget_range_min: 15, budget_range_max: 25, description: "AC gas leak & cooling issue in Salalah apartment", created_at: new Date(Date.now() - 3600000).toISOString() },
+    { job_id: "demo-2", short_id: "PL-442", category_id: "PLUMBER", status: "IN_PROGRESS", budget_range_min: 12, budget_range_max: 20, description: "Kitchen pipeline replacement", created_at: new Date(Date.now() - 7200000).toISOString() },
+    { job_id: "demo-3", short_id: "TW-919", category_id: "TOW_TRUCK", status: "COMPLETED", budget_range_min: 20, budget_range_max: 30, description: "Car tow to Sanaiya workshop", created_at: new Date(Date.now() - 86400000).toISOString() }
+  ]),
+  msgs: load("msgs", []),
+  bids: load("bids", [
+    { bid_id: "b-1", job_id: "demo-1", vendor_id: VENDOR_ID, bid_amount: 18, status: "OPEN" },
+    { bid_id: "b-2", job_id: "demo-2", vendor_id: VENDOR_ID, bid_amount: 15, status: "SELECTED" }
+  ]),
+  users: load("users", [
+    { user_id: CONSUMER_ID, full_name: "Khxzi Bxtt", phone_number: "+96895956361", role: "CUSTOMER" },
+    { user_id: VENDOR_ID, full_name: "Al-Khareef Certified Pro", phone_number: "+96895956361", role: "VENDOR" }
+  ]),
+  wallet: load("wallet", { balance: 0.0, locked_balance: 0.0 }),
+  txns: load("txns", [
+    { kind: "ESCROW_LOCK", amount: 18.0, note: "AC Repair Escrow Secured", created_at: new Date(Date.now() - 3600000).toISOString() },
+    { kind: "DEPOSIT", amount: 100.0, note: "Thawani / Bank Muscat Top-up", created_at: new Date(Date.now() - 86400000).toISOString() }
+  ]),
+  addresses: load("addresses", [
+    { address_id: "a-1", label: "Home (Salalah)", address_line: "Al Haffa Beach Rd, Villa 14" },
+    { address_id: "a-2", label: "Office", address_line: "As Saadah Commercial Zone, Bld 2" }
+  ]),
+  coupons: load("coupons", [
+    { code: "SALALAH25", discount_pct: 25, is_active: true },
+    { code: "FIXIT10", discount_pct: 10, is_active: true },
+    { code: "FREEPRO", discount_pct: 100, is_active: true }
+  ]),
+  tickets: load("tickets", [
+    { ticket_id: "t-1", subject: "14-Day Warranty Inquiry", body: "Can Admin verify the technician warranty certificate?", status: "OPEN", admin_reply: "Approved! 14 days full coverage active." }
+  ]),
+  photos: load("photos", []),
+  notifs: load("notifs", [
+    { title: "Offer Accepted", body: "Your AC Repair request received a verified bid of 18 OMR.", created_at: new Date(Date.now() - 1800000).toISOString() },
+    { title: "Escrow Protected", body: "Payment secured in Khidmah Escrow.", created_at: new Date(Date.now() - 3600000).toISOString() }
+  ]),
+  seen: load("seen", {}),
+  online: load("online", true)
+};
+
+/* ---------- helpers ---------- */
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const sid = j => "#" + (j.short_id || String(j.job_id || "").slice(0, 6).toUpperCase());
+const price = j => Number(j.bounty_price || j.budget_range_max || j.budget_range_min || 0).toFixed(3);
+const ago = d => { const m = Math.max(0, Math.round((Date.now() - new Date(d || Date.now())) / 60000)); return m < 1 ? (L === "ar" ? "الآن" : "now") : m < 60 ? m + (L === "ar" ? " د" : "m") : m < 1440 ? Math.round(m / 60) + (L === "ar" ? " س" : "h") : Math.round(m / 1440) + (L === "ar" ? " ي" : "d"); };
+const cleanDesc = d => String(d || "").replace(/\s*\[[^\]]*\]\s*/g, " ").trim();
+const isDone = j => j.status === "COMPLETED" || j.status === "CANCELLED";
+const myJobs = () => ROLE === "consumer" ? S.jobs.filter(j => j.consumer_id === ME || j.consumer_id === CONSUMER_ID) : ROLE === "vendor" ? S.jobs.filter(j => j.status !== "OPEN" && (S.bids.some(b => b.job_id === j.job_id && b.vendor_id === ME && b.status === "SELECTED") || j.assigned_vendor_id === ME || j.vendor_id === ME)) : S.jobs;
+const jobMsgs = id => S.msgs.filter(m => m.job_id === id).sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+const unread = id => jobMsgs(id).filter(m => m.sender_id !== ME && new Date(m.created_at) > new Date(S.seen[id] || 0)).length;
+const totalUnread = () => myJobs().reduce((a, j) => a + unread(j.job_id), 0);
+const markSeen = id => { S.seen[id] = new Date().toISOString(); save("seen", S.seen); };
+const statusPill = j => `<span class="pill ${j.status === "COMPLETED" ? "ok" : j.status === "CANCELLED" ? "no" : j.status === "IN_PROGRESS" || j.status === "BID_SELECTED" ? "am" : ""}">${t(j.status)}</span>`;
+
+function toast(msg) { S.toast = msg; render(); clearTimeout(toast.h); toast.h = setTimeout(() => { S.toast = null; render(); }, 2200); }
+function ping() {
+  try { const C = window.AudioContext || window.webkitAudioContext; const c = new C(), o = c.createOscillator(), g = c.createGain(); o.connect(g); g.connect(c.destination); o.frequency.setValueAtTime(660, c.currentTime); o.frequency.exponentialRampToValueAtTime(990, c.currentTime + .1); g.gain.setValueAtTime(.25, c.currentTime); g.gain.exponentialRampToValueAtTime(.001, c.currentTime + .3); o.start(); o.stop(c.currentTime + .3); } catch (e) {}
+  try { navigator.vibrate && navigator.vibrate([60, 40, 80]); } catch (e) {}
+}
+
+/* ---------- api ---------- */
+async function sb(path, method = "GET", body) {
+  const h = { apikey: SB_KEY, Authorization: "Bearer " + SB_KEY, "Content-Type": "application/json" };
+  if (method !== "GET") h.Prefer = "return=representation";
+  const r = await fetch(SB_URL + "/rest/v1" + path, { method, headers: h, body: body ? JSON.stringify(body) : undefined });
+  const x = await r.text(); let d = null; try { d = x ? JSON.parse(x) : null; } catch (e) { d = x; }
+  if (!r.ok) throw new Error((d && d.message) || "HTTP " + r.status);
+  return d;
+}
+async function sync() {
+  try {
+    const q = [
+      sb("/jobs?order=created_at.desc&limit=80"),
+      sb("/messages?order=created_at.desc&limit=300"),
+      sb("/bids?order=created_at.desc&limit=150"),
+      sb("/job_photos?order=created_at.desc&limit=50"),
+      sb("/notifications?order=created_at.desc&limit=30")
+    ];
+    if (ROLE === "admin") {
+      q.push(sb("/users?order=created_at.desc&limit=80"));
+      q.push(sb("/wallets?limit=50"));
+      q.push(sb("/support_tickets?order=created_at.desc&limit=50"));
+      q.push(sb("/support_messages?order=created_at.asc&limit=150"));
+    } else {
+      q.push(sb(`/wallets?user_id=eq.${ME}`));
+      q.push(sb(`/wallet_transactions?user_id=eq.${ME}&order=created_at.desc&limit=20`));
+      q.push(sb(`/user_addresses?user_id=eq.${ME}&order=created_at.desc`));
+      q.push(sb("/coupons?is_active=eq.true"));
+      q.push(sb(`/support_tickets?user_id=eq.${ME}&order=created_at.desc`));
+      q.push(sb(`/support_messages?user_id=eq.${ME}&order=created_at.asc&limit=150`));
+    }
+    const res = await Promise.all(q.map(p => p.catch(() => null)));
+    const [jobs, msgs, bids, photos, notifs] = res;
+    const before = totalUnread();
+    if (Array.isArray(jobs)) { S.jobs = jobs; save("jobs", jobs); }
+    if (Array.isArray(msgs)) { S.msgs = msgs; save("msgs", msgs); }
+    if (Array.isArray(bids)) { S.bids = bids; save("bids", bids); }
+    if (Array.isArray(photos)) { S.photos = photos; save("photos", photos); }
+    if (Array.isArray(notifs)) { S.notifs = notifs; save("notifs", notifs); }
+
+    if (ROLE === "admin") {
+      if (Array.isArray(res[5])) { S.users = res[5]; save("users", res[5]); }
+      if (Array.isArray(res[6])) { S.wallets = res[6]; save("wallets", res[6]); }
+      if (Array.isArray(res[7])) { S.tickets = res[7]; save("tickets", res[7]); }
+    } else {
+      if (Array.isArray(res[5]) && res[5][0]) { S.wallet = res[5][0]; save("wallet", res[5][0]); }
+      if (Array.isArray(res[6])) { S.txns = res[6]; save("txns", res[6]); }
+      if (Array.isArray(res[7])) { S.addresses = res[7]; save("addresses", res[7]); }
+      if (Array.isArray(res[8])) { S.coupons = res[8]; save("coupons", res[8]); }
+      if (Array.isArray(res[9])) { S.tickets = res[9]; save("tickets", res[9]); }
+    }
+
+    if (S.jobId && isOpenScreen("job")) markSeen(S.jobId);
+    if (totalUnread() > before) ping();
+
+    // Smart Dirty Check: Only re-render when data actually changed!
+    const sig = (S.jobs.length + "_" + (S.jobs[0] ? S.jobs[0].status + S.jobs[0].updated_at : "") + "_" + S.msgs.length + "_" + S.bids.length + "_" + (S.tickets ? S.tickets.length : 0));
+    if (window._lastDataSig !== sig) {
+      window._lastDataSig = sig;
+      // If user is currently looking at active tracking or map, don't blow away the map DOM!
+      if (isOpenScreen("job") || isOpenScreen("tracking")) {
+        const curJob = S.jobs.find(x => x.job_id === S.jobId);
+        // Only re-render if the job status changed (e.g. from BID_SELECTED to COMPLETED)
+        if (curJob && curJob._renderedStatus !== curJob.status) {
+          curJob._renderedStatus = curJob.status;
+          render();
+        }
+      } else {
+        if (!busyTyping()) render();
+      }
+    }
+  } catch (e) {}
+}
+const isOpenScreen = n => S.stack.length && S.stack[S.stack.length - 1] === n;
+const busyTyping = () => { const a = document.activeElement; return a && (a.tagName === "INPUT" || a.tagName === "TEXTAREA") && a.value; };
+
+/* ---------- navigation ---------- */
+function tab(n) { S.tab = n; S.stack = []; S.jobId = null; scrollTo(0, 0); render(); }
+function go(screen, id) {
+  S.stack.push(screen);
+  if (screen === "support_chat" && id) S.ticketId = id;
+  else if (id) { S.jobId = id; markSeen(id); }
+  scrollTo(0, 0); render();
+  if (screen === "job") scrollChat();
+  if (screen === "support_chat") setTimeout(() => { const c = document.getElementById("supportChat"); if (c) c.scrollTop = c.scrollHeight; }, 30);
+}
+function back() { if (S.sheet) { S.sheet = null; render(); return true; } if (S.stack.length) { S.stack.pop(); render(); return true; } const home = ROLE === "vendor" ? "jobs" : ROLE === "admin" ? "overview" : "home"; if (S.tab !== home) { tab(home); return true; } return false; }
+window.handleAndroidBack = back;
+window.onAppResume = sync;
+const scrollChat = () => setTimeout(() => { const c = document.getElementById("chat"); if (c) c.scrollTop = c.scrollHeight; }, 30);
+
+/* ---------- actions ---------- */
+async function sendMsg(text) {
+  const inp = document.getElementById("msg");
+  const txt = (text || (inp && inp.value) || "").trim(); if (!txt || !S.jobId) return;
+  if (inp) inp.value = "";
+  const job = S.jobs.find(j => j.job_id === S.jobId) || {};
+  const sender = ROLE === "admin" ? (job.consumer_id || CONSUMER_ID) : ME;
+  const content = ROLE === "admin" ? "[Admin Khxzi Notice]: " + txt : txt;
+  const local = { job_id: S.jobId, sender_id: sender, content, created_at: new Date().toISOString(), _local: 1 };
+  S.msgs.push(local); render(); scrollChat();
+  try { await sb("/messages", "POST", { job_id: S.jobId, sender_id: sender, content }); sync(); } catch (e) { toast("⚠ " + e.message); }
+}
+async function postJob() {
+  const d = S.draft, c = cat(d.cat), sh = String(Math.floor(100000 + Math.random() * 900000));
+  S.sheet = null; render();
+  try {
+    const created = await sb("/jobs", "POST", { consumer_id: ME, category_id: d.cat, urgency: d.when === "urgent" ? "URGENT" : "NORMAL", description: (d.note || "").trim() || c.name, status: "OPEN", posting_kind: "STANDARD", budget_range_min: 10, budget_range_max: 30, media_urls: [], is_approved: true, short_id: sh, tracking_id: "FX-" + sh });
+    toast("✓ " + t("sent")); await sync(); tab("orders");
+  } catch (e) { toast("⚠ " + e.message); }
+}
+async function acceptBid(bidId, jobId) {
+  try { await sb(`/bids?bid_id=eq.${bidId}`, "PATCH", { status: "SELECTED" }); await sb(`/jobs?job_id=eq.${jobId}`, "PATCH", { status: "BID_SELECTED" }); toast("✓ Offer accepted!"); sync(); } catch (e) { toast("⚠ " + e.message); }
+}
+async function setStatus(jobId, status, note) {
+  try { await sb(`/jobs?job_id=eq.${jobId}`, "PATCH", { status, updated_at: new Date().toISOString() }); if (note) await sendMsg(note); toast("✓ " + t(status)); sync(); } catch (e) { toast("⚠ " + e.message); }
+}
+async function rateJob(jobId, n) { const j = S.jobs.find(x => x.job_id === jobId); if (j) j.rating_given = n; render(); sb(`/jobs?job_id=eq.${jobId}`, "PATCH", { rating_given: n }).catch(() => {}); }
+async function sendBid(jobId, amt) {
+  S.sheet = null; render();
+  try { await sb("/bids", "POST", { job_id: jobId, vendor_id: VENDOR_ID, bid_amount: amt, proposed_milestones: [{ pct: 100, label: "FixIt Pro" }], below_floor: false }); toast("✓ " + t("offerSent")); sync(); } catch (e) { toast("⚠ " + e.message); }
+}
+
+async function addAddress(lbl, line) {
+  if (!line.trim()) return;
+  const newAddr = { address_id: "a-" + Date.now(), user_id: ME, label: lbl.trim() || "Address", address_line: line.trim() };
+  S.addresses.push(newAddr); save("addresses", S.addresses); S.sheet = null; render();
+  try { await sb("/user_addresses", "POST", { user_id: ME, label: newAddr.label, address_line: newAddr.address_line }); toast("✓ Address saved"); sync(); } catch (e) {}
+}
+async function delAddress(id) {
+  S.addresses = S.addresses.filter(a => a.address_id !== id); save("addresses", S.addresses); render();
+  try { await sb(`/user_addresses?address_id=eq.${id}`, "DELETE"); toast("✓ Removed"); } catch (e) {}
+}
+async function addTicket(sub, body) {
+  if (!sub.trim() || !body.trim()) return;
+  const newT = { ticket_id: "t-" + Date.now(), user_id: ME, subject: sub.trim(), body: body.trim(), status: "OPEN" };
+  S.tickets.push(newT); save("tickets", S.tickets); S.sheet = null; render();
+  try { await sb("/support_tickets", "POST", newT); toast("✓ Ticket submitted"); sync(); } catch (e) {}
+}
+async function addJobPhoto(jobId) {
+  const url = "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=600&q=80";
+  const p = { job_id: jobId, uploaded_by_user_id: ME, phase: "DURING", url };
+  S.photos.push(p); save("photos", S.photos); render();
+  try { await sb("/job_photos", "POST", p); toast("✓ Photo uploaded"); sync(); } catch (e) {}
+}
+
+
+async function depositFunds(amountOmr) {
+  const amt = parseFloat(amountOmr);
+  if (isNaN(amt) || amt <= 0) return;
+  const newBal = Number(S.wallet.balance || 0) + amt;
+  S.wallet.balance = newBal;
+  save("wallet", S.wallet);
+  S.sheet = null; render();
+  try {
+    if (S.wallet.wallet_id) {
+      await sb(`/wallets?wallet_id=eq.${S.wallet.wallet_id}`, "PATCH", { balance: newBal, updated_at: new Date().toISOString() });
+      await sb("/wallet_transactions", "POST", { wallet_id: S.wallet.wallet_id, user_id: ME, kind: "TOPUP", amount: amt, balance_after: newBal, note: "Thawani / Bank Muscat Top-Up" });
+    }
+    toast("✓ Top-Up: +" + amt.toFixed(3) + " OMR");
+    sync();
+  } catch (e) { toast("✓ Balance updated locally"); }
+}
+
+async function withdrawFunds(amountOmr) {
+  const amt = parseFloat(amountOmr);
+  if (isNaN(amt) || amt <= 0) return;
+  const cur = Number(S.wallet.balance || 0);
+  if (amt > cur) { toast("⚠ Insufficient balance"); return; }
+  const newBal = cur - amt;
+  S.wallet.balance = newBal;
+  save("wallet", S.wallet);
+  S.sheet = null; render();
+  try {
+    if (S.wallet.wallet_id) {
+      await sb(`/wallets?wallet_id=eq.${S.wallet.wallet_id}`, "PATCH", { balance: newBal, updated_at: new Date().toISOString() });
+      await sb("/wallet_transactions", "POST", { wallet_id: S.wallet.wallet_id, user_id: ME, kind: "PAYOUT", amount: -amt, balance_after: newBal, note: "Bank Muscat Transfer" });
+    }
+    toast("✓ Withdrawal: -" + amt.toFixed(3) + " OMR");
+    sync();
+  } catch (e) { toast("✓ Balance updated locally"); }
+}
+
+async function adminRefundJob(jobId) {
+  try {
+    await setStatus(jobId, "CANCELLED", "Refunded by Admin Khxzi to Consumer Wallet");
+    toast("✓ Refunded 18.000 OMR to Consumer Wallet");
+    sync();
+  } catch (e) { toast("⚠ " + e.message); }
+}
+
+async function adminReleaseEscrow(jobId) {
+  try {
+    await setStatus(jobId, "COMPLETED", "Escrow Released by Admin Khxzi to Pro");
+    toast("✓ Escrow Released to Pro Wallet");
+    sync();
+  } catch (e) { toast("⚠ " + e.message); }
+}
+
+function depositSheet() {
+  return `<div class="sheet" onclick="if(event.target===this){S.sheet=null;render()}">
+    <div>
+      <div class="grab"></div>
+      <div class="row">
+        <div class="ico gr">${I("plus")}</div>
+        <div class="t1 sp" style="font-size:18px">Top Up Wallet (Bank Muscat / Thawani)</div>
+        <button class="ib" onclick="S.sheet=null;render()">${I("x")}</button>
+      </div>
+      <div class="t2">Select instant recharge amount in OMR</div>
+      <div class="grid">
+        ${[5, 10, 20, 50, 100, 250].map(a => `
+          <button class="chip" style="height:52px;font-size:16px;font-weight:900" onclick="depositFunds(${a})">+${a}</button>
+        `).join("")}
+      </div>
+      <div class="row" style="gap:8px">
+        <input id="customTopup" type="number" placeholder="Custom OMR amount..." class="sp search" style="height:46px" />
+        <button class="btn s" style="width:auto;padding:0 20px" onclick="depositFunds(document.getElementById('customTopup').value)">${t("deposit")}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function withdrawSheet() {
+  return `<div class="sheet" onclick="if(event.target===this){S.sheet=null;render()}">
+    <div>
+      <div class="grab"></div>
+      <div class="row">
+        <div class="ico">${I("wallet")}</div>
+        <div class="t1 sp" style="font-size:18px">Withdraw to Bank Muscat</div>
+        <button class="ib" onclick="S.sheet=null;render()">${I("x")}</button>
+      </div>
+      <div class="t2">Available Balance: ${(Number(S.wallet.balance || 0)).toFixed(3)} OMR</div>
+      <div class="grid">
+        ${[10, 25, 50, 100, 200, 500].map(a => `
+          <button class="chip" style="height:52px;font-size:16px;font-weight:900" onclick="withdrawFunds(${a})">-${a}</button>
+        `).join("")}
+      </div>
+      <div class="row" style="gap:8px">
+        <input id="customWithdraw" type="number" placeholder="Custom OMR amount..." class="sp search" style="height:46px" />
+        <button class="btn g s" style="width:auto;padding:0 20px" onclick="withdrawFunds(document.getElementById('customWithdraw').value)">${t("withdraw")}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+
+/* ================= ZERO-FLICKER LEAFLET MAP REGISTRY ================= */
+let activeMapInstances = {};
+
+// Realistic Salalah Road Waypoints (Depot / Workshop -> Ar Rubat St -> Central Salalah Apartment 23C3+XWG)
+const SALALAH_WAYPOINTS = [
+  [17.0298, 54.0762],
+  [17.0280, 54.0785],
+  [17.0260, 54.0815],
+  [17.0242, 54.0838],
+  [17.0225, 54.0858],
+  [17.0210, 54.0878],
+  [17.0195, 54.0895],
+  [17.0180, 54.0908],
+  [17.0165, 54.0918],
+  [17.0150, 54.0924] // Destination Apartment (23C3+XWG)
+];
+
+function renderTalabatLeafletMap(containerId, heightPx, isFullscreen, jobId) {
+  setTimeout(() => {
+    initTalabatMap(containerId);
+  }, 40);
+
+  return `
+  <div class="talabat-map-container" style="height:${heightPx || '260px'}">
+    <div id="${containerId}" style="width:100%;height:100%"></div>
+
+    <!-- Floating Top Destination Pill (Apartment 23C3+XWG) -->
+    <div style="position:absolute;top:12px;right:14px;z-index:999;cursor:pointer" onclick="S.sheet='address_info';render()">
+      <div style="background:#0F172A;color:#fff;font-size:11px;font-weight:800;padding:6px 12px;border-radius:20px;display:flex;align-items:center;gap:6px;box-shadow:0 4px 14px rgba(0,0,0,0.3);border:2px solid #fff">
+        <span style="width:7px;height:7px;border-radius:50%;background:#FF5A00"></span>
+        <span>Apartment (23C3+XWG)</span>
+      </div>
+    </div>
+
+    <!-- Live Telemetry HUD Bar -->
+    <div style="position:absolute;bottom:10px;left:10px;right:10px;z-index:999;background:rgba(15,23,42,0.85);backdrop-filter:blur(6px);color:#fff;padding:6px 12px;border-radius:12px;display:flex;align-items:center;justify-content:space-between;font-size:11px">
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="width:7px;height:7px;border-radius:50%;background:#10B981;box-shadow:0 0 6px #10B981"></span>
+        <span style="font-weight:700">GPS Live · Salalah Express</span>
+      </div>
+      <div id="mapTelemetry_${containerId}" style="font-weight:800;color:#FDBA74">17.0210, 54.0880</div>
+    </div>
+  </div>`;
+}
+
+function initTalabatMap(containerId) {
+  if (typeof L === "undefined") return;
+  const el = document.getElementById(containerId);
+  if (!el) return;
+
+  // If map already active on this exact DOM node, keep it intact!
+  if (activeMapInstances[containerId] && activeMapInstances[containerId].el === el) {
+    return;
+  }
+
+  // If old map instance existed on an unmounted element, safely remove it
+  if (activeMapInstances[containerId] && activeMapInstances[containerId].map) {
+    try { activeMapInstances[containerId].map.remove(); } catch(e) {}
+  }
+
+  const destCoord = SALALAH_WAYPOINTS[SALALAH_WAYPOINTS.length - 1];
+  const step = typeof S.trackingStep === "number" ? S.trackingStep : 3;
+  const idx = Math.min(Math.floor(step), SALALAH_WAYPOINTS.length - 1);
+  const curCoord = SALALAH_WAYPOINTS[idx];
+
+  try {
+    const map = L.map(containerId, {
+      center: [(destCoord[0] + curCoord[0]) / 2, (destCoord[1] + curCoord[1]) / 2],
+      zoom: 14,
+      zoomControl: false,
+      attributionControl: false
+    });
+
+    // CartoDB Positron Light Tiles (Clean white aesthetic matching Talabat)
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+      maxZoom: 19,
+      subdomains: "abcd"
+    }).addTo(map);
+
+    // Route polyline in Talabat Orange
+    const routeLine = L.polyline(SALALAH_WAYPOINTS, {
+      color: "#FF5A00",
+      weight: 4.5,
+      opacity: 0.9,
+      dashArray: "8, 6"
+    }).addTo(map);
+
+    // Destination Pin (House Icon)
+    const destIcon = L.divIcon({
+      className: "talabat-dest-pin",
+      html: `<div style="background:#0F172A;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;border:2.5px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,0.35)">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.2"><path d="M3 10 12 3l9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      </div>`,
+      iconSize: [34, 34],
+      iconAnchor: [17, 17]
+    });
+    L.marker(destCoord, { icon: destIcon }).addTo(map);
+
+    // Delivery Hero Moving Scooter Icon (Talabat Orange with pulse halo)
+    const proIcon = L.divIcon({
+      className: "talabat-pro-pin",
+      html: `<div style="position:relative;width:44px;height:44px">
+        <div style="position:absolute;inset:-6px;border-radius:50%;background:rgba(255,90,0,0.3);animation:pulse 2s infinite"></div>
+        <div style="width:44px;height:44px;border-radius:50%;background:#FF5A00;color:#fff;display:grid;place-items:center;box-shadow:0 4px 14px rgba(255,90,0,0.5);border:2.5px solid #fff">
+          <svg viewBox="0 0 24 24" style="width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2.2"><path d="M5 17h14M6 17v2M18 17v2M3 13l2-6h14l2 6v4H3z"/><circle cx="7.5" cy="13.5" r="1"/><circle cx="16.5" cy="13.5" r="1"/></svg>
+        </div>
+      </div>`,
+      iconSize: [44, 44],
+      iconAnchor: [22, 22]
+    });
+    const proMarker = L.marker(curCoord, { icon: proIcon }).addTo(map);
+
+    activeMapInstances[containerId] = {
+      map: map,
+      marker: proMarker,
+      routeLine: routeLine,
+      el: el
+    };
+
+    setTimeout(() => { map.invalidateSize(); }, 250);
+  } catch(e) {
+    console.error("Map init err:", e);
+  }
+}
+
+// SMOOTH LIVE GPS HUD: Moves scooter along road waypoints and updates ETA directly in DOM WITHOUT RE-RENDERING!
+function updateLiveRiderMovement() {
+  if (!S.stack.includes("job") && !S.stack.includes("tracking")) return;
+
+  if (typeof S.trackingStep === "undefined") S.trackingStep = 3;
+  S.trackingStep = S.trackingStep >= (SALALAH_WAYPOINTS.length - 1) ? 2 : S.trackingStep + 0.3;
+
+  const baseIdx = Math.floor(S.trackingStep);
+  const nextIdx = Math.min(baseIdx + 1, SALALAH_WAYPOINTS.length - 1);
+  const frac = S.trackingStep - baseIdx;
+
+  const p1 = SALALAH_WAYPOINTS[baseIdx];
+  const p2 = SALALAH_WAYPOINTS[nextIdx];
+  const curLat = p1[0] + (p2[0] - p1[0]) * frac;
+  const curLng = p1[1] + (p2[1] - p1[1]) * frac;
+
+  const stepsLeft = (SALALAH_WAYPOINTS.length - 1) - S.trackingStep;
+  const etaMinutes = Math.max(1, Math.round(stepsLeft * 0.9));
+  const etaText = stepsLeft <= 0.4 ? "Arriving now!" : `within ${etaMinutes} minutes`;
+  const speedKm = 32 + Math.round(Math.sin(S.trackingStep) * 6);
+
+  // Update text nodes directly: ZERO DOM reconstruction!
+  const etaEl = document.getElementById("liveEtaText");
+  if (etaEl) etaEl.innerText = etaText;
+  const subEtaEl = document.getElementById("liveSubEtaText");
+  if (subEtaEl) subEtaEl.innerText = `ETA: ~${etaMinutes} mins`;
+  const speedEl = document.getElementById("liveSpeedText");
+  if (speedEl) speedEl.innerText = `${speedKm} km/h`;
+
+  // Update map markers smoothly
+  for (const id in activeMapInstances) {
+    const inst = activeMapInstances[id];
+    if (inst && inst.marker) {
+      inst.marker.setLatLng([curLat, curLng]);
+      const tel = document.getElementById("mapTelemetry_" + id);
+      if (tel) tel.innerText = `${curLat.toFixed(4)}, ${curLng.toFixed(4)}`;
+    }
+  }
+}
+
+setInterval(updateLiveRiderMovement, 1400);
+
+/* ---------- shared UI pieces ---------- */
+
+const bar = (title, withBack, right) => {
+  if (!withBack && S.tab === "home") {
+    return `<div class="talabat-top-bar">
+      <div class="talabat-loc-picker" onclick="go('addresses')">
+        <div class="talabat-loc-icon">${I("pin")}</div>
+        <div class="talabat-loc-text sp">
+          <div class="talabat-loc-label">Delivering to</div>
+          <div class="talabat-loc-addr">Apartment (23C3+XWG) <span style="font-size:10px;margin-left:4px">▼</span></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="talabat-circle-btn" onclick="go('notifs')">
+          ${I("bell")}
+          ${S.notifs.length ? `<span class="badge" style="position:absolute;top:3px;right:3px">${S.notifs.length}</span>` : ""}
+        </button>
+        ${langBtn()}
+      </div>
+    </div>`;
+  }
+  return `<div class="talabat-top-bar">
+    ${withBack ? `<button class="talabat-back-btn" onclick="back()">${I("back", "flip")}</button>` : `<img class="logo" src="logo.png" onerror="this.style.display='none'">`}
+    <div class="t1 sp ell" style="font-size:17px">${title}</div>
+    <div style="display:flex;align-items:center;gap:8px">${right || langBtn()}</div>
+  </div>`;
+};
+const langBtn = () => `<button class="talabat-circle-btn" onclick="setLang(L==='ar'?'en':'ar')" style="font-weight:800;font-size:13px">${L === "ar" ? "EN" : "ع"}</button>`;
+
+const empty = (icon, text) => `<div class="empty">${I(icon)}<div class="t1">${text}</div></div>`;
+
+
+function jobCard(j) {
+  const c = cat(j.category_id), u = unread(j.job_id);
+  const isTracking = j.status === "BID_SELECTED" || j.status === "IN_PROGRESS";
+  const dateFormatted = j.created_at ? new Date(j.created_at).toLocaleDateString("en-GB") : "Today";
+  const p = price(j);
+
+  return `
+  <div class="card" style="padding:16px;display:flex;flex-direction:column;gap:12px;cursor:pointer;border:1px solid #F1F1F4" onclick="go('job','${j.job_id}')">
+    <!-- Top Header Row: Store/Category + Status Pill -->
+    <div class="row" style="justify-content:space-between">
+      <div class="row" style="gap:10px">
+        <div style="width:42px;height:42px;border-radius:12px;background:#FFF4ED;color:#FF5A00;display:grid;place-items:center;border:1px solid #FFE4D6">
+          ${I(c.icon)}
+        </div>
+        <div>
+          <div class="t1" style="font-size:16px">${c.name} Express</div>
+          <div class="t2" style="font-size:12px">${dateFormatted} · #${sid(j)}</div>
+        </div>
+      </div>
+      <div>
+        ${isTracking ? `<span style="background:#0F172A;color:#fff;font-size:11px;font-weight:800;padding:4px 10px;border-radius:12px">On the way</span>` : statusPill(j)}
+      </div>
+    </div>
+
+    <!-- Problem Description Snippet -->
+    ${j.description ? `<div style="font-size:13px;color:#4B5563;background:#F9FAFB;padding:8px 12px;border-radius:10px;line-height:1.4">${esc(cleanDesc(j.description))}</div>` : ''}
+
+    <!-- Financial & Action Row -->
+    <div class="row" style="justify-content:space-between;padding-top:8px;border-top:1px solid #F3F4F6">
+      <div>
+        <div class="t2" style="font-size:11px;font-weight:600;text-transform:uppercase;color:#9CA3AF">Amount</div>
+        <div class="t1" style="color:#FF5A00;font-size:16px;font-weight:900">${p} OMR</div>
+      </div>
+      <div class="row" style="gap:8px" onclick="event.stopPropagation()">
+        ${isTracking ? `
+          <button class="pill" style="background:#FF5A00;color:#fff;font-weight:800;font-size:12px;padding:6px 14px;box-shadow:0 2px 6px rgba(255,90,0,0.3)" onclick="go('tracking','${j.job_id}')">
+            ${I("navigate")} <span>Track Live</span>
+          </button>
+        ` : ''}
+        <button class="pill" style="background:#F3F4F6;color:#18181B;font-weight:700;font-size:12px;padding:6px 12px" onclick="go('receipt','${j.job_id}')">
+          ${I("receipt")} <span>Receipt</span>
+        </button>
+        <button class="ib" style="width:36px;height:36px;border-radius:50%;background:#FFF4ED;color:#FF5A00" onclick="go('job','${j.job_id}')">
+          ${I("chat")}
+          ${u ? `<span class="badge" style="position:absolute;top:-4px;right:-4px">${u}</span>` : ""}
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function filtered(list) {
+  const q = S.q.toLowerCase(), now = Date.now();
+  return list.filter(j => {
+    if (S.filter === "ACTIVE" && isDone(j)) return false;
+    if (S.filter === "DONE" && !isDone(j)) return false;
+    if (S.filter === "OPEN" && j.status !== "OPEN") return false;
+    if (S.filter === "TODAY" && now - new Date(j.created_at) > 864e5) return false;
+    if (S.filter === "WEEK" && now - new Date(j.created_at) > 6048e5) return false;
+    if (!q) return true;
+    return [sid(j), cat(j.category_id).name, j.category_id, j.description].join(" ").toLowerCase().includes(q) || jobMsgs(j.job_id).some(m => String(m.content).toLowerCase().includes(q));
+  });
+}
+const searchBar = () => `<label class="search">${I("search")}<input id="q" value="${esc(S.q)}" placeholder="${t("search")}" oninput="S.q=this.value;renderKeep('q')"></label>`;
+const chipRow = keys => `<div class="chips">${keys.map(k => `<button class="chip ${S.filter === k[0] ? "on" : ""}" onclick="S.filter='${k[0]}';render()">${t(k[1])}</button>`).join("")}</div>`;
+
+function stepper(j) {
+  const n = { OPEN: 0, BID_SELECTED: 1, IN_PROGRESS: 2, COMPLETED: 3 }[j.status] ?? 0;
+  return `<div class="steps">${[["send","s1"],["check","s2"],["tool","s3"],["star","s4"]].map((s, i) => `<div class="st ${i <= n ? "on" : ""}"><i>${I(s[0])}</i>${t(s[1])}</div>`).join("")}</div>`;
+}
+function chatBox(j, quick) {
+  const ms = jobMsgs(j.job_id);
+  return `<div class="card" style="display:flex;flex-direction:column;gap:12px">
+    <div class="row"><span style="width:10px;height:10px;border-radius:5px;background:var(--gr)"></span><span class="t1 sp">${t("chats")}</span></div>
+    <div class="chat" id="chat">${ms.length ? ms.map(m => { const ad = String(m.content).startsWith("[Admin"); return `<div class="m ${ad ? "ad" : (m.sender_id === ME && ROLE !== "admin") ? "me" : ""}">${ad ? "🛡 " + esc(m.content) : esc(m.content)}</div>`; }).join("") : `<div class="t2" style="text-align:center;padding:16px">👋</div>`}</div>
+    ${quick ? `<div class="chips">${quick.map(k => `<button class="chip" onclick="sendMsg(t('${k}'))">${t(k)}</button>`).join("")}</div>` : ""}
+    <div class="send"><input id="msg" placeholder="${ROLE === "admin" ? t("notice") : t("typemsg")}" onkeydown="if(event.key==='Enter')sendMsg()"><button onclick="sendMsg()">${I("send", "flip")}</button></div>
+  </div>`;
+}
+
+/* ================= CONSUMER SCREENS ================= */
+
+function cHome() {
+  const act = myJobs().filter(j => !isDone(j));
+  return `${bar("FixIt", false)}
+  <div class="pad">
+    <!-- Talabat Search Pill -->
+    <div class="talabat-search" onclick="tab('orders')">
+      ${I("search")}
+      <input readonly placeholder="Find AC repair, plumbing, electrician in Salalah..." />
+    </div>
+
+    <!-- Active Live Order HUD Card (Exact Talabat Style) -->
+    ${act.length ? `
+      <div class="card" style="background:#0F172A;color:#fff;border-radius:20px;padding:16px;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,0.15)" onclick="go('tracking','${act[0].job_id}')">
+        <div class="row" style="justify-content:space-between">
+          <div class="row" style="gap:10px">
+            <span style="width:8px;height:8px;border-radius:50%;background:#10B981;box-shadow:0 0 8px #10B981"></span>
+            <span style="font-weight:800;font-size:13px;letter-spacing:0.3px">${cat(act[0].category_id).name} Express</span>
+          </div>
+          <span style="background:var(--o);color:#fff;font-size:11px;font-weight:800;padding:3px 10px;border-radius:10px">
+            ${t("onWay")}
+          </span>
+        </div>
+
+        <div class="row" style="margin-top:12px;justify-content:space-between">
+          <div>
+            <div style="font-size:11px;color:#94A3B8;font-weight:600;text-transform:uppercase">Live Delivery Status</div>
+            <div style="font-size:18px;font-weight:900;color:#FDBA74;margin-top:2px">Arriving within 4 mins</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.12);padding:6px 12px;border-radius:12px;font-size:12px;font-weight:800">
+            <span>Track Live</span>
+            ${I("next", "flip")}
+          </div>
+        </div>
+      </div>
+    ` : ''}
+
+    <!-- Section Title -->
+    <div class="row" style="justify-content:space-between;margin-top:4px">
+      <div class="t1" style="font-size:18px">Services & Repairs</div>
+      <span class="t2" style="font-size:12px">Certified Salalah Pros</span>
+    </div>
+
+    <!-- Talabat 4-Col Squircle Category Grid -->
+    <div class="talabat-grid">
+      ${CATS.map(c => `
+        <button class="talabat-cat-card" onclick="S.draft={cat:'${c[0]}',when:'now'};S.sheet='book';render()">
+          <div class="talabat-cat-icon">${I(c[1])}</div>
+          <div class="talabat-cat-label">${L === "ar" ? c[3] : c[2]}</div>
+        </button>
+      `).join("")}
+    </div>
+
+    <!-- Talabat Perks Trust Banner (from User Uploaded Screenshot 1) -->
+    <div class="card" style="background:#FAF5FF;border:1.5px solid #F3E8FF;display:flex;align-items:center;gap:14px;padding:16px;margin-top:4px">
+      <div style="width:48px;height:48px;border-radius:14px;background:#9333EA;color:#fff;display:grid;place-items:center">
+        ${I("shield")}
+      </div>
+      <div class="sp">
+        <div class="t1" style="font-size:15px;color:#581C87">Your perks just got better</div>
+        <div style="font-size:12px;color:#7E22CE;margin-top:2px">100% Escrow Protection · 14-Day Free Revisit Guarantee</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+
+function cBookSheet() {
+  const d = S.draft, c = cat(d.cat);
+  return `<div class="sheet" onclick="if(event.target===this){S.sheet=null;render()}">
+    <div>
+      <div class="grab"></div>
+      <div class="row" style="justify-content:space-between">
+        <div class="row" style="gap:10px">
+          <div style="width:44px;height:44px;border-radius:12px;background:#FFF4ED;color:#FF5A00;display:grid;place-items:center;border:1px solid #FFE4D6">
+            ${I(c.icon)}
+          </div>
+          <div>
+            <div class="t1" style="font-size:18px">${c.name} Express</div>
+            <div class="t2" style="font-size:12px">Free Instant Quotes · Central Salalah</div>
+          </div>
+        </div>
+        <button class="ib" onclick="S.sheet=null;render()">${I("x")}</button>
+      </div>
+
+      <div style="font-size:13px;font-weight:700;color:var(--tx);margin-top:2px">When do you need the technician?</div>
+      <div class="chips">
+        ${[["now", "⚡ Immediate (30m)"], ["urgent", "📅 Today"], ["later", "🗓️ Flexible Schedule"]].map(w => `
+          <button class="chip ${d.when === w[0] ? "on" : ""}" onclick="S.draft.note=document.getElementById('note').value;S.draft.when='${w[0]}';render()">
+            ${w[1]}
+          </button>
+        `).join("")}
+      </div>
+
+      <div style="font-size:13px;font-weight:700;color:var(--tx);margin-top:2px">Describe the issue</div>
+      <textarea id="note" placeholder="E.g. Master bedroom AC blowing warm air, needs gas recharge..." oninput="S.draft.note=this.value">${esc(d.note || "")}</textarea>
+
+      <div class="row" style="background:#F9FAFB;padding:10px 14px;border-radius:12px;border:1px solid var(--ln);justify-content:space-between">
+        <div class="t2" style="font-size:12px">Estimated Quote Range</div>
+        <div class="t1" style="color:var(--o);font-size:14px">10.000 - 25.000 OMR</div>
+      </div>
+
+      <button class="btn" onclick="S.draft.note=document.getElementById('note').value;postJob()">
+        <span>Request Instant Quotes (Free)</span> ${I("next", "flip")}
+      </button>
+    </div>
+  </div>`;
+}
+
+function cOrders() {
+  const list = filtered(myJobs());
+  return `${bar(t("orders"))}<div class="pad">${searchBar()}${chipRow([["ACTIVE","active"],["DONE","done"],["ALL","all"],["TODAY","today"],["WEEK","week"]])}
+    ${list.length ? list.map(jobCard).join("") : empty("list", t("noOrders"))}</div>`;
+}
+function chatsList() {
+  const list = myJobs().filter(j => jobMsgs(j.job_id).length).sort((a, b) => { const la = jobMsgs(a.job_id).pop(), lb = jobMsgs(b.job_id).pop(); return new Date(lb.created_at) - new Date(la.created_at); });
+  return `${bar(t("chats"))}<div class="pad">
+    <button class="card row" onclick="go('tickets')" style="background:var(--o2);border:1px solid #FFD6C2;text-align:start;width:100%"><div class="ico">${I("help")}</div><div class="sp"><div class="t1" style="color:var(--o)">24/7 FixIt Support Desk</div><div class="t2">Tap to chat with Admin & AI</div></div>${I("next", "flip")}</button>
+    ${list.length ? `<div class="card" style="padding:0 16px">${list.map(j => { const last = jobMsgs(j.job_id).pop(), u = unread(j.job_id), c = cat(j.category_id); return `<button class="li" onclick="go('job','${j.job_id}')"><div class="ico">${I(c.icon)}</div><div class="sp"><div class="t1 ell">${c.name} <span class="t2">${sid(j)}</span></div><div class="t2 ell" style="${u ? "color:var(--tx);font-weight:700" : ""}">${esc(last.content)}</div></div><div style="text-align:end"><div class="t2">${ago(last.created_at)}</div>${u ? `<span class="badge">${u}</span>` : ""}</div></button>`; }).join("")}</div>` : empty("chat", t("noChats"))}
+  </div>`;
+}
+function cJob() {
+  const j = S.jobs.find(x => x.job_id === S.jobId); if (!j) return `${bar("", true)}${empty("list", "…")}`;
+  const c = cat(j.category_id), bids = S.bids.filter(b => b.job_id === j.job_id);
+  const chosen = bids.find(b => b.status === "SELECTED");
+  const jobPhotos = S.photos.filter(p => p.job_id === j.job_id);
+  const isTracking = j.status === "BID_SELECTED" || j.status === "IN_PROGRESS";
+
+  return `${bar(c.name, true, statusPill(j))}
+  <div class="pad">
+    <div class="card">${stepper(j)}</div>
+
+    <!-- Live Zero-Flicker Map on Job Screen (Disappears automatically upon completion) -->
+    ${isTracking ? `
+      <div class="card" style="padding:0;overflow:hidden;border-radius:20px;border:1px solid var(--ln);box-shadow:0 4px 16px rgba(0,0,0,0.06)">
+        <div style="padding:12px 14px;background:#0F172A;color:#fff;display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="width:8px;height:8px;border-radius:50%;background:#10B981;box-shadow:0 0 8px #10B981"></span>
+            <span style="font-weight:800;font-size:13px">${t("onWay")} · Live GPS HUD</span>
+          </div>
+          <button class="pill" style="background:var(--o);color:#fff;font-size:11px" onclick="go('tracking','${j.job_id}')">
+            Fullscreen ${I("next", "flip")}
+          </button>
+        </div>
+        ${renderTalabatLeafletMap("cjobLeafletMap", "240px", false, j.job_id)}
+        <div style="padding:10px 14px;background:var(--card);display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--ln)">
+          <div class="t2">Destination: <strong>23C3+XWG Central Salalah</strong></div>
+          <div id="liveSubEtaText" class="t1" style="color:var(--o);font-size:13px">ETA: ~4 mins</div>
+        </div>
+      </div>
+    ` : ''}
+
+    <div class="row card" style="background:var(--gr2);border:1px solid #A7F3D0;color:var(--gr);padding:12px 16px">
+      ${I("shield")} <span class="t1 sp" style="font-size:13px">${t("escrowSecured")} · ${t("warrantyBadge")}</span>
+    </div>
+
+    ${cleanDesc(j.description) ? `<div class="card" style="display:flex;flex-direction:column;gap:8px"><div class="t2">${t("describe")}</div><div style="font-weight:700">${esc(cleanDesc(j.description))}</div></div>` : ""}
+    ${jobPhotos.length ? `<div class="card" style="display:flex;flex-direction:column;gap:8px"><div class="t2">Verification Photos (${jobPhotos.length})</div><div style="display:flex;gap:8px;overflow-x:auto">${jobPhotos.map(p => `<img src="${p.url}" style="width:72px;height:72px;border-radius:12px;object-fit:cover" />`).join("")}</div></div>` : ""}
+    <button class="btn g s" onclick="addJobPhoto('${j.job_id}')">${I("camera")}${t("addPhoto")}</button>
+
+    ${j.status === "OPEN" ? `<div class="card" style="display:flex;flex-direction:column;gap:12px"><div class="t1">${t("offers")} (${bids.length})</div>
+      ${bids.length ? bids.map(b => `<div class="row"><div class="ico">${I("user")}</div><div class="sp"><div class="t1">FixIt Pro</div><div class="t2">★ 4.9 Verified Pro</div></div><div class="num">${Number(b.bid_amount).toFixed(3)} ${t("omr")}</div><button class="btn s" style="width:auto;padding:0 16px" onclick="acceptBid('${b.bid_id}','${j.job_id}')">${t("accept")}</button></div>`).join("") : `<div class="t2">${t("noOffers")}</div>`}</div>` : `
+    <div class="card row"><div class="ico">${I("user")}</div><div class="sp"><div class="t1">Al-Khareef Certified Pro</div><div class="t2">★ 4.9 ${chosen ? "· " + Number(chosen.bid_amount).toFixed(3) + " " + t("omr") : ""}</div></div>
+      <a class="ib" href="tel:${PHONE}" style="background:var(--o2);color:var(--o)">${I("phone")}</a></div>`}
+
+    ${chatBox(j, ["q1", "q2", "q3"])}
+
+    ${j.status === "IN_PROGRESS" || j.status === "BID_SELECTED" ? `<button class="btn ok" onclick="setStatus('${j.job_id}','COMPLETED')">${I("check")}${t("markDone")}</button>` : ""}
+    ${j.status === "COMPLETED" ? `<div class="card" style="text-align:center"><div class="t1">${t("rate")}</div><div class="stars">${[1,2,3,4,5].map(n => `<button class="${n <= (j.rating_given || 0) ? "on" : ""}" onclick="rateJob('${j.job_id}',${n})">★</button>`).join("")}</div><button class="btn g s" style="margin-top:12px" onclick="S.draft={cat:'${j.category_id}',when:'now'};S.sheet='book';render()">${t("book")} Again</button></div>` : ""}
+    ${j.status === "OPEN" ? `<button class="btn g" onclick="setStatus('${j.job_id}','CANCELLED')">${I("x")}${t("cancel")}</button>` : ""}
+  </div>`;
+}
+
+function walletScreen() {
+  const bal = Number(S.wallet.balance || 0).toFixed(3);
+  const lkd = Number(S.wallet.locked_balance || 0).toFixed(3);
+  return `${bar(t("wallet"))}<div class="pad">
+    <div class="card" style="background:var(--o);color:#fff;display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:12px;opacity:.85;font-weight:700">${t("balance")}</div>
+      <div class="big">${bal} <span style="font-size:16px">${t("omr")}</span></div>
+      <div class="row" style="background:rgba(255,255,255,0.18);padding:8px 12px;border-radius:12px;margin-top:4px">
+        ${I("shield")} <span class="sp" style="font-size:12px;font-weight:700">${t("locked")}: ${lkd} ${t("omr")}</span>
+      </div>
+    </div>
+    <div class="two">
+      <button class="btn s" onclick="toast('Thawani / Bank Muscat Top-Up Ready')">${I("plus")}${t("deposit")}</button>
+      <button class="btn g s" onclick="toast('Withdrawal requested to Bank Muscat')">${I("wallet")}${t("withdraw")}</button>
+    </div>
+    <div class="t1">Transactions</div>
+    ${S.txns.length ? `<div class="card" style="padding:0 16px">${S.txns.map(tx => `<div class="li"><div class="ico">${I("wallet")}</div><div class="sp"><div class="t1">${tx.note || tx.kind}</div><div class="t2">${ago(tx.created_at)}</div></div><div class="num" style="color:${tx.amount > 0 ? 'var(--gr)' : 'var(--rd)'}">${tx.amount > 0 ? '+' : ''}${Number(tx.amount).toFixed(3)} ${t("omr")}</div></div>`).join("")}</div>` : empty("wallet", "No transactions")}
+  </div>`;
+}
+
+/* ================= ACCOUNT & SUB-PAGES ================= */
+function accountScreen() {
+  return `${bar(t("account"))}<div class="pad">
+    <div class="card row"><div class="ico" style="width:64px;height:64px;border-radius:32px">${I("user")}</div><div class="sp"><div class="t1" style="font-size:20px">${ROLE === "vendor" ? "FixIt Pro" : ROLE === "admin" ? "Admin Khxzi" : "Khxzi Bxtt"}</div><div class="t2" dir="ltr">${PHONE}</div></div></div>
+    <div class="card" style="padding:0 16px">
+      ${ROLE === "consumer" ? `<button class="li" onclick="go('addresses')">${I("pin")}<span class="sp t1">${t("addresses")}</span><span class="t2">${S.addresses.length}</span>${I("next","flip")}</button>` : ""}
+      ${ROLE === "consumer" ? `<button class="li" onclick="go('coupons')">${I("tag")}<span class="sp t1">${t("coupons")}</span><span class="t2">${S.coupons.length}</span>${I("next","flip")}</button>` : ""}
+      <button class="li" onclick="go('tickets')">${I("help")}<span class="sp t1">${t("tickets")}</span><span class="t2">${S.tickets.length}</span>${I("next","flip")}</button>
+      <button class="li" onclick="go('notifs')">${I("bell")}<span class="sp t1">${t("notifs")}</span><span class="t2">${S.notifs.length}</span>${I("next","flip")}</button>
+      ${ROLE === "vendor" ? `<div class="li">${I("power")}<span class="sp t1">${t("online")}</span><button class="tog ${S.online ? "on" : ""}" onclick="S.online=!S.online;save('online',S.online);render()"></button></div>` : ""}
+      <button class="li" onclick="setLang(L==='ar'?'en':'ar')">${I("globe")}<span class="sp t1">${t("language")}</span><span class="t2">${L === "ar" ? "العربية" : "English"}</span></button>
+      <button class="li" onclick="sync().then(()=>toast('✓ Synced'))">${I("refresh")}<span class="sp t1">${t("refresh")}</span></button>
+    </div>
+  </div>`;
+}
+
+function addressesScreen() {
+  return `${bar(t("addresses"), true)}<div class="pad">
+    <button class="btn s" onclick="S.sheet='address';render()">${I("plus")}${t("addAddress")}</button>
+    ${S.addresses.length ? `<div class="card" style="padding:0 16px">${S.addresses.map(a => `<div class="li"><div class="ico">${I("pin")}</div><div class="sp"><div class="t1">${esc(a.label)}</div><div class="t2">${esc(a.address_line)}</div></div><button class="ib" onclick="delAddress('${a.address_id}')">${I("trash")}</button></div>`).join("")}</div>` : empty("pin", "No addresses saved")}
+  </div>`;
+}
+function addressSheet() {
+  return `<div class="sheet" onclick="if(event.target===this){S.sheet=null;render()}"><div>
+    <div class="grab"></div>
+    <div class="t1" style="font-size:20px">${t("addAddress")}</div>
+    <input id="addrLbl" class="search" placeholder="${t("addressLabel")}" style="height:48px" />
+    <input id="addrLine" class="search" placeholder="${t("addressLine")}" style="height:48px" />
+    <button class="btn" onclick="addAddress(document.getElementById('addrLbl').value, document.getElementById('addrLine').value)">${t("addAddress")}</button>
+  </div></div>`;
+}
+
+function couponsScreen() {
+  return `${bar(t("coupons"), true)}<div class="pad">
+    <div class="card row"><input id="codeInp" class="sp search" placeholder="Enter Promo Code (e.g. SALALAH25)" style="height:48px" /><button class="btn s" style="width:auto;padding:0 18px" onclick="toast(t('promoApplied'))">${t("redeemPromo")}</button></div>
+    <div class="t1">Available Offers</div>
+    ${S.coupons.length ? `<div class="card" style="padding:0 16px">${S.coupons.map(c => `<div class="li"><div class="ico">${I("tag")}</div><div class="sp"><div class="t1">${c.code}</div><div class="t2">${c.discount_pct}% OFF instant booking discount</div></div><button class="btn s" style="width:auto;padding:0 14px" onclick="toast('Applied '+c.code)">Apply</button></div>`).join("")}</div>` : empty("tag", "No coupons")}
+  </div>`;
+}
+
+
+/* ================= SCREEN: SUPPORT TICKETS & DESK ================= */
+function ticketsScreen() {
+  return `${bar(t("tickets"), true)}
+  <div class="pad">
+    <div class="card card-hero" style="display:flex;flex-direction:column;gap:10px;padding:18px">
+      <div class="row">
+        <div class="ico" style="background:rgba(255,255,255,0.2);color:#fff">${I("help")}</div>
+        <div class="sp">
+          <div class="t1" style="color:#fff;font-size:18px">FixIt Support Desk</div>
+          <div style="font-size:12px;opacity:0.9">Khidmah Protection & Order Disputes</div>
+        </div>
+      </div>
+      <div style="font-size:13px;line-height:1.4;opacity:0.95">
+        Need assistance with your orders, billing, or technician arrival? Our dedicated support team in Salalah is available 24/7.
+      </div>
+      <button class="btn" style="background:#fff;color:var(--o);box-shadow:none;height:44px;font-weight:900" onclick="S.sheet='ticket';render()">
+        ${I("plus")} <span>Open New Ticket</span>
+      </button>
+    </div>
+
+    <button class="card row" onclick="go('support_chat')" style="border:1.5px solid #FFD6C2;background:var(--o2);padding:14px;cursor:pointer;text-align:start;width:100%">
+      <div class="ico">${I("chat")}</div>
+      <div class="sp">
+        <div class="t1" style="color:var(--o);font-size:16px">24/7 Live Agent & AI Stream</div>
+        <div class="t2" style="margin-top:2px">Direct instant connection to Admin Khxzi & Support Team</div>
+      </div>
+      ${I("next", "flip")}
+    </button>
+
+    <div class="row" style="justify-content:space-between;margin-top:4px">
+      <div class="t1" style="font-size:16px">${t("tickets")} (${S.tickets.length})</div>
+      <span class="t2">Tap any ticket to chat</span>
+    </div>
+
+    ${S.tickets.length ? S.tickets.map(tkt => `
+      <div class="card" style="display:flex;flex-direction:column;gap:10px;padding:16px;cursor:pointer;border:1px solid var(--ln)" onclick="go('support_chat','${tkt.ticket_id}')">
+        <div class="row" style="align-items:flex-start">
+          <div class="ico ${tkt.status === 'RESOLVED' ? 'gr' : ''}" style="width:40px;height:40px">
+            ${I(tkt.status === 'RESOLVED' ? 'check' : 'help')}
+          </div>
+          <div class="sp">
+            <div class="t1" style="font-size:16px;line-height:1.3">${esc(tkt.subject)}</div>
+            <div class="t2" style="margin-top:3px">${ago(tkt.created_at)} · Ticket #${String(tkt.ticket_id || '').slice(0,8)}</div>
+          </div>
+          <span class="pill ${tkt.status === 'RESOLVED' ? 'ok' : 'am'}" style="font-size:12px;padding:4px 10px">
+            ${tkt.status}
+          </span>
+        </div>
+
+        <div style="font-size:14px;color:var(--tx);line-height:1.4;background:var(--bg);padding:10px 12px;border-radius:12px">
+          ${esc(tkt.body)}
+        </div>
+
+        ${tkt.admin_reply ? `
+          <div style="background:#FFF7ED;border:1px solid #FFEDD5;padding:10px 12px;border-radius:12px;font-size:13px;border-inline-start:4px solid var(--o)">
+            <strong style="color:var(--o)">Admin Khxzi:</strong> ${esc(tkt.admin_reply)}
+          </div>
+        ` : ''}
+
+        <div class="row" style="margin-top:4px;border-top:1px solid var(--ln);padding-top:10px;justify-content:space-between">
+          <span class="t2" style="display:flex;align-items:center;gap:4px">
+            ${I("chat")} Tap to view thread
+          </span>
+          <span style="font-size:13px;font-weight:800;color:var(--o);display:flex;align-items:center;gap:4px">
+            Open Chat ${I("next", "flip")}
+          </span>
+        </div>
+      </div>
+    `).join("") : empty("help", "No tickets submitted yet")}
+  </div>`;
+}
+
+function supportChatScreen() {
+  const tkt = S.tickets.find(x => x.ticket_id === S.ticketId) || S.tickets[0] || {};
+  const targetUid = tkt.user_id || ME;
+  const userObj = (S.users || []).find(u => u.user_id === targetUid) || { full_name: "Khxzi bxtt", phone_number: "+96895956361" };
+  const msgs = (S.supportMsgs || []).filter(m => ROLE === "admin" ? (m.user_id === targetUid) : (m.user_id === ME));
+
+  return `${bar("Support: " + (tkt.subject ? esc(tkt.subject) : "Live Desk"), true)}
+  <div class="pad">
+    <div class="card" style="background:#0F172A;color:#fff;padding:14px 16px;border-radius:18px;display:flex;align-items:center;gap:12px">
+      <div style="position:relative">
+        <div class="ico" style="background:var(--o);color:#fff;width:44px;height:44px">${I("user")}</div>
+        <span style="position:absolute;bottom:0;right:0;width:12px;height:12px;border-radius:50%;background:#10B981;border:2px solid #0F172A"></span>
+      </div>
+      <div class="sp">
+        <div style="font-weight:800;font-size:15px">${ROLE === "admin" ? esc(userObj.full_name || "Customer") : "Admin Khxzi & Support Team"}</div>
+        <div style="font-size:12px;color:#94A3B8;display:flex;align-items:center;gap:4px">
+          <span style="color:#10B981">● Active in Chat</span> · ${ROLE === "admin" ? esc(userObj.phone_number || "+968 77 956361") : "FixIt Salalah Support"}
+        </div>
+      </div>
+      <button class="pill" style="background:var(--o);color:#fff;font-weight:800;padding:6px 12px" onclick="pingAdminAlert()">
+        ${ROLE === "admin" ? "Ping User" : "Ping Admin"}
+      </button>
+    </div>
+
+    ${tkt.ticket_id ? `
+      <div class="card" style="background:var(--bg);border:1px solid var(--ln);display:flex;flex-direction:column;gap:8px;padding:14px">
+        <div class="row" style="justify-content:space-between">
+          <span class="t1 sp" style="font-size:15px">${esc(tkt.subject)}</span>
+          <span class="pill ${tkt.status === 'RESOLVED' ? 'ok' : 'am'}">${tkt.status}</span>
+        </div>
+        <div class="t2" style="font-size:13px;line-height:1.4">${esc(tkt.body)}</div>
+        ${ROLE === "admin" ? `
+          <div class="row" style="margin-top:4px;gap:8px">
+            <button class="btn s ${tkt.status === 'RESOLVED' ? 'g' : 'ok'}" style="width:auto;padding:0 14px;height:36px" onclick="tkt.status=tkt.status==='RESOLVED'?'OPEN':'RESOLVED';sb('/support_tickets?ticket_id=eq.'+tkt.ticket_id,'PATCH',{status:tkt.status}).catch(()=>{});render()">
+              Mark ${tkt.status === 'RESOLVED' ? 'Open' : 'Resolved'}
+            </button>
+          </div>
+        ` : ''}
+      </div>
+    ` : ''}
+
+    <div class="card" style="display:flex;flex-direction:column;gap:12px;padding:14px">
+      <div class="row">
+        <span style="width:10px;height:10px;border-radius:50%;background:var(--gr)"></span>
+        <span class="t1 sp" style="font-size:14px">Official Support Thread</span>
+        <button class="ib" style="width:34px;height:34px" onclick="sync().then(()=>toast('✓ Synced'))">${I("refresh")}</button>
+      </div>
+
+      <div class="chat" id="supportChat" style="max-height:360px">
+        <div style="text-align:center;font-size:11px;color:var(--mu);margin:4px 0">
+          <span style="background:var(--bg);padding:4px 12px;border-radius:12px;border:1px solid var(--ln)">
+            Admin Khxzi joined the support room
+          </span>
+        </div>
+
+        ${msgs.length ? msgs.map(m => {
+          const isAgent = m.sender === "AI" || m.sender === "ADMIN" || m.sender === "AGENT";
+          const isMe = (ROLE === "admin" && isAgent) || (ROLE !== "admin" && !isAgent);
+          return `<div class="m ${isAgent ? "ad" : isMe ? "me" : ""}" style="font-size:13px;line-height:1.4">
+            ${isAgent ? "<strong style='color:var(--o)'>🛡 Admin Khxzi: </strong>" : ""}
+            ${esc(m.content)}
+            <div style="font-size:9px;opacity:0.75;margin-top:3px;text-align:end">${ago(m.created_at)}</div>
+          </div>`;
+        }).join("") : `<div class="t2" style="text-align:center;padding:24px">No messages yet. Send a message to chat with support team!</div>`}
+      </div>
+
+      <div class="chips">
+        <button class="chip" onclick="document.getElementById('supportInp').value='Where is my technician?';sendSupportMsg()">Where is Pro?</button>
+        <button class="chip" onclick="document.getElementById('supportInp').value='Escrow release dispute';sendSupportMsg()">Escrow dispute</button>
+        <button class="chip" onclick="document.getElementById('supportInp').value='Change delivery address';sendSupportMsg()">Address change</button>
+      </div>
+
+      <div class="send">
+        <input id="supportInp" placeholder="${ROLE === 'admin' ? 'Type response as Admin Khxzi...' : 'Type message to support team...'}" onkeydown="if(event.key==='Enter')sendSupportMsg()" style="height:46px" />
+        <button onclick="sendSupportMsg()" style="width:46px;height:46px">${I("send", "flip")}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function pingAdminAlert() {
+  toast("🔔 Admin Khxzi notified of urgent ticket!");
+  ping();
+  try {
+    await sb("/notifications", "POST", { user_id: ME, title: "Urgent Support Request", body: "User requested immediate assistance in Support Chat." });
+  } catch (e) {}
+}
+
+async function sendSupportMsg() {
+  const inp = document.getElementById("supportInp");
+  const txt = (inp ? inp.value : "").trim();
+  if (!txt) return;
+  inp.value = "";
+  const tkt = S.tickets.find(x => x.ticket_id === S.ticketId) || {};
+  const senderRole = ROLE === "admin" ? "AGENT" : "USER";
+  const targetUser = ROLE === "admin" ? (tkt.user_id || ME) : ME;
+  const newMsg = {
+    user_id: targetUser,
+    sender: senderRole,
+    content: (ROLE === "admin" ? "[Admin Khxzi]: " : "") + txt,
+    created_at: new Date().toISOString()
+  };
+  if (!S.supportMsgs) S.supportMsgs = [];
+  S.supportMsgs.push(newMsg);
+  render();
+  setTimeout(() => { const c = document.getElementById("supportChat"); if (c) c.scrollTop = c.scrollHeight; }, 30);
+  try {
+    await sb("/support_messages", "POST", newMsg);
+    sync();
+  } catch (e) { toast("✓ Message saved"); }
+}
+
+
+/* ================= SCREEN: TALABAT LIVE TRACKING SCREEN (MATCHES USER SCREENSHOT 1) ================= */
+function trackingScreen() {
+  const j = S.jobs.find(x => x.job_id === S.jobId) || S.jobs.find(x => x.status === "BID_SELECTED" || x.status === "IN_PROGRESS") || S.jobs[0] || {};
+  const c = cat(j.category_id);
+  const isVendor = ROLE === "vendor";
+
+  return `
+  <div style="position:relative;width:100%;min-height:100vh;background:var(--bg);padding-bottom:20px">
+    <!-- Top Floating Close & Header -->
+    <div style="position:absolute;top:12px;left:14px;right:14px;z-index:999;display:flex;align-items:center;justify-content:space-between;pointer-events:none">
+      <button class="ib" style="pointer-events:auto;background:rgba(255,255,255,0.95);backdrop-filter:blur(6px);box-shadow:0 4px 14px rgba(0,0,0,0.15);width:42px;height:42px;border-radius:50%" onclick="back()">
+        ${I("x")}
+      </button>
+      <div style="pointer-events:auto;background:rgba(15,23,42,0.88);backdrop-filter:blur(6px);color:#fff;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:800;display:flex;align-items:center;gap:6px">
+        <span style="width:7px;height:7px;border-radius:50%;background:#10B981;box-shadow:0 0 6px #10B981"></span>
+        <span>Order #${String(j.short_id || '469436')}</span>
+      </div>
+    </div>
+
+    <!-- Fullscreen Non-Flickering Leaflet Street Map -->
+    <div style="width:100%;height:56vh;position:relative">
+      ${renderTalabatLeafletMap("trackingLeafletMap", "100%", true, j.job_id)}
+    </div>
+
+    <!-- Bottom Floating Delivery Hero Card (Exact Talabat Style from User Upload) -->
+    <div style="position:relative;margin-top:-24px;z-index:1000;background:var(--card);border-radius:24px 24px 0 0;padding:20px 18px 40px 18px;box-shadow:0 -6px 24px rgba(0,0,0,0.09);display:flex;flex-direction:column;gap:14px">
+      <!-- Store & Category Header -->
+      <div class="row" style="justify-content:space-between">
+        <div class="row" style="gap:10px">
+          <div style="width:38px;height:38px;border-radius:10px;background:#FF5A00;color:#fff;display:grid;place-items:center;font-weight:900;font-size:11px">
+            FixIt
+          </div>
+          <div>
+            <div class="t1" style="font-size:16px">${c.name} Express</div>
+            <div class="t2" style="font-size:11px">Central Salalah Division</div>
+          </div>
+        </div>
+        <span style="background:#0F172A;color:#fff;font-size:11px;font-weight:800;padding:5px 12px;border-radius:14px">
+          ${t("onWay")}
+        </span>
+      </div>
+
+      <!-- Estimated Arrival Banner with Big Typography and Scooter Ring -->
+      <div class="row" style="background:#FAF8F5;border:1px solid #F0ECE4;border-radius:18px;padding:14px 16px;justify-content:space-between">
+        <div>
+          <div class="t2" style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:0.5px">Estimated arrival</div>
+          <div id="liveEtaText" style="font-size:22px;font-weight:900;color:var(--tx);margin-top:2px">within 4 minutes</div>
+        </div>
+        <div style="position:relative;width:52px;height:52px;border-radius:50%;border:3px solid #FF5A00;display:grid;place-items:center;background:#FFF4ED">
+          <div style="color:#FF5A00">${I("car")}</div>
+        </div>
+      </div>
+
+      <!-- Peach Alert Banner -->
+      <div style="background:#FFF8F0;border:1px solid #FFE4CC;border-radius:12px;padding:10px 14px;color:#C2410C;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px">
+        <span style="font-size:15px">👍</span>
+        <span>Almost there! Give Md a moment to arrive at your door</span>
+      </div>
+
+      <!-- Delivery Hero Driver Profile Row -->
+      <div class="row" style="padding:4px 0">
+        <div style="width:46px;height:46px;border-radius:50%;background:#FF5A00;color:#fff;display:grid;place-items:center;font-weight:900;font-size:18px">
+          Md
+        </div>
+        <div class="sp">
+          <div class="t1" style="font-size:15px">Md</div>
+          <div class="t2" style="font-size:12px">is your delivery hero for today · ★ 4.9</div>
+        </div>
+        <button class="ib" onclick="go('job','${j.job_id}')" style="background:var(--o2);color:var(--o);width:42px;height:42px;border-radius:50%">
+          ${I("chat")}
+        </button>
+        <a class="ib" href="tel:${PHONE}" style="background:var(--o2);color:var(--o);width:42px;height:42px;border-radius:50%">
+          ${I("phone")}
+        </a>
+      </div>
+
+      <!-- Action Buttons: Order Details & Get Help -->
+      <div class="two" style="margin-top:4px">
+        <button class="btn outline s" style="background:var(--bg);border:1px solid var(--ln);color:var(--tx)" onclick="go('receipt','${j.job_id}')">
+          ${I("receipt")} <span>Order Details</span>
+        </button>
+        <button class="btn s" style="background:var(--o);color:#fff" onclick="go('support_chat')">
+          🎧 <span>Get Help</span>
+        </button>
+      </div>
+
+      ${isVendor ? `
+        <div class="two" style="margin-top:4px">
+          <button class="btn ok s" onclick="setStatus('${j.job_id}','IN_PROGRESS',t('arrived'))">${I("pin")}${t("arrived")}</button>
+          <button class="btn s" onclick="toast('✓ Live GPS ping broadcasted')">${I("navigate")}Ping GPS</button>
+        </div>
+      ` : ''}
+    </div>
+  </div>`;
+}
+
+
+/* ================= SCREEN: TALABAT ORDER DETAILS (MATCHES USER SCREENSHOT 2) ================= */
+function receiptScreen() {
+  const j = S.jobs.find(x => x.job_id === S.jobId) || S.jobs.find(x => x.status === "BID_SELECTED" || x.status === "IN_PROGRESS" || x.status === "COMPLETED") || S.jobs[0] || {};
+  const c = cat(j.category_id);
+  const chosenBid = (S.bids || []).find(b => b.job_id === j.job_id && (b.status === "SELECTED" || b.status === "ACCEPTED")) || { bid_amount: 18.000 };
+  const subtotal = Number(chosenBid.bid_amount || 18.000);
+  const serviceFee = 0.160;
+  const total = subtotal + serviceFee;
+  const orderId = j.short_id || "4694368418";
+  const dateStr = j.created_at ? new Date(j.created_at).toLocaleDateString("en-GB") + " " + new Date(j.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "03/11/2026 11:40";
+
+  return `${bar("Order Details", true)}
+  <div class="pad" style="background:var(--bg)">
+    <!-- Store Header matching Talabat Screenshot 2 -->
+    <div class="card" style="padding:16px;display:flex;align-items:center;gap:14px;border:1px solid var(--ln)">
+      <div style="width:52px;height:52px;border-radius:14px;background:#FF5A00;color:#fff;display:grid;place-items:center;font-weight:900;font-size:12px;text-align:center;line-height:1.1;padding:4px">
+        FixIt<br><span style="font-size:9px;opacity:0.9">EXPRESS</span>
+      </div>
+      <div class="sp">
+        <div class="t1" style="font-size:18px">${c.name} Express</div>
+        <div class="t2" style="margin-top:2px">${dateStr}</div>
+        <div class="t2" style="font-size:12px;color:var(--mu)">Order ID: ${orderId}</div>
+      </div>
+    </div>
+
+    <!-- Delivery Address Card -->
+    <div class="card" style="padding:16px;display:flex;flex-direction:column;gap:8px;border:1px solid var(--ln)">
+      <div class="row" style="gap:10px">
+        <div class="ico" style="width:36px;height:36px;background:var(--bg);color:var(--tx)">${I("pin")}</div>
+        <div class="t1" style="font-size:16px">Delivery Address</div>
+      </div>
+      <div style="padding-inline-start:46px;display:flex;flex-direction:column;gap:4px">
+        <div style="font-weight:700;font-size:14px">Mohammed Kamal Uddin</div>
+        <div class="t2">Salalah Industrial, 23C3+XWG Central Salalah</div>
+        <div class="t2" style="font-weight:600">Mobile: +968 92817052</div>
+      </div>
+    </div>
+
+    <!-- Order Summary Card -->
+    <div class="card" style="padding:16px;display:flex;flex-direction:column;gap:12px;border:1px solid var(--ln)">
+      <div class="t1" style="font-size:17px">Order Summary</div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--ln)">
+        <div class="row" style="justify-content:space-between">
+          <div class="sp" style="font-size:14px">1 x ${c.name} Diagnosis & On-Site Repair</div>
+          <div style="font-weight:700;font-size:14px">${(subtotal * 0.8).toFixed(3)} OMR</div>
+        </div>
+        <div class="row" style="justify-content:space-between">
+          <div class="sp" style="font-size:14px">1 x OEM Parts & Khidmah Inspection Guarantee</div>
+          <div style="font-weight:700;font-size:14px">${(subtotal * 0.2).toFixed(3)} OMR</div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:14px">
+        <div class="row" style="justify-content:space-between;color:var(--mu)">
+          <span>Subtotal</span>
+          <span style="color:var(--tx);font-weight:600">${subtotal.toFixed(3)} OMR</span>
+        </div>
+        <div class="row" style="justify-content:space-between;color:var(--mu)">
+          <span>Delivery / Dispatch fee</span>
+          <span style="color:var(--gr);font-weight:700">FREE</span>
+        </div>
+        <div class="row" style="justify-content:space-between;color:var(--mu)">
+          <span>Escrow Protection fee</span>
+          <span style="color:var(--tx);font-weight:600">${serviceFee.toFixed(3)} OMR</span>
+        </div>
+        <div class="row" style="justify-content:space-between;padding-top:8px;border-top:1px dashed var(--ln);font-size:16px">
+          <span style="font-weight:900">Total</span>
+          <span style="font-weight:900;color:var(--o);font-size:18px">${total.toFixed(3)} OMR</span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:6px;padding-top:10px;border-top:1px solid var(--ln);font-size:13px">
+        <div class="row" style="justify-content:space-between">
+          <span class="t2">Payment method</span>
+          <span style="font-weight:700">FixIt Escrow / Thawani</span>
+        </div>
+        <div class="row" style="justify-content:space-between">
+          <span class="t2">Estimated arrival</span>
+          <span style="font-weight:700;color:var(--o)">within 4 mins</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Get Help Button (Matches Talabat Screenshot 2) -->
+    <button class="btn outline" style="border:1.5px solid var(--ln);background:var(--card);color:var(--tx);height:50px;border-radius:25px;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,0.04)" onclick="go('support_chat')">
+      <span>🎧</span> <span style="font-weight:800">Get help</span>
+    </button>
+  </div>`;
+}
+
+function notifsScreen() {
+  return `${bar(t("notifs"), true)}<div class="pad">
+    ${S.notifs.length ? `<div class="card" style="padding:0 16px">${S.notifs.map(n => `<div class="li"><div class="ico">${I("bell")}</div><div class="sp"><div class="t1">${esc(n.title)}</div><div class="t2">${esc(n.body)}</div></div><div class="t2">${ago(n.created_at)}</div></div>`).join("")}</div>` : empty("bell", "No notifications")}
+  </div>`;
+}
+
+/* ================= VENDOR SCREENS ================= */
+function vJobs() {
+  const mine = myJobs();
+  const openJobs = S.jobs.filter(j => j.status === "OPEN");
+  const showNew = S.filter !== "MINE";
+  const list = showNew ? openJobs : mine.filter(j => !isDone(j));
+  const earned = mine.filter(j => j.status === "COMPLETED").length;
+  return `${bar(t("jobs"), false, `<button class="tog ${S.online ? "on" : ""}" onclick="S.online=!S.online;save('online',S.online);render()"></button>`)}<div class="pad">
+    <div class="two"><div class="card"><div class="t2">${t("newJobs")}</div><div class="big">${openJobs.length}</div></div><div class="card"><div class="t2">${t("done")}</div><div class="big">${earned}</div></div></div>
+    <div class="chips"><button class="chip ${showNew ? "on" : ""}" onclick="S.filter='NEW';render()">${t("newJobs")}</button><button class="chip ${!showNew ? "on" : ""}" onclick="S.filter='MINE';render()">${t("myJobs")} ${mine.filter(j => !isDone(j)).length}</button></div>
+    ${!S.online ? empty("power", t("online") + " ✕") : list.length ? list.map(j => showNew ? vLeadCard(j) : jobCard(j)).join("") : empty("radar", "…")}
+  </div>`;
+}
+function vLeadCard(j) {
+  const c = cat(j.category_id), mine = S.bids.find(b => b.job_id === j.job_id && b.vendor_id === ME);
+  return `<div class="card" style="display:flex;flex-direction:column;gap:12px">
+    <div class="row"><div class="ico">${I(c.icon)}</div><div class="sp"><div class="t1">${c.name}</div><div class="t2 ell">${esc(cleanDesc(j.description)) || sid(j)}</div></div><div class="t2">${ago(j.created_at)}</div></div>
+    ${mine ? `<div class="pill ok" style="align-self:flex-start">✓ ${Number(mine.bid_amount).toFixed(3)} ${t("omr")}</div>` : `<button class="btn s" onclick="S.sheet='bid';S.jobId='${j.job_id}';render()">${I("send", "flip")}${t("bid")}</button>`}
+  </div>`;
+}
+function vBidSheet() {
+  const j = S.jobs.find(x => x.job_id === S.jobId) || {}, c = cat(j.category_id);
+  return `<div class="sheet" onclick="if(event.target===this){S.sheet=null;render()}"><div><div class="grab"></div>
+    <div class="row"><div class="ico">${I(c.icon)}</div><div class="t1 sp" style="font-size:20px">${c.name}</div><button class="ib" onclick="S.sheet=null;render()">${I("x")}</button></div>
+    <div class="grid">${[5,8,10,12,15,18,20,25].map(a => `<button class="chip" style="height:56px;font-size:18px" onclick="sendBid('${j.job_id}',${a})">${a}</button>`).join("")}</div>
+    <div class="t2" style="text-align:center">${t("omr")}</div></div></div>`;
+}
+function vJob() {
+  const j = S.jobs.find(x => x.job_id === S.jobId); if (!j) return `${bar("", true)}${empty("list", "…")}`;
+  const c = cat(j.category_id);
+  const jobPhotos = S.photos.filter(p => p.job_id === j.job_id);
+  return `${bar(c.name, true, `<a class="ib" href="tel:${PHONE}" style="background:var(--o2);color:var(--o)">${I("phone")}</a>`)}<div class="pad">
+    <div class="card">${stepper(j)}</div>
+    ${cleanDesc(j.description) ? `<div class="card t2" style="font-size:15px;color:var(--tx)">${esc(cleanDesc(j.description))}</div>` : ""}
+    <div class="two">
+      <button class="btn g s" onclick="sendMsg(t('onWay'))">${I("car")}${t("onWay")}</button>
+      <button class="btn g s" onclick="sendMsg(t('arrived'))">${I("pin")}${t("arrived")}</button>
+      <button class="btn s" onclick="setStatus('${j.job_id}','IN_PROGRESS')">${I("tool")}${t("start")}</button>
+      <button class="btn ok s" onclick="setStatus('${j.job_id}','COMPLETED')">${I("check")}${t("finish")}</button>
+    </div>
+    ${jobPhotos.length ? `<div class="card" style="display:flex;flex-direction:column;gap:8px"><div class="t2">Verification Photos (${jobPhotos.length})</div><div style="display:flex;gap:8px;overflow-x:auto">${jobPhotos.map(p => `<img src="${p.url}" style="width:72px;height:72px;border-radius:12px;object-fit:cover" />`).join("")}</div></div>` : ""}
+    <button class="btn g s" onclick="addJobPhoto('${j.job_id}')">${I("camera")}Upload Completion Photo</button>
+    ${chatBox(j, ["v1", "v2", "v3"])}
+  </div>`;
+}
+
+/* ================= ADMIN SCREENS ================= */
+function aOverview() {
+  const J = S.jobs, n = s => J.filter(j => j.status === s).length;
+  const tile = (icon, label, val, go) => `<button class="card" style="text-align:start" onclick="${go}"><div class="ico" style="margin-bottom:12px">${I(icon)}</div><div class="big">${val}</div><div class="t2">${label}</div></button>`;
+  return `${bar("FixIt Admin", false, `<button class="ib" onclick="sync().then(()=>toast('✓'))">${I("refresh")}</button>${langBtn()}`)}<div class="pad">
+    <div class="two">
+      ${tile("list", t("orders"), J.length, "S.filter='ALL';tab('orders')")}
+      ${tile("bell", t("open"), n("OPEN"), "tab('orders');S.filter='OPEN';render()")}
+      ${tile("tool", t("live"), n("BID_SELECTED") + n("IN_PROGRESS"), "tab('orders');S.filter='ACTIVE';render()")}
+      ${tile("users", t("users"), S.users.length, "tab('users')")}
+    </div>
+    <!-- Quick broadcast card -->
+    <div class="card row"><input id="bcastMsg" class="sp search" placeholder="Broadcast Push Notification to all users..." style="height:44px" /><button class="btn s" style="width:auto;padding:0 16px" onclick="toast('Push sent to users!')">${I("send", "flip")}</button></div>
+    <div class="t1">${t("orders")}</div>
+    ${J.slice(0, 5).map(jobCard).join("") || empty("list", t("noOrders"))}
+  </div>`;
+}
+function aOrders() {
+  const list = filtered(S.jobs);
+  return `${bar(t("orders"))}<div class="pad">${searchBar()}${chipRow([["ALL","all"],["OPEN","open"],["ACTIVE","active"],["DONE","done"],["TODAY","today"]])}
+    ${list.length ? list.map(jobCard).join("") : empty("list", t("noOrders"))}</div>`;
+}
+function aJob() {
+  const j = S.jobs.find(x => x.job_id === S.jobId); if (!j) return `${bar("", true)}${empty("list", "…")}`;
+  const c = cat(j.category_id), bids = S.bids.filter(b => b.job_id === j.job_id);
+  const jobPhotos = S.photos.filter(p => p.job_id === j.job_id);
+  return `${bar(c.name + " " + sid(j), true, statusPill(j))}<div class="pad">
+    <div class="card">${stepper(j)}</div>
+    <div class="card row"><div class="sp"><div class="t2">${t("offers")}</div><div class="big">${bids.length}</div></div><div style="text-align:end"><div class="t2">${t("omr")}</div><div class="big">${price(j)}</div></div></div>
+    ${cleanDesc(j.description) ? `<div class="card" style="font-size:15px">${esc(cleanDesc(j.description))}</div>` : ""}
+    ${jobPhotos.length ? `<div class="card" style="display:flex;flex-direction:column;gap:8px"><div class="t2">Verification Photos (${jobPhotos.length})</div><div style="display:flex;gap:8px;overflow-x:auto">${jobPhotos.map(p => `<img src="${p.url}" style="width:72px;height:72px;border-radius:12px;object-fit:cover" />`).join("")}</div></div>` : ""}
+    <div class="t2">${t("status")}</div>
+    <div class="chips">${["OPEN","BID_SELECTED","IN_PROGRESS","COMPLETED","CANCELLED"].map(s => `<button class="chip ${j.status === s ? "on" : ""}" onclick="setStatus('${j.job_id}','${s}')">${t(s)}</button>`).join("")}</div>
+    <div class="two" style="margin-top:4px">
+      <button class="btn g s" onclick="toast('Refund processed')">${t("refundUser")}</button>
+      <button class="btn ok s" onclick="toast('Released to Pro')">${t("payPro")}</button>
+    </div>
+    ${chatBox(j)}
+  </div>`;
+}
+function aUsers() {
+  const q = S.q.toLowerCase();
+  const list = S.users.filter(u => !q || [u.full_name, u.phone_number, u.email, u.role].join(" ").toLowerCase().includes(q));
+  return `${bar(t("users"))}<div class="pad">${searchBar()}
+    ${list.length ? `<div class="card" style="padding:0 16px">${list.map(u => `<div class="li"><div class="ico">${I(u.role === "VENDOR" ? "tool" : "user")}</div><div class="sp"><div class="t1 ell">${esc(u.full_name || "User")}</div><div class="t2 ell" dir="ltr">${esc(u.phone_number || u.email || "")}</div></div>${u.phone_number ? `<a class="ib" href="tel:${esc(u.phone_number)}" style="background:var(--o2);color:var(--o)">${I("phone")}</a>` : ""}</div>`).join("")}</div>` : empty("users", "…")}</div>`;
+}
+
+function aEscrow() {
+  return `${bar(t("escrow"))}<div class="pad">
+    <div class="card" style="background:var(--o);color:#fff;display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:12px;opacity:.85;font-weight:700">Total Platform Escrow Held</div>
+      <div class="big">1,240.500 <span style="font-size:16px">${t("omr")}</span></div>
+      <div class="t2" style="color:rgba(255,255,255,0.85)">Platform Take: 20% · 100% Guaranteed</div>
+    </div>
+    <div class="t1">Recent Escrow Locks & Releases</div>
+    ${S.txns.length ? `<div class="card" style="padding:0 16px">${S.txns.map(tx => `<div class="li"><div class="ico">${I("shield")}</div><div class="sp"><div class="t1">${tx.note}</div><div class="t2">${ago(tx.created_at)}</div></div><div class="num">${Number(tx.amount).toFixed(3)} ${t("omr")}</div></div>`).join("")}</div>` : empty("shield", "No escrow activity")}
+  </div>`;
+}
+
+function aSupportDesk() {
+  return `${bar(t("support"))}<div class="pad">
+    <div class="card row"><input id="adminReplyAll" class="sp search" placeholder="Broadcast reply to open tickets..." style="height:44px" /><button class="btn s" style="width:auto;padding:0 16px" onclick="toast('Reply posted')">${I("send", "flip")}</button></div>
+    <div class="t1">${t("tickets")} (${S.tickets.length})</div>
+    ${S.tickets.length ? S.tickets.map(tkt => `<div class="card" style="display:flex;flex-direction:column;gap:8px"><div class="row"><span class="t1 sp">${esc(tkt.subject)}</span><button class="pill ${tkt.status === 'RESOLVED' ? 'ok' : 'am'}" onclick="tkt.status=tkt.status==='RESOLVED'?'OPEN':'RESOLVED';render()">${tkt.status}</button></div><div class="t2">${esc(tkt.body)}</div></div>`).join("") : empty("help", "No tickets")}
+  </div>`;
+}
+
+/* ---------- render ---------- */
+const NAV = {
+  consumer: [["home","home","home"],["orders","list","orders"],["wallet","wallet","wallet"],["chats","chat","chats"],["account","user","account"]],
+  vendor: [["jobs","radar","jobs"],["chats","chat","chats"],["wallet","wallet","wallet"],["account","user","account"]],
+  admin: [["overview","grid","overview"],["orders","list","orders"],["users","users","users"],["escrow","shield","escrow"],["support","help","support"]]
+};
+function screen() {
+  const s = S.stack[S.stack.length - 1];
+  if (s === "job") return ROLE === "consumer" ? cJob() : ROLE === "vendor" ? vJob() : aJob();
+  if (s === "addresses") return addressesScreen();
+  if (s === "coupons") return couponsScreen();
+  if (s === "tracking") return trackingScreen();
+  if (s === "receipt") return receiptScreen();
+  if (s === "tickets") return ticketsScreen();
+  if (s === "support_chat") return supportChatScreen();
+  if (s === "notifs") return notifsScreen();
+
+  const m = {
+    consumer: { home: cHome, orders: cOrders, wallet: walletScreen, chats: chatsList, account: accountScreen },
+    vendor: { jobs: vJobs, chats: chatsList, wallet: walletScreen, account: accountScreen },
+    admin: { overview: aOverview, orders: aOrders, users: aUsers, escrow: aEscrow, support: aSupportDesk }
+  }[ROLE];
+  return (m[S.tab] || Object.values(m)[0])();
+}
+function render() {
+  const u = totalUnread();
+  const nav = S.stack.length ? "" : `<nav class="nav">${NAV[ROLE].map(n => `<button class="${S.tab === n[0] ? "on" : ""}" onclick="tab('${n[0]}')">${I(n[1])}${t(n[2])}${n[0] === "chats" && u ? `<span class="badge">${u}</span>` : ""}${ROLE === "admin" && n[0] === "orders" && S.jobs.filter(j => j.status === "OPEN").length ? `<span class="badge">${S.jobs.filter(j => j.status === "OPEN").length}</span>` : ""}</button>`).join("")}</nav>`;
+  const sheet = S.sheet === "book" ? cBookSheet() : S.sheet === "bid" ? vBidSheet() : S.sheet === "address" ? addressSheet() : S.sheet === "ticket" ? ticketSheet() : S.sheet === "deposit" ? depositSheet() : S.sheet === "withdraw" ? withdrawSheet() : "";
+  const keepChat = document.getElementById("chat"), atBottom = keepChat && keepChat.scrollHeight - keepChat.scrollTop - keepChat.clientHeight < 40;
+  document.getElementById("app").innerHTML = (S.toast ? `<div class="toast">${esc(S.toast)}</div>` : "") + screen() + nav + sheet;
+  if (atBottom) scrollChat();
+}
+function renderKeep(id) { const el = document.getElementById(id), pos = el ? el.selectionStart : 0; render(); const n = document.getElementById(id); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {} } }
+
+render();
+sync();
+setInterval(sync, 4000);
+
+/* ================= WEB ROLE SWITCHER & GESTURE LOCKS ================= */
+function switchRole(newRole) {
+  ROLE = newRole;
+  S.tab = ROLE === "vendor" ? "jobs" : ROLE === "admin" ? "overview" : "home";
+  S.stack = [];
+  S.jobId = null;
+  updateRoleBarUI();
+  render();
+  sync();
+}
+
+function updateRoleBarUI() {
+  const bar = document.getElementById("webRoleBar");
+  if (!bar) return;
+  const isWeb = !window.FixItNative;
+  bar.style.display = isWeb ? "flex" : "none";
+  document.querySelectorAll(".web-role-btn").forEach(b => b.classList.remove("active"));
+  const btn = document.getElementById("roleBtn" + ROLE.charAt(0).toUpperCase() + ROLE.slice(1));
+  if (btn) btn.classList.add("active");
+}
+
+// Block pinch-to-zoom gestures on mobile browsers
+window.addEventListener('gesturestart', function(e) { e.preventDefault(); }, { passive: false });
+window.addEventListener('gesturechange', function(e) { e.preventDefault(); }, { passive: false });
+window.addEventListener('gestureend', function(e) { e.preventDefault(); }, { passive: false });
+
+// Block rapid double-tap zoom
+let _lastTap = 0;
+document.addEventListener('touchend', function(e) {
+  const now = Date.now();
+  if (now - _lastTap < 300) { e.preventDefault(); }
+  _lastTap = now;
+}, { passive: false });
+
+updateRoleBarUI();
+
+</script>
+</body>
+</html>

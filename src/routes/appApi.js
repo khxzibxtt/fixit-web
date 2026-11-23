@@ -1452,6 +1452,71 @@ function createAppApiRouter() {
   router.post("/api/payments/paypal/checkout", proxyLimiter, requireAppSession, handlePaypalCheckout);
   router.post("/api/app/payments/paypal/checkout", proxyLimiter, requireAppSession, handlePaypalCheckout);
 
+  function validatePhotoPayload(rawUrl) {
+    const url = String(rawUrl || "").trim();
+    if (!url) return { valid: false, error: "Empty photo payload." };
+
+    // 1. Data URL (Base64 encoded camera photo)
+    if (url.startsWith("data:")) {
+      const match = url.match(/^data:image\/(jpeg|jpg|png|webp);base64,(.+)$/i);
+      if (!match) {
+        return {
+          valid: false,
+          error: "Unacceptable file type. Only JPEG, PNG, or WebP image data is allowed (SVG, HTML, and executables are strictly forbidden)."
+        };
+      }
+      const b64Data = match[2];
+      if (b64Data.length > 8 * 1024 * 1024) {
+        return { valid: false, error: "Photo file exceeds maximum 6MB limit." };
+      }
+      try {
+        const headerBuf = Buffer.from(b64Data.slice(0, 32), "base64");
+        if (headerBuf.length < 4) {
+          return { valid: false, error: "Corrupted or truncated image data." };
+        }
+        const hex = headerBuf.toString("hex").toLowerCase();
+        const isJpeg = hex.startsWith("ffd8ff");
+        const isPng = hex.startsWith("89504e47");
+        const isWebP = hex.startsWith("52494646") && hex.slice(16, 24) === "57454250";
+
+        if (!isJpeg && !isPng && !isWebP) {
+          return {
+            valid: false,
+            error: "Binary signature mismatch. File header does not match authentic JPEG, PNG, or WebP photo magic bytes."
+          };
+        }
+        return { valid: true };
+      } catch (_) {
+        return { valid: false, error: "Failed to parse image data." };
+      }
+    }
+
+    // 2. HTTPS URL (hosted image CDN)
+    if (url.startsWith("https://")) {
+      try {
+        const parsed = new URL(url);
+        const pathname = parsed.pathname.toLowerCase();
+        const isImageExt = /\.(jpg|jpeg|png|webp|heic)$/i.test(pathname);
+        const isTrustedCdn = parsed.hostname.includes("unsplash.com") ||
+          parsed.hostname.includes("supabase.co") ||
+          parsed.hostname.includes("cloudinary.com") ||
+          parsed.hostname.includes("fixit-now.xyz");
+
+        if (!isImageExt && !isTrustedCdn) {
+          return {
+            valid: false,
+            error: "Remote image URL must end with .jpg, .jpeg, .png, or .webp, or originate from a verified storage host."
+          };
+        }
+        return { valid: true };
+      } catch (_) {
+        return { valid: false, error: "Malformed photo URL." };
+      }
+    }
+
+    return { valid: false, error: "Photo must be a secure https:// URL or data:image/jpeg;base64 payload." };
+  }
+
   // Generic PostgREST proxy for app reads & writes (`app -> fixit-now.xyz -> Supabase`)
   // Enforces strict role & per-user ownership access control before forwarding to Supabase.
   router.all("/api/app/rest/:table", proxyLimiter, requireAppSession, async (req, res) => {
@@ -1558,6 +1623,32 @@ function createAppApiRouter() {
         delete body.videoUrl;
         delete body.videoName;
         delete body.applied_coupon;
+      }
+
+      // 7. Job Photos (Vector #14 defense: strictly validate authentic photos, reject non-photo payloads)
+      if (table === "job_photos" && (method === "POST" || method === "PATCH") && body && typeof body === "object") {
+        if (method === "POST") {
+          if (uid) body.uploaded_by_user_id = uid;
+          if (!body.phase) body.phase = "DURING";
+        }
+        const photoUrl = String(body.url || body.photo_url || "").trim();
+        if (method === "POST" && !photoUrl) {
+          return res.status(400).json({ ok: false, error: "Photo URL or image data is required." });
+        }
+        if (photoUrl) {
+          const check = validatePhotoPayload(photoUrl);
+          if (!check.valid) {
+            return res.status(400).json({ ok: false, error: check.error });
+          }
+        }
+      }
+
+      // 8. Wallet Transactions (Vector #10 defense: reject negative / underflow amounts)
+      if (table === "wallet_transactions" && method === "POST" && body && typeof body === "object") {
+        const amt = Number(body.amount);
+        if (!Number.isFinite(amt) || amt <= 0) {
+          return res.status(400).json({ ok: false, error: "Transaction amount must be strictly greater than zero." });
+        }
       }
     }
 
