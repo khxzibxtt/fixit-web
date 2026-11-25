@@ -1073,7 +1073,7 @@ const S = {
   bids: load("bids", []),
   users: load("users", [
     { user_id: CONSUMER_ID, full_name: "FixIt Customer", phone_number: "", role: "CUSTOMER" },
-    { user_id: VENDOR_ID, full_name: (S.profile && S.profile.full_name) || "", phone_number: "", role: "VENDOR" }
+    { user_id: VENDOR_ID, full_name: "FixIt Partner", phone_number: "", role: "VENDOR" }
   ]),
   wallet: load("wallet", { balance: 0.0, locked_balance: 0.0 }),
   txns: load("txns", []),
@@ -1599,7 +1599,7 @@ if (!S.reviews) S.reviews = load("reviews", [
 ]);
 if (!S.vendorLocs) S.vendorLocs = load("vendorLocs", []);
 if (!S.vendorProfiles) S.vendorProfiles = load("vendorProfiles", [
-  { vendor_id: VENDOR_ID, full_name: (S.profile && S.profile.full_name) || "", rating_avg: 0, jobs_completed_count: 0, verification_status: "PENDING", bio_en: "", bio_ar: "" }
+  { vendor_id: VENDOR_ID, full_name: (typeof S !== "undefined" && S && S.profile && S.profile.full_name) || "FixIt Partner", rating_avg: 0, jobs_completed_count: 0, verification_status: "PENDING", bio_en: "", bio_ar: "" }
 ]);
 if (!S.readNotifIds) S.readNotifIds = load("readNotifIds", []);
 if (!S.transCache) S.transCache = load("transCache", {});
@@ -3015,7 +3015,7 @@ function makeBadgeSvgDataUri(bg1, bg2, title, sub, iconText) {
 }
 
 const PRO_AVATAR_PHOTOS = {
-  [VENDOR_ID]: makeBadgeSvgDataUri("#C2410C", "#9A3412", (S.profile && S.profile.full_name && S.profile.full_name.toUpperCase()) || "", "", "👨‍🔧"),
+  [VENDOR_ID]: makeBadgeSvgDataUri("#C2410C", "#9A3412", (typeof S !== "undefined" && S && S.profile && S.profile.full_name && S.profile.full_name.toUpperCase()) || "FIXIT PRO", "", "👨‍🔧"),
   "pro-salim": makeBadgeSvgDataUri("#065F46", "#047857", "SALIM AL KATHIRI", "Senior HVAC Specialist", "👨‍🔧"),
   "pro-tariq": makeBadgeSvgDataUri("#1E3A8A", "#1D4ED8", "TARIQ AL SHANFARI", "Mechanic & Flatbed Captain", "👨‍🔧")
 };
