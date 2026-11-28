@@ -426,6 +426,20 @@ const DEFAULT_LINK_PHONE = process.env.WHATSAPP_ADMIN_PHONE || "96877956361";
   }
 })();
 
+// ── Watchdog: every 90s, reconnect if disconnected but have saved creds ──────
+setInterval(async () => {
+  if (isConnected || isConnecting || startPromise) return;
+  const credsPath = path.join(AUTH_DIR, "creds.json");
+  if (!fs.existsSync(credsPath)) return;
+  try {
+    const raw = JSON.parse(fs.readFileSync(credsPath, "utf8"));
+    if (raw && raw.registered) {
+      console.log("[WA-WEB] Watchdog: WhatsApp disconnected — auto-reconnecting...");
+      startSocket({ mode: "auto", reset: false }).catch(() => {});
+    }
+  } catch (_) {}
+}, 90000);
+
 async function getWhatsAppStatus() {
   return {
     ok: true,

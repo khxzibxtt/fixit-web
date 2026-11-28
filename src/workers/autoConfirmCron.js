@@ -104,6 +104,15 @@ async function runAutoConfirmCycle() {
 
 async function runKeepAliveSelfPing() {
   recordMonitorPing("self");
+
+  // WhatsApp connection health check — trigger reconnect if dropped
+  try {
+    const waWeb = require("../services/whatsappWeb");
+    if (!waWeb.isWhatsAppConnected()) {
+      console.log("[KEEPALIVE] WhatsApp not connected — watchdog will handle reconnect.");
+    }
+  } catch (_) {}
+
   const targets = [
     process.env.RENDER_EXTERNAL_URL ? `${String(process.env.RENDER_EXTERNAL_URL).replace(/\/+$/, "")}/ping?src=self` : null,
     "https://fixit-now.xyz/ping?src=self",
