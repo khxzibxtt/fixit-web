@@ -105,11 +105,14 @@ async function runAutoConfirmCycle() {
 async function runKeepAliveSelfPing() {
   recordMonitorPing("self");
 
-  // WhatsApp connection health check — trigger reconnect if dropped
+  // WhatsApp connection health check — actively restore/reconnect if dropped
   try {
     const waWeb = require("../services/whatsappWeb");
     if (!waWeb.isWhatsAppConnected()) {
-      console.log("[KEEPALIVE] WhatsApp not connected — watchdog will handle reconnect.");
+      console.log("[KEEPALIVE] WhatsApp not connected — triggering immediate auto-reconnect...");
+      if (typeof waWeb.ensureWhatsAppConnected === "function") {
+        waWeb.ensureWhatsAppConnected(5000).catch(() => {});
+      }
     }
   } catch (_) {}
 

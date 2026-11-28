@@ -381,56 +381,75 @@ async function startSocket({ mode = "qr", phoneNumber = null, reset = false } = 
 // If unlinked, automatically generates 1 WhatsApp Pairing Code, prints it in Render logs, and sends a notification.
 const DEFAULT_LINK_PHONE = process.env.WHATSAPP_ADMIN_PHONE || "96877956361";
 
-(async function bootWhatsApp() {
-  try {
-    const credsPath = path.join(AUTH_DIR, "creds.json");
-    let hasCreds = fs.existsSync(credsPath);
-    if (!hasCreds) {
-      hasCreds = await restoreAuthFromSupabase();
+if (process.env.NODE_ENV !== "test") {
+  (async function bootWhatsApp() {
+    try {
+      const credsPath = path.join(AUTH_DIR, "creds.json");
+      let hasCreds = fs.existsSync(credsPath);
+      if (!hasCreds) {
+        hasCreds = await restoreAuthFromSupabase();
+      }
+      if (hasCreds) {
+        try {
+          const raw = JSON.parse(fs.readFileSync(credsPath, "utf8"));
+          if (raw && raw.registered) {
+            console.log("[WA-WEB] Found saved WhatsApp credentials. Auto-reconnecting session...");
+            await startSocket({ mode: "auto", reset: false });
+            return;
+          }
+        } catch (_) {}
+      }
+
+      // No existing session or not linked: auto-generate a fresh pairing code on Render boot
+      console.log(`[WA-WEB] No active WhatsApp session on startup. Auto-generating pairing code for +${normalizeWaPhone(DEFAULT_LINK_PHONE)}...`);
+      const pairRes = await requestPairing(DEFAULT_LINK_PHONE, { reset: false });
+      if (pairRes && pairRes.pairingCode) {
+        const code = pairRes.pairingCode;
+        const formattedCode = code.length === 8 ? `${code.slice(0, 4)}-${code.slice(4)}` : code;
+        console.log(`\n================================================================`);
+        console.log(`🟢 [WHATSAPP LINK CODE]: ${formattedCode}`);
+        console.log(`   Phone Number: +${normalizeWaPhone(DEFAULT_LINK_PHONE)}`);
+        console.log(`   Open WhatsApp on your phone -> Linked Devices -> Link with phone number`);
+        console.log(`================================================================\n`);
+
+        // Send in-app notification to Supabase so it appears in the Admin App and Web app
+        if (isSupabaseConfigured()) {
+          await supabaseRequest("/notifications", "POST", {
+            user_id: ADMIN_USER_ID,
+            kind: "WHATSAPP_PAIR_CODE",
+            title: `WhatsApp Link Code: ${formattedCode}`,
+            body: `Enter code ${formattedCode} on WhatsApp (+${normalizeWaPhone(DEFAULT_LINK_PHONE)}) -> Linked Devices -> Link with phone number`
+          }).catch(() => {});
+        }
+      }
+    } catch (err) {
+      console.error("[WA-WEB] Startup boot error:", err && err.message ? err.message : err);
     }
-    if (hasCreds) {
+  })();
+}
+
+// ── Watchdog & Active Presence Keep-Alive (every 30s) ────────────────────────
+let _lastPresencePingAt = 0;
+const _waWatchdogTimer = setInterval(async () => {
+  if (isConnected && sock) {
+    const now = Date.now();
+    if (now - _lastPresencePingAt >= 45000) {
+      _lastPresencePingAt = now;
       try {
-        const raw = JSON.parse(fs.readFileSync(credsPath, "utf8"));
-        if (raw && raw.registered) {
-          console.log("[WA-WEB] Found saved WhatsApp credentials. Auto-reconnecting session...");
-          await startSocket({ mode: "auto", reset: false });
-          return;
+        if (typeof sock.sendPresenceUpdate === "function") {
+          await sock.sendPresenceUpdate("available").catch(() => {});
         }
       } catch (_) {}
     }
-
-    // No existing session or not linked: auto-generate a fresh pairing code on Render boot
-    console.log(`[WA-WEB] No active WhatsApp session on startup. Auto-generating pairing code for +${normalizeWaPhone(DEFAULT_LINK_PHONE)}...`);
-    const pairRes = await requestPairing(DEFAULT_LINK_PHONE, { reset: false });
-    if (pairRes && pairRes.pairingCode) {
-      const code = pairRes.pairingCode;
-      const formattedCode = code.length === 8 ? `${code.slice(0, 4)}-${code.slice(4)}` : code;
-      console.log(`\n================================================================`);
-      console.log(`🟢 [WHATSAPP LINK CODE]: ${formattedCode}`);
-      console.log(`   Phone Number: +${normalizeWaPhone(DEFAULT_LINK_PHONE)}`);
-      console.log(`   Open WhatsApp on your phone -> Linked Devices -> Link with phone number`);
-      console.log(`================================================================\n`);
-
-      // Send in-app notification to Supabase so it appears in the Admin App and Web app
-      if (isSupabaseConfigured()) {
-        await supabaseRequest("/notifications", "POST", {
-          user_id: ADMIN_USER_ID,
-          kind: "WHATSAPP_PAIR_CODE",
-          title: `WhatsApp Link Code: ${formattedCode}`,
-          body: `Enter code ${formattedCode} on WhatsApp (+${normalizeWaPhone(DEFAULT_LINK_PHONE)}) -> Linked Devices -> Link with phone number`
-        }).catch(() => {});
-      }
-    }
-  } catch (err) {
-    console.error("[WA-WEB] Startup boot error:", err && err.message ? err.message : err);
+    return;
   }
-})();
-
-// ── Watchdog: every 90s, reconnect if disconnected but have saved creds ──────
-setInterval(async () => {
-  if (isConnected || isConnecting || startPromise) return;
+  if (isConnecting || startPromise) return;
   const credsPath = path.join(AUTH_DIR, "creds.json");
-  if (!fs.existsSync(credsPath)) return;
+  let hasCreds = fs.existsSync(credsPath);
+  if (!hasCreds) {
+    hasCreds = await restoreAuthFromSupabase().catch(() => false);
+  }
+  if (!hasCreds || !fs.existsSync(credsPath)) return;
   try {
     const raw = JSON.parse(fs.readFileSync(credsPath, "utf8"));
     if (raw && raw.registered) {
@@ -438,7 +457,35 @@ setInterval(async () => {
       startSocket({ mode: "auto", reset: false }).catch(() => {});
     }
   } catch (_) {}
-}, 90000);
+}, 30000);
+if (typeof _waWatchdogTimer.unref === "function") {
+  _waWatchdogTimer.unref();
+}
+
+async function ensureWhatsAppConnected(waitMs = 6500) {
+  if (isConnected && sock) return true;
+  if (!isConnecting && !startPromise) {
+    const credsPath = path.join(AUTH_DIR, "creds.json");
+    let hasCreds = fs.existsSync(credsPath);
+    if (!hasCreds) {
+      hasCreds = await restoreAuthFromSupabase().catch(() => false);
+    }
+    if (hasCreds && fs.existsSync(credsPath)) {
+      try {
+        const raw = JSON.parse(fs.readFileSync(credsPath, "utf8"));
+        if (raw && raw.registered) {
+          startSocket({ mode: "auto", reset: false }).catch(() => {});
+        }
+      } catch (_) {}
+    }
+  }
+  const deadline = Date.now() + waitMs;
+  while (Date.now() < deadline) {
+    if (isConnected && sock) return true;
+    await new Promise(r => setTimeout(r, 350));
+  }
+  return Boolean(isConnected && sock);
+}
 
 async function getWhatsAppStatus() {
   return {
@@ -486,7 +533,10 @@ async function disconnectWhatsApp() {
 
 async function sendWhatsAppMessage(toPhone, message) {
   if (!isConnected || !sock) {
-    return { ok: false, error: "WhatsApp Web not connected. Link via QR or code in Admin first." };
+    const ready = await ensureWhatsAppConnected(6500);
+    if (!ready) {
+      return { ok: false, error: "WhatsApp Web not connected. Link via QR or code in Admin first." };
+    }
   }
 
   try {
@@ -509,5 +559,6 @@ module.exports = {
   requestPairing,
   disconnectWhatsApp,
   sendWhatsAppMessage,
+  ensureWhatsAppConnected,
   isWhatsAppConnected: () => isConnected
 };

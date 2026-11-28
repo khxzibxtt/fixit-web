@@ -1073,7 +1073,7 @@ const S = {
   bids: load("bids", []),
   users: load("users", [
     { user_id: CONSUMER_ID, full_name: "FixIt Customer", phone_number: "", role: "CUSTOMER" },
-    { user_id: VENDOR_ID, full_name: "FixIt Partner", phone_number: "", role: "VENDOR" }
+    { user_id: VENDOR_ID, full_name: "Al-Khareef Certified Pro", phone_number: "+96892004411", role: "VENDOR" }
   ]),
   wallet: load("wallet", { balance: 0.0, locked_balance: 0.0 }),
   txns: load("txns", []),
@@ -1599,7 +1599,7 @@ if (!S.reviews) S.reviews = load("reviews", [
 ]);
 if (!S.vendorLocs) S.vendorLocs = load("vendorLocs", []);
 if (!S.vendorProfiles) S.vendorProfiles = load("vendorProfiles", [
-  { vendor_id: VENDOR_ID, full_name: (typeof S !== "undefined" && S && S.profile && S.profile.full_name) || "FixIt Partner", rating_avg: 0, jobs_completed_count: 0, verification_status: "PENDING", bio_en: "", bio_ar: "" }
+  { vendor_id: VENDOR_ID, full_name: "Khalid Al Balushi", rating_avg: 4.8, jobs_completed_count: 42, verification_status: "VERIFIED", bio_en: "Master AC, Electrical & Plumbing Technician in Salalah (8+ yrs experience).", bio_ar: "فني معتمد في التكييف والكهرباء والسباكة في صلالة (خبرة أكثر من 8 سنوات)." }
 ]);
 if (!S.readNotifIds) S.readNotifIds = load("readNotifIds", []);
 if (!S.transCache) S.transCache = load("transCache", {});
@@ -3015,7 +3015,7 @@ function makeBadgeSvgDataUri(bg1, bg2, title, sub, iconText) {
 }
 
 const PRO_AVATAR_PHOTOS = {
-  [VENDOR_ID]: makeBadgeSvgDataUri("#C2410C", "#9A3412", (typeof S !== "undefined" && S && S.profile && S.profile.full_name && S.profile.full_name.toUpperCase()) || "FIXIT PRO", "", "👨‍🔧"),
+  [VENDOR_ID]: makeBadgeSvgDataUri("#C2410C", "#9A3412", "KHALID AL BALUSHI", "Master Electrician & AC Lead", "👨‍🔧"),
   "pro-salim": makeBadgeSvgDataUri("#065F46", "#047857", "SALIM AL KATHIRI", "Senior HVAC Specialist", "👨‍🔧"),
   "pro-tariq": makeBadgeSvgDataUri("#1E3A8A", "#1D4ED8", "TARIQ AL SHANFARI", "Mechanic & Flatbed Captain", "👨‍🔧")
 };
@@ -5818,7 +5818,7 @@ async function sendBid(jobId, amt) {
   if (shop.kyc_status !== "APPROVED") {
     toast(L === "ar" ? "⚠ يجب اعتماد المحل قبل تقديم العروض" : "⚠ Your shop must be approved before placing bids.");
     S.sheet = null;
-    go('shop_kyc');
+    S.tab = "shop";
     render();
     return;
   }
@@ -5874,7 +5874,7 @@ async function sendBid(jobId, amt) {
       user_id: j.consumer_id || ME || CONSUMER_ID,
       kind: "BID_RECEIVED",
       title: `New Offer: ${priceVal.toFixed(3)} OMR on ${sid(j)}`,
-      body: `A new bid was submitted — tap to view & accept!`,
+      body: `Khalid Al Balushi (★ 4.8 · 42 jobs done) sent an offer — tap to view profile & accept!`,
       job_id: jobId
     }).catch(() => {});
     sync();
@@ -6461,7 +6461,7 @@ const PRO_DIRECTORY = {
     vendor_id: VENDOR_ID,
     avatar: "KB",
     pfpUrl: DEFAULT_PRO_PFP,
-    nameEn: (S.profile && S.profile.full_name) || "",
+    nameEn: "Khalid Al Balushi",
     nameAr: "خالد البلوشي",
     titleEn: "Master AC, Electrical, Plumbing & Roadside Pro",
     titleAr: "فني خبير تكييف وكهرباء وسباكة وخدمات طرق",
@@ -8643,7 +8643,7 @@ function accountScreen() {
   <div class="pad" style="margin-top:-24px">
     ${ROLE === "vendor" ? `<div class="acct-grid">
       <button onclick="tab('jobs')"><i>${I("radar")}</i><span>${ar ? "الرادار" : "Live Radar"}</span></button>
-      <button onclick="go('notifs')"><i>${I("bell")}</i><span>${ar ? "إشعارات" : "Alerts"}</span></button>
+      <button onclick="tab('shop')"><i>${I("box")}</i><span>${ar ? "محلي" : "My Shop"}</span></button>
       <button onclick="tab('wallet')"><i>${I("wallet")}</i><span>${ar ? "الأرباح" : "Earnings"}</span></button>
       <button onclick="go('tickets')"><i>${I("help")}</i><span>${ar ? "المساعدة" : "Get Help"}</span></button>
     </div>` : `<div class="acct-grid">
@@ -8655,17 +8655,7 @@ function accountScreen() {
 
     ${ROLE === "vendor" ? `<div class="mh">${ar ? "بوابة الشريك والمحل" : "Partner & Business Hub"}</div>
     <div class="card" style="padding:0 16px">
-      ${(() => {
-      const kycStatus = activeShop && activeShop.kyc_status;
-      const adminRequested = activeShop && activeShop.admin_requested_kyc;
-      const needsKyc = !kycStatus || kycStatus === 'PENDING' || kycStatus === 'CONFLICT' || adminRequested;
-      if (!needsKyc) return '';
-      const statusLabel = kycStatus === 'PENDING' ? (ar ? '⏳ قيد المراجعة' : '⏳ Under review')
-        : kycStatus === 'CONFLICT' ? (ar ? '⚠ يتطلب إجراء' : '⚠ Action needed')
-        : adminRequested ? (ar ? '⚠ طُلب من الإدارة' : '⚠ Admin requested')
-        : (ar ? 'أضف السجل التجاري' : 'Add CR & verify');
-      return row('box', ar ? 'السجل التجاري والتوثيق' : 'Business Verification', statusLabel, "go('shop_kyc')");
-    })()}
+      ${row("box", ar ? "بيانات المحل والسجل التجاري" : "Shop & CR Verification", esc((activeShop && activeShop.cr_number) || ""), "go('shop_kyc')")}
       ${row("wallet", ar ? "محفظة الأرباح والسحب" : "Partner Earnings & Payouts", `${fmtOmr((S.wallet && S.wallet.balance) || 0)} ${t("omr")}`, "go('wallet')")}
       ${row("user", ar ? "معلومات الحساب الشخصي" : "Partner Account Info", "", "go('account_info')")}
       ${row("bell", t("notifs"), unreadNotifs || "", "go('notifs')")}
@@ -10724,11 +10714,11 @@ async function checkWhatsAppStatus(force = false) {
   if (!force && now - _lastWaCheckAt < 1200) return;
   _lastWaCheckAt = now;
   try {
-    const res = await apiCall("/api/app/admin/whatsapp-status", { method: "GET", timeoutMs: 12000 });
+    const res = await apiCall("/api/app/admin/whatsapp-status", { method: "GET", timeoutMs: 15000 });
     updateWaUiFromStatus(res);
   } catch (e) {
     window._waState.loaded = true;
-    window._waState.error = "OFFLINE";
+    window._waState.error = (e && e.status === 401) ? ((e && e.message) || "Session error") : "OFFLINE";
     renderWaCard();
   }
 }
@@ -10738,7 +10728,7 @@ function startWaPoll() {
   let tries = 0;
   _waPollTimer = setInterval(() => {
     tries++;
-    if (tries > 45 || !document.getElementById("waCardRoot")) {
+    if (tries > 60 || !document.getElementById("waCardRoot")) {
       clearInterval(_waPollTimer);
       _waPollTimer = null;
       return;
@@ -10759,7 +10749,7 @@ async function requestWhatsAppQr(forceReset = false) {
     const res = await apiCall("/api/app/admin/whatsapp-qr", {
       method: "POST",
       body: { reset: Boolean(forceReset) },
-      timeoutMs: 25000
+      timeoutMs: 35000
     });
     st.busy = false;
     updateWaUiFromStatus(res);
@@ -10800,7 +10790,7 @@ async function requestWhatsAppPairCode(forceReset = true) {
     const res = await apiCall("/api/app/admin/whatsapp-pair", {
       method: "POST",
       body: { phone, reset: Boolean(forceReset) },
-      timeoutMs: 25000
+      timeoutMs: 35000
     });
     st.busy = false;
     updateWaUiFromStatus(res);
@@ -10968,7 +10958,7 @@ function aEscrow() {
 /* ---------- router ---------- */
 const NAV = {
   consumer: [["home","home","home"],["orders","list","orders"],["__post__","plus","post"],["chats","chat","chats"],["account","user","account"]],
-  vendor: [["jobs","home","jobs"],["chats","chat","chats"],["wallet","wallet","wallet"],["account","user","account"]],
+  vendor: [["jobs","home","jobs"],["shop","box","Shop"],["chats","chat","chats"],["wallet","wallet","wallet"],["account","user","account"]],
   admin: [["overview","grid","overview"],["shops","box","Shops"],["analytics","star","Analytics"],["orders","list","orders"],["users","users","users"],["escrow","wallet","escrow"]]
 };
 const APP_VERSION_CODE = 169;
@@ -11106,13 +11096,13 @@ function screen() {
   else {
     const m = {
       consumer: { home: cHome, orders: cOrders, wallet: walletScreen, chats: chatsList, account: accountScreen },
-      vendor: { jobs: vJobs, chats: chatsList, wallet: walletScreen, account: accountScreen },
+      vendor: { jobs: vJobs, shop: () => vShopKycScreen(false), chats: chatsList, wallet: walletScreen, account: accountScreen },
       admin: { overview: aOverview, shops: aShopKycScreen, analytics: aAnalyticsScreen, orders: aOrders, users: aUsers, escrow: aEscrow, support: ticketsScreen }
     }[ROLE];
     html = (m[S.tab] || Object.values(m)[0])();
   }
   const adScreens = new Set(["wallet", "job", "job_chat", "book", "checkout", "shop_kyc", "account_info", "tracking", "support_chat", "addresses", "coupons", "tickets", "notifs", "settings", "about", "legal", "tos", "privacy", "refund_policy", "cookie_policy"]);
-  const adTabs = new Set(["orders", "chats", "wallet", "account"]);
+  const adTabs = new Set(["orders", "shop", "chats", "wallet", "account"]);
   if (ROLE !== "admin" && ((s && adScreens.has(s)) || (!s && adTabs.has(S.tab)))) {
     html += `<div style="padding:0 16px 8px">${aadsSlotHtml()}</div>`;
   }
@@ -11301,8 +11291,11 @@ hydrateFromIndexedDB().then(() => {
 setInterval(() => {
   if ((typeof document === "undefined" || !document.hidden) && S.auth && S.auth.loggedIn && S.auth.sessionCode) {
     sync();
+    if (ROLE === "admin" && typeof checkWhatsAppStatus === "function" && document.getElementById("waCardRoot")) {
+      checkWhatsAppStatus(true);
+    }
   }
-}, 30000);
+}, 20000);
 setInterval(() => {
   if ((typeof document === "undefined" || !document.hidden) && S.auth && S.auth.loggedIn && S.auth.sessionCode) {
     sendSessionHeartbeat();

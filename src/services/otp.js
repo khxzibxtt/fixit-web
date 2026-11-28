@@ -100,7 +100,8 @@ async function sendOtp(rawPhone, rawChannel = "whatsapp", opts = {}) {
 
   try {
     const waWeb = require("./whatsappWeb");
-    if (waWeb.isWhatsAppConnected()) {
+    const connected = waWeb.isWhatsAppConnected() || (typeof waWeb.ensureWhatsAppConnected === "function" ? await waWeb.ensureWhatsAppConnected(6500) : false);
+    if (connected) {
       const bodyText = formatWhatsAppOtpMessage(code);
       const waRes = await waWeb.sendWhatsAppMessage(phone, bodyText);
       if (waRes.ok) {
